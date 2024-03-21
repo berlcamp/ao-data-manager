@@ -12,6 +12,7 @@ import TwoColTableLoading from './Loading/TwoColTableLoading'
 import Login from './Login'
 import LoginBox from './LoginBox'
 import MainMenu from './MainMenu'
+import NotWhitelisted from './NotWhitelisted'
 import OfflinePage from './Offline'
 import PerPage from './PerPage'
 import ShowMore from './ShowMore'
@@ -27,7 +28,7 @@ import UserBlock from './UserBlock'
 
 export {
     AccountDetails, ConfirmModal, CustomButton, DeleteModal, FilterDateRange, Jobs, LandingPage, Login,
-    LoginBox, MainMenu, OfflinePage, OneColLayoutLoading, PerPage, RisSidebar, SettingsSideBar, ShowMore, Sidebar, TableRowLoading, ThreeColTableLoading, Title,
+    LoginBox, MainMenu, NotWhitelisted, OfflinePage, OneColLayoutLoading, PerPage, RisSidebar, SettingsSideBar, ShowMore, Sidebar, TableRowLoading, ThreeColTableLoading, Title,
     TopBar, TopBarDark, TrackerSideBar, TwoColTableLoading, Unauthorized, UserBlock
 }
 
