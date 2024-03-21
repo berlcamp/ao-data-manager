@@ -7,7 +7,6 @@ import { Toaster } from 'react-hot-toast'
 import 'server-only'
 import './globals.css'
 
-import LandingPage from '@/components/LandingPage'
 import type { AccountTypes, UserAccessTypes } from '@/types/index'
 import type { Metadata } from 'next'
 
@@ -39,6 +38,9 @@ export default async function RootLayout({
   let sysAccess: UserAccessTypes[] | null = []
   let currUser: AccountTypes | null = null
   let ipLists: any = null
+
+  const { data: ips } = await supabase.from('adm_ip_whitelists').select()
+  ipLists = ips
 
   if (session) {
     try {
@@ -86,25 +88,9 @@ export default async function RootLayout({
         throw new Error(error4.message)
       }
 
-      const { data: ips, error: error5 } = await supabase
-        .from('adm_ip_whitelists')
-        .select()
-
-      if (error5) {
-        void logError(
-          'root layout ip whitelist',
-          'adm_ip_whitelists',
-          '',
-          'root layout ip whitelist error'
-        )
-        console.log('Error #: 5')
-        throw new Error(error5.message)
-      }
-
       sysAccess = systemAccess
       sysUsers = systemUsers
       currUser = user
-      ipLists = ips
     } catch (err) {
       console.log('Root layout error:', err)
       return (
@@ -130,8 +116,9 @@ export default async function RootLayout({
           <Providers>
             <FilterProvider>
               <Toaster />
-              {!session && <LandingPage />}
-              {session && children}
+              {/* {!session && <LandingPage />}
+              {session && children} */}
+              {children}
             </FilterProvider>
           </Providers>
         </SupabaseProvider>
