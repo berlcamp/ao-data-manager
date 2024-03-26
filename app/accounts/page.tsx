@@ -303,6 +303,7 @@ const Page: React.FC = () => {
                       </td>
                       <th className="app__th_firstcol">
                         <UserBlock user={item} />
+                        <span>{item.firstname}</span>
                         {/* Mobile View */}
                         <div>
                           <div className="md:hidden app__td_mobile">

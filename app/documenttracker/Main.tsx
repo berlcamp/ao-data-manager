@@ -429,7 +429,7 @@ const Page: React.FC = () => {
   const email: string = session.user.email
 
   // Check access from permission settings or Super Admins
-  if (!hasAccess('request_tracker') && !superAdmins.includes(email))
+  if (!hasAccess('tracker') && !superAdmins.includes(email))
     return <Unauthorized />
 
   return (
@@ -631,7 +631,7 @@ const Page: React.FC = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="app__td">
+                      <td className="app__td max-w-[300px]">
                         <div className="space-y-2">
                           <div>
                             <span className="font-medium">
@@ -644,7 +644,7 @@ const Page: React.FC = () => {
                                       setSelectedItem(item)
                                       setViewTrackerModal(true)
                                     }}>
-                                    See More
+                                    See&nbsp;More
                                   </span>
                                 </span>
                               ) : (
@@ -661,7 +661,7 @@ const Page: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="hidden md:table-cell app__td">
+                      <td className="hidden md:table-cell app__td max-w-[200px]">
                         {item.adm_tracker_remarks?.length > 0 && (
                           <div className="space-x-1 font-medium">
                             <span>
@@ -683,19 +683,21 @@ const Page: React.FC = () => {
                                 setSelectedItem(item)
                                 setViewTrackerModal(true)
                               }}>
-                              View All
+                              View&nbsp;All
                             </span>
                           </div>
                         )}
                       </td>
                       <td className="hidden md:table-cell app__td">
                         <div className="flex items-center">
-                          <span className="font-bold">{item.location}</span>
                           <Menu
                             as="div"
                             className="app__menu_container font-normal text-gray-600">
                             <div>
                               <Menu.Button className="app__dropdown_btn">
+                                <span className="font-bold">
+                                  {item.location}
+                                </span>
                                 <ChevronDownIcon
                                   className="h-5 w-5"
                                   aria-hidden="true"
@@ -735,16 +737,18 @@ const Page: React.FC = () => {
                       </td>
                       <td className="hidden md:table-cell app__td">
                         <div className="flex items-center">
-                          <span
-                            className="font-bold"
-                            style={{ color: getStatusColor(item.status) }}>
-                            {item.status}
-                          </span>
                           <Menu
                             as="div"
                             className="app__menu_container font-normal text-gray-600">
                             <div>
                               <Menu.Button className="app__dropdown_btn">
+                                <span
+                                  className="font-bold"
+                                  style={{
+                                    color: getStatusColor(item.status),
+                                  }}>
+                                  {item.status}
+                                </span>
                                 <ChevronDownIcon
                                   className="h-5 w-5"
                                   aria-hidden="true"
