@@ -157,8 +157,8 @@ const Page: React.FC = () => {
   const handleMigrate = async () => {
     try {
       let eof = false
-      let lastId = 118207
-      // let lastId = 124207
+      // let lastId = 118207
+      let lastId = 118732
 
       while (!eof) {
         const { data, error } = await supabase
@@ -484,14 +484,12 @@ const Page: React.FC = () => {
               btnType="button"
               handleClick={handleAdd}
             />
-            {superAdmins.includes(email) && (
-              <CustomButton
-                containerStyles="app__btn_green"
-                title="Migrate"
-                btnType="button"
-                handleClick={handleMigrate}
-              />
-            )}
+            {/* <CustomButton
+              containerStyles="app__btn_green"
+              title="Migrate"
+              btnType="button"
+              handleClick={handleMigrate}
+            /> */}
           </div>
 
           {/* Filters */}
