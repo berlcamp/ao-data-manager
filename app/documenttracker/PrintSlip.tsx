@@ -73,8 +73,8 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
           </tr>
           <tr>
             <td colSpan={2}>
-              <span>Routin No: </span>{' '}
-              <span className="font-bold">{document.id}</span>
+              <span>Routing No: </span>{' '}
+              <span className="font-bold">{document.routing_slip_no}</span>
             </td>
             <td colSpan={2}>
               <span>DATE: </span>{' '}
@@ -89,6 +89,14 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               colSpan={4}
               className="flex items-center space-x-1">
               <span>Type: </span>
+              <span className="font-bold">{document.type}</span>
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={4}
+              className="flex items-center space-x-1">
+              <span>Particulars: </span>
               <span className="font-bold">{document.particulars}</span>
             </td>
           </tr>
@@ -107,7 +115,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               colSpan={4}
               className="flex items-center space-x-1">
               <span>From: </span>
-              <span className="font-bold">{document.received_from}</span>
+              <span className="font-bold">{document.agency}</span>
             </td>
           </tr>
           <tr>
@@ -115,7 +123,9 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               colSpan={4}
               className="flex items-center space-x-1">
               <span>Received By: </span>
-              <span className="font-bold">{document.received_by}</span>
+              <span className="font-bold">
+                {document.asenso_user.firstname}
+              </span>
             </td>
           </tr>
           <tr>

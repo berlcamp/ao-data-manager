@@ -45,7 +45,7 @@ export default function PrintButton({ document }: ModalProps) {
     <>
       <CustomButton
         btnType="button"
-        title="Print Slip"
+        title="Print&nbsp;Slip"
         handleClick={handlePrint}
         containerStyles="app__btn_blue_xs"
       />

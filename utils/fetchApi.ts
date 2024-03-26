@@ -22,6 +22,7 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
       .select('tracker_id')
       .eq('title', filters.filterRoute)
       .eq('date', format(new Date(filters.filterDateForwarded), 'yyyy-MM-dd'))
+      .limit(200)
 
       if (data) {
         data.forEach(d => trackerIds.push(d.tracker_id))
@@ -30,15 +31,15 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
 
     let query = supabase
       .from('adm_trackers')
-      .select('*, adm_tracker_routes(*),  adm_tracker_remarks(*), adm_tracker_stickies(*), asenso_users:user_id(*)', { count: 'exact' })
+      .select('*, adm_tracker_routes(*),  adm_tracker_remarks(*), adm_tracker_stickies(*), asenso_user:user_id(firstname,middlename,lastname)', { count: 'exact' })
       .eq('archived', false)
 
       // Full text search
     if (typeof filters.filterKeyword !== 'undefined' && filters.filterKeyword.trim() !== '') {
-      query = query.or(`particulars.ilike.%${filters.filterKeyword}%`)
+      query = query.or(`routing_slip_no.ilike.%${filters.filterKeyword}%,particulars.ilike.%${filters.filterKeyword}%,agency.ilike.%${filters.filterKeyword}%,requester.ilike.%${filters.filterKeyword}%,amount.ilike.%${filters.filterKeyword}%,cheque_no.ilike.%${filters.filterKeyword}%`)
     }
 
-    // Filter current route
+    // Filter Current Location
     if (filters.filterCurrentRoute && filters.filterCurrentRoute.trim() !== '') {
       query = query.eq('location', filters.filterCurrentRoute)
     }
@@ -73,7 +74,7 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
     query = query.range(from, to)
 
     // Order By
-    query = query.order('id', { ascending: false })
+    query = query.order('created_at', { ascending: false })
 
     const { data, count, error } = await query
 

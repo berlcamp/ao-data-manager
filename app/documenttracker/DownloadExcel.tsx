@@ -1,6 +1,7 @@
 'use client'
-import type { DocumentTypes } from '@/types'
+import type { DocumentRemarksTypes, DocumentTypes } from '@/types'
 import { fetchDocuments } from '@/utils/fetchApi'
+import { format } from 'date-fns'
 import Excel from 'exceljs'
 import { saveAs } from 'file-saver'
 import { useState } from 'react'
@@ -34,18 +35,38 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
       // Add data to the worksheet
       worksheet.columns = [
         { header: '#', key: 'no', width: 20 },
-        { header: 'Type', key: 'type', width: 20 },
-        { header: 'Particulars', key: 'particulars', width: 20 },
+        { header: 'Routing No', key: 'routing', width: 20 },
+        { header: 'Name/Payee', key: 'requester', width: 20 },
+        { header: 'Amount', key: 'amoount', width: 20 },
+        { header: 'Agency/Department', key: 'agency', width: 20 },
+        { header: 'Current Location ', key: 'location', width: 20 },
+        { header: 'Particulars ', key: 'particulars', width: 20 },
+        { header: 'Remarks', key: 'remarks', width: 20 },
         // Add more columns based on your data structure
       ]
+
+      worksheet.getColumn(8).alignment = { wrapText: true }
 
       // Data for the Excel file
       const data: any[] = []
       results?.forEach((item: DocumentTypes, index) => {
+        let remarks = ''
+        item.adm_tracker_remarks?.map((rem: DocumentRemarksTypes, index) => {
+          remarks = `${rem.user}(${format(
+            new Date(rem.timestamp),
+            'MM-dd-yyyy'
+          )}): ${rem.remarks}\n${remarks}`
+        })
+
         data.push({
           no: index + 1,
-          type: item.type,
+          routing: item.routing_slip_no,
+          requester: item.requester,
+          amount: item.amount,
+          agency: item.agency,
+          location: item.location,
           particulars: item.particulars,
+          remarks,
         })
       })
 

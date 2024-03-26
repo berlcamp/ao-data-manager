@@ -55,7 +55,7 @@ const FormSchema = z.object({
     message: 'Type is required.',
   }),
   location: z.string().min(1, {
-    message: 'Current Route is required.',
+    message: 'Current Location is required.',
   }),
   status: z.string().min(1, {
     message: 'Status is required.',
@@ -72,7 +72,7 @@ const FormSchema = z.object({
   }),
   contact_number: z.string().optional(),
   specify: z.string().optional(),
-  check_no: z.string().optional(),
+  cheque_no: z.string().optional(),
   date_received: z.date({
     required_error: 'Date Received is required.',
   }),
@@ -96,6 +96,9 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
   )
   const [showCheckNo, setShowCheckNo] = useState(
     editData ? (editData.type === 'Disbursement Voucher' ? true : false) : false
+  )
+  const [showActivityDate, setShowActivityDate] = useState(
+    editData ? (editData.type === 'Letters' ? true : false) : false
   )
   const [specifyLabel, setSpecifyLabel] = useState('')
 
@@ -142,7 +145,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
       specify: editData ? editData.specify || '' : '',
       requester: editData ? editData.requester || '' : '',
       contact_number: editData ? editData.contact_number || '' : '',
-      check_no: editData ? editData.check_no || '' : '',
+      cheque_no: editData ? editData.cheque_no || '' : '',
       agency: editData ? editData.agency || '' : '',
       amount: editData ? editData.amount || '' : '',
       particulars: editData ? editData.particulars : '',
@@ -168,13 +171,19 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
   const handleCreate = async (formdata: z.infer<typeof FormSchema>) => {
     setSaving(true)
 
+    const type = documentTypes.find((t) => t.type === formdata.type)?.shortcut
+    const routingNo = generateRandomNumber(6)
+    const routingSlipNo = `${type || 'DOC'}-${routingNo}`
+
     try {
       const newData = {
+        routing_no: routingNo,
+        routing_slip_no: routingSlipNo,
         type: formdata.type,
         location: formdata.location,
         status: formdata.status,
         contact_number: formdata.contact_number,
-        check_no: formdata.check_no,
+        cheque_no: formdata.cheque_no,
         agency: formdata.agency,
         specify: formdata.specify,
         date_received: format(new Date(formdata.date_received), 'yyyy-MM-dd'),
@@ -213,6 +222,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
       // Append new data in redux
       const updatedData = {
         ...newData,
+        asenso_user: user,
         id: data[0].id,
         adm_tracker_routes: [trackerRoutes],
         adm_tracker_remarks: [],
@@ -239,13 +249,19 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
   const handleUpdate = async (formdata: z.infer<typeof FormSchema>) => {
     if (!editData) return
 
+    const type = documentTypes.find((t) => t.type === formdata.type)?.shortcut
+    const routingNo = editData.routing_no
+    const routingSlipNo = `${type || 'DOC'}-${routingNo}`
+
     try {
       const newData = {
+        routing_no: routingNo,
+        routing_slip_no: routingSlipNo,
         status: formdata.status,
         type: formdata.type,
         specify: formdata.specify,
         contact_number: formdata.contact_number,
-        check_no: formdata.check_no,
+        cheque_no: formdata.cheque_no,
         agency: formdata.agency,
         location: formdata.location,
         date_received: format(new Date(formdata.date_received), 'yyyy-MM-dd'),
@@ -305,7 +321,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
       ]
       items[foundIndex] = {
         ...items[foundIndex],
-        // attachments: updatedAttachments,
+        attachments: updatedAttachments,
         ...updatedData,
       }
       dispatch(updateList(items))
@@ -344,10 +360,12 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
     )
 
     // Update attachments on database column
-    const { error } = await supabase
-      .from('adm_trackers')
-      .update({ attachments: newAttachments })
-      .eq('id', id)
+    if (newAttachments.length > 0) {
+      const { error } = await supabase
+        .from('adm_trackers')
+        .update({ attachments: newAttachments })
+        .eq('id', id)
+    }
 
     return newAttachments
   }
@@ -458,6 +476,11 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                               } else {
                                 setShowCheckNo(false)
                               }
+                              if (value === 'Letters') {
+                                setShowActivityDate(true)
+                              } else {
+                                setShowActivityDate(false)
+                              }
                             }}
                             defaultValue={field.value}>
                             <FormControl>
@@ -499,18 +522,64 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                         )}
                       />
                     )}
+                    {showActivityDate && (
+                      <FormField
+                        control={form.control}
+                        name="activity_date"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col space-y-3">
+                            <FormLabel className="app__form_label">
+                              Activity Date
+                            </FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}>
+                                    {field.value ? (
+                                      format(field.value, 'PPP')
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) =>
+                                    date < new Date('1900-01-01')
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                     {showCheckNo && (
                       <FormField
                         control={form.control}
-                        name="check_no"
+                        name="cheque_no"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="app__form_label">
-                              Check No.
+                              Cheque No.
                             </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Check No"
+                                placeholder="Cheque No"
                                 {...field}
                               />
                             </FormControl>
@@ -563,50 +632,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="activity_date"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col space-y-3">
-                          <FormLabel className="app__form_label">
-                            Activity Date
-                          </FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground'
-                                  )}>
-                                  {field.value ? (
-                                    format(field.value, 'PPP')
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date < new Date('1900-01-01')
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
                     <FormField
                       control={form.control}
                       name="agency"
@@ -618,6 +644,24 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                           <FormControl>
                             <Input
                               placeholder="Department/Agency"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="contact_number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="app__form_label">
+                            Contact Number
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Contact Number"
                               {...field}
                             />
                           </FormControl>
@@ -652,7 +696,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="app__form_label">
-                            Current Route
+                            Current Location
                           </FormLabel>
                           <Select
                             onValueChange={field.onChange}
@@ -689,7 +733,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                             defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Choose Status" />
+                                <SelectValue placeholder="Choose" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -744,24 +788,9 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="contact_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="app__form_label">
-                            Contact Number
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Contact Number"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
+                    <div className="app__form_label">Attachments:</div>
+
                     {editData && (
                       <div className="mb-2">
                         {attachments?.length === 0 ? (

@@ -94,7 +94,7 @@ export interface DocumentTypes {
   activity_date: string
   contact_number: string
   status: string
-  check_no: string
+  cheque_no: string
   particulars: string
   date_received: string
   user_id: string
@@ -105,6 +105,7 @@ export interface DocumentTypes {
   attachments: { name: string}[]
   amount: string
   received_from: string
+  routing_no: string
   routing_slip_no: string
   received_by: string
 }

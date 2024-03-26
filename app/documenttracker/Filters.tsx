@@ -126,7 +126,7 @@ const Filters = ({
                 render={({ field }) => (
                   <FormItem className="w-[240px]">
                     <FormLabel className="app__form_label">
-                      Current Route
+                      Current Location
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -134,7 +134,7 @@ const Filters = ({
                       defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Choose Route" />
+                          <SelectValue placeholder="Choose" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -160,12 +160,12 @@ const Filters = ({
                   multiple>
                   <div className="relative w-72">
                     <Listbox.Button className="app__listbox_btn">
-                      <span className="block truncate text-xs">
+                      <span className="block truncate text-sm">
                         Type: {selectedTypes.map((type) => type).join(', ')}
                       </span>
                       <span className="app__listbox_icon">
                         <ChevronDownIcon
-                          className="h-5 w-5"
+                          className="h-4 w-5"
                           aria-hidden="true"
                         />
                       </span>
@@ -180,7 +180,7 @@ const Filters = ({
                           <Listbox.Option
                             key={itemIdx}
                             className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                              `relative cursor-default select-none py-1 pl-10 pr-4 ${
                                 active
                                   ? 'bg-amber-50 text-amber-900'
                                   : 'text-gray-900'
@@ -190,7 +190,7 @@ const Filters = ({
                             {({ selected }) => (
                               <>
                                 <span
-                                  className={`block truncate text-xs ${
+                                  className={`block truncate text-sm ${
                                     selected ? 'font-medium' : 'font-normal'
                                   }`}>
                                   {doc.type}
@@ -226,7 +226,7 @@ const Filters = ({
                       defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Choose Status" />
+                          <SelectValue placeholder="Choose" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

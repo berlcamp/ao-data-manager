@@ -235,6 +235,7 @@ const Page: React.FC = () => {
                   : null,
               location: route,
               contact_number: dataItem.contact_number,
+              cheque_no: dataItem.cheque_no,
               user_id: dataItem.user_id,
             })
 
@@ -516,13 +517,17 @@ const Page: React.FC = () => {
             <table className="app__table">
               <thead className="app__thead">
                 <tr>
-                  <th className="app__th w-14"></th>
-                  <th className="app__th">Details</th>
+                  <th className="app__th w-10"></th>
+                  <th className="app__th">Routing No</th>
+                  <th className="hidden md:table-cell app__th">
+                    Requester/Payee/Amount
+                  </th>
+                  <th className="app__th">Particulars</th>
                   <th className="hidden md:table-cell app__th">
                     Recent Remarks
                   </th>
                   <th className="hidden md:table-cell app__th">
-                    Current Route
+                    Current Location
                   </th>
                   <th className="hidden md:table-cell app__th">Status</th>
                 </tr>
@@ -591,35 +596,48 @@ const Page: React.FC = () => {
                       <td className="app__td">
                         <div className="space-y-2">
                           <div>
-                            <span className="font-light">Type:</span>{' '}
-                            <span className="font-medium">{item.type}</span>
-                            {item.type === 'Other Documents' && (
-                              <span className="font-medium mt-1">
-                                {item.specify}
-                              </span>
-                            )}
+                            <span className="font-bold">
+                              {item.routing_slip_no}
+                            </span>
                           </div>
+                          <div className="flex items-center space-x-1">
+                            <div className="hidden md:flex">
+                              <PrintButton document={item} />
+                            </div>
+                            <CustomButton
+                              containerStyles="app__btn_green_xs"
+                              title="View&nbsp;Details"
+                              btnType="button"
+                              handleClick={() => {
+                                setSelectedItem(item)
+                                setViewTrackerModal(true)
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="hidden md:table-cell app__td">
+                        <div className="space-y-1">
                           <div>
-                            <span className="font-light">Requester:</span>{' '}
                             <span className="font-medium">
                               {item.requester}
                             </span>
                           </div>
                           <div>
-                            <span className="font-light">Received:</span>{' '}
-                            <span className="font-medium">
-                              {format(
-                                new Date(item.date_received),
-                                'MMMM dd, yyyy'
-                              )}
-                            </span>
+                            <span className="font-medium">{item.agency}</span>
                           </div>
                           <div>
-                            <span className="font-light">Particulars:</span>{' '}
+                            <span className="font-bold">{item.amount}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="app__td">
+                        <div className="space-y-2">
+                          <div>
                             <span className="font-medium">
-                              {item.particulars.length > 50 ? (
+                              {item.particulars.length > 100 ? (
                                 <span>
-                                  {item.particulars.substring(0, 50 - 3)}...
+                                  {item.particulars.substring(0, 100 - 3)}...
                                   <span
                                     className="cursor-pointer text-blue-500"
                                     onClick={() => {
@@ -634,25 +652,13 @@ const Page: React.FC = () => {
                               )}
                             </span>
                           </div>
-                          {item.attachments && (
+                          {item.attachments?.length > 0 && (
                             <div>
                               <span className="font-medium">
-                                {item.attachments?.length} attachments
+                                {item.attachments.length} File/s Attached
                               </span>
                             </div>
                           )}
-                          <div className="flex items-center space-x-1">
-                            <PrintButton document={item} />
-                            <CustomButton
-                              containerStyles="app__btn_green_xs"
-                              title="View Details"
-                              btnType="button"
-                              handleClick={() => {
-                                setSelectedItem(item)
-                                setViewTrackerModal(true)
-                              }}
-                            />
-                          </div>
                         </div>
                       </td>
                       <td className="hidden md:table-cell app__td">
@@ -780,7 +786,7 @@ const Page: React.FC = () => {
                   ))}
                 {loading && (
                   <TableRowLoading
-                    cols={5}
+                    cols={7}
                     rows={2}
                   />
                 )}

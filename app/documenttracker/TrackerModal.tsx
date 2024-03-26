@@ -72,6 +72,8 @@ export default function TrackerModal({
       dispatch(updateList(items))
     } catch (error) {
       console.error(error)
+    } finally {
+      setRemarks('')
     }
   }
 
@@ -184,19 +186,20 @@ export default function TrackerModal({
                               )}
                           </td>
                         </tr>
-                        {documentData.activity_date && (
-                          <tr>
-                            <td className="px-2 py-2 font-light text-right">
-                              Activity Date:
-                            </td>
-                            <td className="text-sm font-medium">
-                              {format(
-                                new Date(documentData.activity_date),
-                                'PPP'
-                              )}
-                            </td>
-                          </tr>
-                        )}
+                        {documentData.type === 'Letters' &&
+                          documentData.activity_date && (
+                            <tr>
+                              <td className="px-2 py-2 font-light text-right">
+                                Activity Date:
+                              </td>
+                              <td className="text-sm font-medium">
+                                {format(
+                                  new Date(documentData.activity_date),
+                                  'PPP'
+                                )}
+                              </td>
+                            </tr>
+                          )}
                         {documentData.agency && (
                           <tr>
                             <td className="px-2 py-2 font-light text-right">
@@ -217,13 +220,13 @@ export default function TrackerModal({
                             </td>
                           </tr>
                         )}
-                        {documentData.check_no && (
+                        {documentData.cheque_no && (
                           <tr>
                             <td className="px-2 py-2 font-light text-right">
-                              Check No:
+                              Cheque No:
                             </td>
                             <td className="text-sm font-medium">
-                              {documentData.check_no || ''}
+                              {documentData.cheque_no || ''}
                             </td>
                           </tr>
                         )}
@@ -263,7 +266,7 @@ export default function TrackerModal({
                         </tr>
                         <tr>
                           <td className="px-2 py-2 font-light text-right">
-                            Current Route:
+                            Current Location:
                           </td>
                           <td className="text-sm font-medium">
                             {documentData.location}
