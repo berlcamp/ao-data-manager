@@ -14,52 +14,89 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { documentTypes } from '@/constants/TrackerConstants'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  docRouting,
+  documentTypes,
+  statusList,
+} from '@/constants/TrackerConstants'
 import { cn } from '@/lib/utils'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import { format } from 'date-fns'
-import { Calendar as CalendarIcon } from 'lucide-react'
+import { Calendar as CalendarIcon, ChevronDown, ChevronUp } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface FilterTypes {
-  setFilterDate: (date: Date | undefined) => void
   setFilterTypes: (type: any[]) => void
+  setFilterStatus: (status: string) => void
   setFilterKeyword: (keyword: string) => void
+  setFilterCurrentRoute: (route: string) => void
+  setFilterRoute: (route: string) => void
+  setFilterDateForwarded: (date: Date | undefined) => void
 }
 
 const FormSchema = z.object({
-  dateReceived: z.date().optional(),
+  dateForwarded: z.date().optional(),
+  currentRoute: z.string().optional(),
+  status: z.string().optional(),
+  forwardedTo: z.string().optional(),
   keyword: z.string().optional(),
 })
 
 const Filters = ({
-  setFilterDate,
   setFilterTypes,
+  setFilterStatus,
   setFilterKeyword,
+  setFilterCurrentRoute,
+  setFilterRoute,
+  setFilterDateForwarded,
 }: FilterTypes) => {
   //
   const [selectedTypes, setSelectedTypes] = useState<string[] | []>([])
 
+  const [toggleAdvanceFilter, setToggleAdvanceFilter] = useState(false)
+
   const form = useForm<z.infer<typeof FormSchema>>({
-    defaultValues: { dateReceived: undefined, keyword: '' },
+    defaultValues: {
+      dateForwarded: undefined,
+      status: '',
+      currentRoute: '',
+      forwardedTo: '',
+      keyword: '',
+    },
   })
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setFilterDate(data.dateReceived)
     setFilterTypes(selectedTypes)
+    setFilterStatus(data.status || '')
     setFilterKeyword(data.keyword || '')
+    setFilterCurrentRoute(data.currentRoute || '')
+    setFilterRoute(data.forwardedTo || '')
+    setFilterDateForwarded(data.dateForwarded)
   }
 
   // clear all filters
   const handleClear = () => {
     form.reset()
-    setFilterDate(undefined)
+
     setFilterTypes([])
     setSelectedTypes([])
+    setFilterStatus('')
     setFilterKeyword('')
+    setFilterCurrentRoute('')
+    setFilterRoute('')
+    setFilterDateForwarded(undefined)
+
+    setToggleAdvanceFilter(false)
   }
 
   return (
@@ -73,7 +110,7 @@ const Filters = ({
                 name="keyword"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="app__form_label">Keyword</FormLabel>
+                    <FormLabel className="app__form_label">Search</FormLabel>
                     <Input
                       placeholder="Search keyword"
                       {...field}
@@ -85,42 +122,31 @@ const Filters = ({
             <div className="items-center inline-flex app__filter_field_container">
               <FormField
                 control={form.control}
-                name="dateReceived"
+                name="currentRoute"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="w-[240px]">
                     <FormLabel className="app__form_label">
-                      Date Received
+                      Current Route
                     </FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}>
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0"
-                        align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date < new Date('1900-01-01')}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose Route" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {docRouting.map((route, index) => (
+                          <SelectItem
+                            key={index}
+                            value={route}>
+                            {route}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormItem>
                 )}
               />
@@ -187,7 +213,127 @@ const Filters = ({
                 </Listbox>
               </FormItem>
             </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="w-[240px]">
+                    <FormLabel className="app__form_label">Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose Status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {statusList.map((s, index) => (
+                          <SelectItem
+                            key={index}
+                            value={s.status}>
+                            {s.status}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
+          <div
+            onClick={() => setToggleAdvanceFilter(!toggleAdvanceFilter)}
+            className="mt-4 inline-flex space-x-1 text-sm cursor-pointer">
+            {toggleAdvanceFilter ? (
+              <ChevronUp className="h-5 w-5 text-blue-600" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-blue-600" />
+            )}
+            <span className="text-blue-600 font-medium">Advance Filters</span>
+          </div>
+          {/* Advance Filters */}
+          <div
+            className={`items-center space-x-2 space-y-1 ${
+              !toggleAdvanceFilter && 'hidden'
+            }`}>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="dateForwarded"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="app__form_label">
+                      Date Forwarded to Other Department
+                    </FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}>
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0"
+                        align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date('1900-01-01')}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="forwardedTo"
+                render={({ field }) => (
+                  <FormItem className="w-[240px]">
+                    <FormLabel className="app__form_label">&nbsp;</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose Department" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {docRouting.map((route, index) => (
+                          <SelectItem
+                            key={index}
+                            value={route}>
+                            {route}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
           <div className="flex items-center space-x-2 mt-4">
             <CustomButton
               containerStyles="app__btn_green"

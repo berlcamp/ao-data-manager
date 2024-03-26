@@ -1,8 +1,8 @@
 'use client'
 
 import {
+  ArchiveModal,
   CustomButton,
-  DeleteModal,
   PerPage,
   ShowMore,
   Sidebar,
@@ -17,6 +17,7 @@ import { Menu, Transition } from '@headlessui/react'
 import {
   CalendarDaysIcon,
   ChevronDownIcon,
+  PencilIcon,
   StarIcon,
 } from '@heroicons/react/20/solid'
 import { format } from 'date-fns'
@@ -37,40 +38,45 @@ import {
 } from '@/constants/TrackerConstants'
 import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
-import { CheckIcon } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
+import { CheckIcon, ChevronDown, Trash2 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Tooltip } from 'react-tooltip'
 import AddStickyModal from './AddStickyModal'
-import Attachment from './Attachment'
+import DownloadExcelButton from './DownloadExcel'
+import PrintButton from './PrintButton'
 import StickiesModal from './StickiesModal'
+import TrackerModal from './TrackerModal'
 
 const Page: React.FC = () => {
   const [loading, setLoading] = useState(false)
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showArchiveModal, setShowArchiveModal] = useState(false)
   const [showStickiesModal, setShowStickiesModal] = useState(false)
   const [showAddStickyModal, setShowAddStickyModal] = useState(false)
-
   const [viewActivity, setViewActivity] = useState(false)
+  const [viewTrackerModal, setViewTrackerModal] = useState(false)
+
   const [selectedId, setSelectedId] = useState<string>('')
   const [selectedItem, setSelectedItem] = useState<DocumentTypes | null>(null)
   const [activitiesData, setActivitiesData] = useState<DocumentTypes[]>([])
 
   // Filters
   const [filterTypes, setFilterTypes] = useState<any[] | []>([])
-  const [filterDate, setFilterDate] = useState<Date | undefined>(undefined)
+  const [filterStatus, setFilterStatus] = useState('')
   const [filterKeyword, setFilterKeyword] = useState('')
+  const [filterCurrentRoute, setFilterCurrentRoute] = useState('')
+  const [filterRoute, setFilterRoute] = useState('')
+  const [filterDateForwarded, setFilterDateForwarded] = useState<
+    Date | undefined
+  >(undefined)
 
   // List
   const [list, setList] = useState<DocumentTypes[]>([])
   const [perPageCount, setPerPageCount] = useState<number>(10)
   const [showingCount, setShowingCount] = useState<number>(0)
   const [resultsCount, setResultsCount] = useState<number>(0)
-
-  const searchParams = useSearchParams()
 
   const { supabase, session, systemUsers } = useSupabase()
   const { hasAccess, setToast } = useFilter()
@@ -89,9 +95,12 @@ const Page: React.FC = () => {
     try {
       const result = await fetchDocuments(
         {
-          filterDate,
           filterTypes,
           filterKeyword,
+          filterStatus,
+          filterCurrentRoute,
+          filterRoute,
+          filterDateForwarded,
         },
         perPageCount,
         0
@@ -116,9 +125,12 @@ const Page: React.FC = () => {
     try {
       const result = await fetchDocuments(
         {
-          filterDate,
           filterTypes,
           filterKeyword,
+          filterStatus,
+          filterCurrentRoute,
+          filterRoute,
+          filterDateForwarded,
         },
         perPageCount,
         list.length
@@ -142,9 +154,156 @@ const Page: React.FC = () => {
     setSelectedItem(null)
   }
 
-  const handleDelete = (id: string) => {
+  const handleMigrate = async () => {
+    try {
+      let eof = false
+      // let lastId = 118207
+      let lastId = 124207
+
+      while (!eof) {
+        const { data, error } = await supabase
+          .from('document_trackers')
+          .select('*, document_tracker_replies(*)', { count: 'exact' })
+          .gt('id', lastId)
+          .limit(100)
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        // insert array
+        const insertArray: any[] = []
+        const remarksInsertArray: any = []
+        const routesInsertArray: any = []
+
+        if (data && data.length > 0) {
+          console.log(
+            'Migration length: ' + data.length,
+            'last id: ',
+            data[data.length - 1].id
+          )
+          lastId = data[data.length - 1].id
+
+          data.forEach((dataItem: any) => {
+            let status = 'Open'
+            let route = 'Received at OCM'
+            if (dataItem.status === 'Approved') {
+              status = 'Approved'
+            } else if (dataItem.status === 'For File') {
+              status = 'For File'
+            } else if (dataItem.status === 'Disapproved') {
+              status = 'Disapproved'
+            } else if (dataItem.status === 'For Further Instruction') {
+              status = 'For Further Instruction'
+            } else if (dataItem.status === 'Cancelled') {
+              status = 'Cancelled'
+            } else if (dataItem.status === 'Resolved') {
+              status = 'Resolved'
+            }
+
+            if (dataItem.route === 'Received at OCM') {
+              route = 'Received at OCM'
+            } else if (dataItem.status === 'Received at CADM') {
+              route = 'Received at CADM'
+            } else if (dataItem.status === 'Forwarded') {
+              route = 'Forwarded'
+            } else if (dataItem.status === 'Forwarded to Atty Rhea') {
+              route = 'Forwarded to Atty Rhea'
+            } else if (dataItem.status === 'Forwarded to CADM') {
+              route = 'Forwarded to CADM'
+            }
+
+            const parsedActivityDate = Date.parse(dataItem.activity_date)
+
+            insertArray.push({
+              id: dataItem.id,
+              date_received: dataItem.date,
+              time_received: dataItem.time,
+              routing_slip_no: dataItem.routing_slip_no,
+              routing_no: dataItem.routing_no,
+              type: dataItem.type,
+              agency: dataItem.agency,
+              requester: dataItem.name,
+              particulars: dataItem.particulars,
+              amount: dataItem.amount,
+              status: status,
+              received_from: dataItem.received_from,
+              received_by: dataItem.received_by,
+              activity_date:
+                !isNaN(parsedActivityDate) && isFinite(parsedActivityDate)
+                  ? format(new Date(dataItem.activity_date), 'yyyy-MM-dd')
+                  : null,
+              location: route,
+              contact_number: dataItem.contact_number,
+              user_id: dataItem.user_id,
+            })
+
+            routesInsertArray.push({
+              date: dataItem.date,
+              time: dataItem.time,
+              user: dataItem.received_by,
+              title: route,
+              tracker_id: dataItem.id,
+              user_id: dataItem.user_id,
+            })
+
+            dataItem.document_tracker_replies?.map((remarks: any) => {
+              if (remarks.reply_type !== 'system') {
+                remarksInsertArray.push({
+                  user_id: remarks.sender_id,
+                  tracker_id: remarks.document_tracker_id,
+                  timestamp: format(
+                    new Date(remarks.created_at),
+                    'yyyy-MM-dd h:mm a'
+                  ),
+                  user:
+                    systemUsers.find(
+                      (user: AccountTypes) => user.id === remarks.sender_id
+                    )?.firstname || 'User',
+                  remarks: remarks.message,
+                })
+              }
+            })
+          })
+
+          // Insert data to db
+          const { error: error2 } = await supabase
+            .from('adm_trackers')
+            .insert(insertArray)
+          if (error2) {
+            throw new Error(error2.message)
+          }
+
+          const { error: error3 } = await supabase
+            .from('adm_tracker_remarks')
+            .insert(remarksInsertArray)
+          if (error3) {
+            throw new Error(error3.message)
+          }
+
+          const { error: error4 } = await supabase
+            .from('adm_tracker_routes')
+            .insert(routesInsertArray)
+          if (error4) {
+            throw new Error(error4.message)
+          }
+
+          console.log('inserted remarksInsertArray')
+          console.log('inserted insertArray')
+          console.log('inserted routesArray')
+        } else {
+          eof = true
+          console.log('eof')
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const handleArchive = (id: string) => {
     setSelectedId(id)
-    setShowDeleteModal(true)
+    setShowArchiveModal(true)
   }
 
   const handleChangeStatus = async (id: string, status: string) => {
@@ -166,24 +325,52 @@ const Page: React.FC = () => {
     // pop up the success message
     setToast('success', 'Successfully Saved.')
   }
-  const handleChangeLocation = async (id: string, location: string) => {
-    const { error } = await supabase
-      .from('adm_trackers')
-      .update({ location })
-      .eq('id', id)
+  const handleChangeLocation = async (
+    item: DocumentTypes,
+    location: string
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('adm_trackers')
+        .update({ location })
+        .eq('id', item.id)
 
-    // Append new data in redux
-    const items = [...globallist]
-    const updatedData = {
-      location,
-      id,
+      if (error) throw new Error(error.message)
+
+      // Add tracker route logs
+      const trackerRoutes = {
+        tracker_id: item.id,
+        date: format(new Date(), 'yyyy-MM-dd'),
+        time: format(new Date(), 'h:mm a'),
+        user_id: session.user.id,
+        user: `${user.firstname} ${user.middlename || ''} ${
+          user.lastname || ''
+        }`,
+        title: location,
+        message: '',
+      }
+      const { error: error2 } = await supabase
+        .from('adm_tracker_routes')
+        .insert(trackerRoutes)
+
+      if (error2) throw new Error(error2.message)
+
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        location,
+        id: item.id,
+        adm_tracker_routes: [...item.adm_tracker_routes, trackerRoutes],
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
+
+      // pop up the success message
+      setToast('success', 'Successfully Saved.')
+    } catch (error) {
+      console.error(error)
     }
-    const foundIndex = items.findIndex((x) => x.id === updatedData.id)
-    items[foundIndex] = { ...items[foundIndex], ...updatedData }
-    dispatch(updateList(items))
-
-    // pop up the success message
-    setToast('success', 'Successfully Saved.')
   }
 
   const handleEdit = (item: DocumentTypes) => {
@@ -227,7 +414,15 @@ const Page: React.FC = () => {
     setList([])
     void fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterDate, filterKeyword, filterTypes, perPageCount])
+  }, [
+    filterKeyword,
+    filterStatus,
+    filterTypes,
+    filterCurrentRoute,
+    filterRoute,
+    filterDateForwarded,
+    perPageCount,
+  ])
 
   const isDataEmpty = !Array.isArray(list) || list.length < 1 || !list
   const email: string = session.user.email
@@ -247,6 +442,21 @@ const Page: React.FC = () => {
           <TopBar />
           <div className="app__title">
             <Title title="Document Tracker" />
+            {/* Download Excel */}
+            {!isDataEmpty && (
+              <div className="hidden md:flex items-center">
+                <DownloadExcelButton
+                  filters={{
+                    filterKeyword,
+                    filterStatus,
+                    filterTypes,
+                    filterCurrentRoute,
+                    filterRoute,
+                    filterDateForwarded,
+                  }}
+                />
+              </div>
+            )}
             <StarIcon
               onClick={() => setShowStickiesModal(true)}
               className="cursor-pointer w-7 h-7 text-yellow-500"
@@ -273,14 +483,23 @@ const Page: React.FC = () => {
               btnType="button"
               handleClick={handleAdd}
             />
+            <CustomButton
+              containerStyles="app__btn_green"
+              title="Migrate"
+              btnType="button"
+              handleClick={handleMigrate}
+            />
           </div>
 
           {/* Filters */}
           <div className="app__filters">
             <Filters
-              setFilterDate={setFilterDate}
               setFilterTypes={setFilterTypes}
+              setFilterStatus={setFilterStatus}
               setFilterKeyword={setFilterKeyword}
+              setFilterCurrentRoute={setFilterCurrentRoute}
+              setFilterRoute={setFilterRoute}
+              setFilterDateForwarded={setFilterDateForwarded}
             />
           </div>
 
@@ -297,12 +516,15 @@ const Page: React.FC = () => {
             <table className="app__table">
               <thead className="app__thead">
                 <tr>
+                  <th className="app__th w-14"></th>
                   <th className="app__th">Details</th>
                   <th className="hidden md:table-cell app__th">
-                    Current Location
+                    Recent Remarks
+                  </th>
+                  <th className="hidden md:table-cell app__th">
+                    Current Route
                   </th>
                   <th className="hidden md:table-cell app__th">Status</th>
-                  <th className="app__th"></th>
                 </tr>
               </thead>
               <tbody>
@@ -311,6 +533,61 @@ const Page: React.FC = () => {
                     <tr
                       key={index}
                       className="app__tr">
+                      <td className="app__td">
+                        <Menu
+                          as="div"
+                          className="app__menu_container font-normal text-gray-600">
+                          <div>
+                            <Menu.Button className="app__dropdown_btn">
+                              <ChevronDown
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            </Menu.Button>
+                          </div>
+
+                          <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-100"
+                            enterFrom="transform opacity-0 scale-95"
+                            enterTo="transform opacity-100 scale-100"
+                            leave="transition ease-in duration-75"
+                            leaveFrom="transform opacity-100 scale-100"
+                            leaveTo="transform opacity-0 scale-95">
+                            <Menu.Items className="absolute left-0 z-30 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                              <div className="py-1">
+                                <Menu.Item>
+                                  <div
+                                    onClick={() => {
+                                      setShowAddStickyModal(true)
+                                      setSelectedItem(item)
+                                    }}
+                                    className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-4 py-2 text-xs">
+                                    <StarIcon className="cursor-pointer outline-none w-6 h-6 text-yellow-500" />
+                                    <span>Add to Starred</span>
+                                  </div>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <div
+                                    onClick={() => handleEdit(item)}
+                                    className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-4 py-2 text-xs">
+                                    <PencilIcon className="cursor-pointer outline-none w-6 h-6 text-green-500" />
+                                    <span>Edit Details</span>
+                                  </div>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <div
+                                    onClick={() => handleArchive(item.id)}
+                                    className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-4 py-2 text-xs">
+                                    <Trash2 className="cursor-pointer outline-none w-6 h-6 text-red-500" />
+                                    <span>Move To Archive</span>
+                                  </div>
+                                </Menu.Item>
+                              </div>
+                            </Menu.Items>
+                          </Transition>
+                        </Menu>
+                      </td>
                       <td className="app__td">
                         <div className="space-y-2">
                           <div>
@@ -337,43 +614,73 @@ const Page: React.FC = () => {
                               )}
                             </span>
                           </div>
-                          {item.activity_date && (
-                            <div>
-                              <span className="font-light">Activity Date:</span>{' '}
-                              <span className="font-medium">
-                                {format(
-                                  new Date(item.activity_date),
-                                  'MMMM dd, yyyy'
-                                )}
-                              </span>
-                            </div>
-                          )}
                           <div>
                             <span className="font-light">Particulars:</span>{' '}
                             <span className="font-medium">
-                              {item.particulars}
+                              {item.particulars.length > 50 ? (
+                                <span>
+                                  {item.particulars.substring(0, 50 - 3)}...
+                                  <span
+                                    className="cursor-pointer text-blue-500"
+                                    onClick={() => {
+                                      setSelectedItem(item)
+                                      setViewTrackerModal(true)
+                                    }}>
+                                    See More
+                                  </span>
+                                </span>
+                              ) : (
+                                <span>{item.particulars}</span>
+                              )}
                             </span>
                           </div>
                           {item.attachments && (
                             <div>
-                              {item.attachments?.length === 0 && (
-                                <span className="font-medium">
-                                  No attachments
-                                </span>
-                              )}
-                              {item.attachments?.map((file, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center space-x-2 justify-start">
-                                  <Attachment
-                                    file={file.name}
-                                    id={item.id}
-                                  />
-                                </div>
-                              ))}
+                              <span className="font-medium">
+                                {item.attachments?.length} attachments
+                              </span>
                             </div>
                           )}
+                          <div className="flex items-center space-x-1">
+                            <PrintButton document={item} />
+                            <CustomButton
+                              containerStyles="app__btn_green_xs"
+                              title="View Details"
+                              btnType="button"
+                              handleClick={() => {
+                                setSelectedItem(item)
+                                setViewTrackerModal(true)
+                              }}
+                            />
+                          </div>
                         </div>
+                      </td>
+                      <td className="hidden md:table-cell app__td">
+                        {item.adm_tracker_remarks?.length > 0 && (
+                          <div className="space-x-1 font-medium">
+                            <span>
+                              {
+                                item.adm_tracker_remarks[
+                                  item.adm_tracker_remarks.length - 1
+                                ].user
+                              }
+                              :{' '}
+                              {
+                                item.adm_tracker_remarks[
+                                  item.adm_tracker_remarks.length - 1
+                                ].remarks
+                              }
+                            </span>
+                            <span
+                              className="cursor-pointer text-blue-500"
+                              onClick={() => {
+                                setSelectedItem(item)
+                                setViewTrackerModal(true)
+                              }}>
+                              View All
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td className="hidden md:table-cell app__td">
                         <div className="flex items-center">
@@ -404,7 +711,7 @@ const Page: React.FC = () => {
                                     <Menu.Item key={idx}>
                                       <div
                                         onClick={() =>
-                                          handleChangeLocation(item.id, route)
+                                          handleChangeLocation(item, route)
                                         }
                                         className="flex items-center justify-between space-x-2 cursor-pointer hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-4 py-2 text-xs">
                                         <span>{route}</span>
@@ -469,40 +776,11 @@ const Page: React.FC = () => {
                           </Menu>
                         </div>
                       </td>
-                      <td className="app__td">
-                        <div className="flex space-x-2 items-center">
-                          <div>
-                            <StarIcon
-                              onClick={() => {
-                                setShowAddStickyModal(true)
-                                setSelectedItem(item)
-                              }}
-                              className="cursor-pointer outline-none w-6 h-6 text-yellow-500"
-                              data-tooltip-id="add-sticky-tooltip"
-                              data-tooltip-content="Add to Starred"
-                            />
-                            <Tooltip
-                              id="add-sticky-tooltip"
-                              place="bottom-end"
-                            />
-                          </div>
-                          <button
-                            onClick={() => handleEdit(item)}
-                            className="app__btn_green_xs">
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="app__btn_red_xs">
-                            Delete
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 {loading && (
                   <TableRowLoading
-                    cols={4}
+                    cols={5}
                     rows={2}
                   />
                 )}
@@ -518,24 +796,16 @@ const Page: React.FC = () => {
             <ShowMore handleShowMore={handleShowMore} />
           )}
 
-          {/* Add Document Modal */}
-          {showAddModal && (
-            <AddDocumentModal
-              editData={selectedItem}
-              hideModal={() => setShowAddModal(false)}
-            />
-          )}
-
-          {/* Confirm Delete Modal */}
-          {showDeleteModal && (
-            <DeleteModal
+          {/* Confirm Move to Archive Modal */}
+          {showArchiveModal && (
+            <ArchiveModal
               table="adm_trackers"
               selectedId={selectedId}
               showingCount={showingCount}
               setShowingCount={setShowingCount}
               resultsCount={resultsCount}
               setResultsCount={setResultsCount}
-              hideModal={() => setShowDeleteModal(false)}
+              hideModal={() => setShowArchiveModal(false)}
             />
           )}
 
@@ -546,15 +816,33 @@ const Page: React.FC = () => {
               hideModal={() => setViewActivity(false)}
             />
           )}
+
+          {/* Tracker Modal */}
+          {viewTrackerModal && selectedItem && (
+            <TrackerModal
+              handleEdit={handleEdit}
+              documentDataProp={selectedItem}
+              hideModal={() => setViewTrackerModal(false)}
+            />
+          )}
+
           {/* Stickies Modal */}
           {showStickiesModal && (
             <StickiesModal hideModal={() => setShowStickiesModal(false)} />
           )}
+
           {/* Add to Sticky Modal */}
           {showAddStickyModal && (
             <AddStickyModal
               item={selectedItem}
               hideModal={() => setShowAddStickyModal(false)}
+            />
+          )}
+          {/* Add Document Modal */}
+          {showAddModal && (
+            <AddDocumentModal
+              editData={selectedItem}
+              hideModal={() => setShowAddModal(false)}
             />
           )}
         </div>

@@ -178,7 +178,7 @@
   @apply bg-blue-500 hover:bg-blue-600 border active:bg-blue-500 border-blue-600 font-bold px-2 py-1 text-xs text-white rounded-sm
 }
 .app__btn_blue_xs {
-  @apply bg-blue-500 hover:bg-blue-600 active:bg-blue-500 border border-blue-600 px-1 py-px text-xs text-white rounded-sm
+  @apply bg-blue-500 hover:bg-blue-600 active:bg-blue-500 border border-blue-600 font-bold px-2 py-px text-[10px] text-white rounded-sm
 }
 .app__dialog_panel {
   @apply relative w-full max-w-lg max-h-[90vh] overflow-y-auto transform rounded-md bg-white p-4 text-left shadow-xl transition-all flex flex-col gap-5

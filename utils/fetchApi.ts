@@ -5,25 +5,52 @@ import { format } from 'date-fns'
 const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
 export interface DocumentFilterTypes {
-  filterDate?: Date | undefined
   filterTypes?: any[]
   filterKeyword?: string
+  filterStatus?: string
+  filterCurrentRoute?: string
+  filterRoute?: string
+  filterDateForwarded?: Date | undefined
 }
 
 export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount: number, rangeFrom: number) {
   try {
+    // Advance filters
+    const trackerIds: string[] = []
+    if (filters.filterRoute && filters.filterRoute !== '' && filters.filterDateForwarded) {
+      const { data } = await supabase.from('adm_tracker_routes')
+      .select('tracker_id')
+      .eq('title', filters.filterRoute)
+      .eq('date', format(new Date(filters.filterDateForwarded), 'yyyy-MM-dd'))
+
+      if (data) {
+        data.forEach(d => trackerIds.push(d.tracker_id))
+      }
+    }
+
     let query = supabase
       .from('adm_trackers')
-      .select('*, adm_tracker_stickies(*), asenso_users:user_id(*)', { count: 'exact' })
+      .select('*, adm_tracker_routes(*),  adm_tracker_remarks(*), adm_tracker_stickies(*), asenso_users:user_id(*)', { count: 'exact' })
+      .eq('archived', false)
 
       // Full text search
     if (typeof filters.filterKeyword !== 'undefined' && filters.filterKeyword.trim() !== '') {
       query = query.or(`particulars.ilike.%${filters.filterKeyword}%`)
     }
 
-    // Filter Date
-    if (typeof filters.filterDate !== 'undefined') {
-      query = query.gte('date_received', format(new Date(filters.filterDate), 'yyyy-MM-dd'))
+    // Filter current route
+    if (filters.filterCurrentRoute && filters.filterCurrentRoute.trim() !== '') {
+      query = query.eq('location', filters.filterCurrentRoute)
+    }
+
+    // Filter status
+    if (filters.filterStatus && filters.filterStatus.trim() !== '') {
+      query = query.eq('status', filters.filterStatus)
+    }
+
+    // Advance Filters
+    if (trackerIds.length > 0) {
+      query = query.in('id', trackerIds)
     }
 
     // Filter type
@@ -283,7 +310,7 @@ export async function logError (transaction: string, table: string, data: string
   await supabase
     .from('error_logs')
     .insert({
-      system: 'ddm',
+      system: 'adm',
       transaction,
       table,
       data,

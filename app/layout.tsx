@@ -37,10 +37,8 @@ export default async function RootLayout({
   let sysUsers: AccountTypes[] | null = []
   let sysAccess: UserAccessTypes[] | null = []
   let currUser: AccountTypes | null = null
-  let ipLists: any = null
 
-  const { data: ips } = await supabase.from('adm_ip_whitelists').select()
-  ipLists = ips
+  const { data: ipLists } = await supabase.from('adm_ip_whitelists').select()
 
   if (session) {
     try {

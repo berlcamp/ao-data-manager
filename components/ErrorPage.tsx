@@ -10,7 +10,7 @@ export default function ErrorPage() {
                   <div className="w-full flex-col items-center">
                     <div className="text-center">
                       <h1 className="text-base font-light">
-                        Something went wrong, please reload the page.
+                        An unexpected error occurred, please reload the page.
                       </h1>
                     </div>
                   </div>
@@ -21,5 +21,5 @@ export default function ErrorPage() {
         </div>
       </div>
     </>
-  );
+  )
 }

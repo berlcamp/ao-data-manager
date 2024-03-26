@@ -37,7 +37,8 @@ export default function LoginBox() {
       })
 
       if (error) {
-        setError('Credentials provided is incorrect.')
+        console.log(error)
+        setError(error.message)
         setSigningIn(false)
       } else {
         router.refresh()

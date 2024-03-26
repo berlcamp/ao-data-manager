@@ -1,18 +1,23 @@
-import React from 'react'
-
 import type { CustomButtonTypes } from '@/types'
 
-function CustomButton ({ isDisabled, btnType, containerStyles, textStyles, title, rightIcon, handleClick }: CustomButtonTypes) {
+function CustomButton({
+  isDisabled,
+  btnType,
+  containerStyles,
+  textStyles,
+  title,
+  leftIcon,
+  handleClick,
+}: CustomButtonTypes) {
   return (
     <button
       disabled={isDisabled}
       type={btnType ?? 'button'}
-      className={`custom-btn ${containerStyles ?? ''}`}
-      onClick={handleClick}
-    >
-      <span className={`flex-1 ${textStyles ?? ''}`}>{title}</span>
-      {rightIcon && rightIcon}
-  </button>
+      className={`flex items-center space-x-2 ${containerStyles ?? ''}`}
+      onClick={handleClick}>
+      {leftIcon && leftIcon}
+      <span className={`${textStyles ?? ''}`}>{title}</span>
+    </button>
   )
 }
 

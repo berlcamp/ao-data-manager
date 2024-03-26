@@ -10,7 +10,7 @@ export default function LandingPage() {
           <LoginBox />
         </div>
         <div className="mt-auto bg-gray-800 p-4 text-white fixed bottom-0 w-full">
-          <div className="text-white text-center text-xs">&copy; DDM v1.0</div>
+          <div className="text-white text-center text-xs">&copy; ADM v3.0</div>
         </div>
       </div>
     </>
