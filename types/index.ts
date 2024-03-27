@@ -67,7 +67,7 @@ export interface StickiesTypes {
 }
 
 export interface DocumentRemarksTypes {
-  id: string
+  id?: string
   user_id: string
   timestamp: string
   user: string
@@ -98,10 +98,8 @@ export interface DocumentTypes {
   particulars: string
   date_received: string
   user_id: string
-  adm_tracker_remarks: DocumentRemarksTypes[]
-  adm_tracker_routes: DocumentFlowchartTypes[]
+  recent_remarks: DocumentRemarksTypes
   asenso_user: AccountTypes
-  tracker_stickies: StickiesTypes[]
   attachments: { name: string}[]
   amount: string
   received_from: string

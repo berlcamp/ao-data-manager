@@ -17,21 +17,28 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
   try {
     // Advance filters
     const trackerIds: string[] = []
-    if (filters.filterRoute && filters.filterRoute !== '' && filters.filterDateForwarded) {
-      const { data } = await supabase.from('adm_tracker_routes')
-      .select('tracker_id')
-      .eq('title', filters.filterRoute)
-      .eq('date', format(new Date(filters.filterDateForwarded), 'yyyy-MM-dd'))
-      .limit(200)
+    if (filters.filterDateForwarded) {
+      let query1 = supabase.from('adm_tracker_routes')
+        .select('tracker_id')
+        .eq('date', format(new Date(filters.filterDateForwarded), 'yyyy-MM-dd'))
+        .limit(200)
 
-      if (data) {
-        data.forEach(d => trackerIds.push(d.tracker_id))
+      if(filters.filterRoute && filters.filterRoute !== '') {
+        query1 = query1.eq('title', filters.filterRoute)
+      }
+
+      const { data: data1 } = await query1
+
+      if (data1) {
+        data1.forEach(d => trackerIds.push(d.tracker_id))
+      } else {
+        trackerIds.push('99999999')
       }
     }
 
     let query = supabase
       .from('adm_trackers')
-      .select('*, adm_tracker_routes(*),  adm_tracker_remarks(*), adm_tracker_stickies(*), asenso_user:user_id(firstname,middlename,lastname)', { count: 'exact' })
+      .select('*', { count: 'exact' })
       .eq('archived', false)
 
       // Full text search
@@ -74,7 +81,7 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
     query = query.range(from, to)
 
     // Order By
-    query = query.order('created_at', { ascending: false })
+    query = query.order('id', { ascending: false })
 
     const { data, count, error } = await query
 
@@ -84,7 +91,7 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
 
     return { data, count }
   } catch (error) {
-    console.error('fetch error xx', error)
+    console.error('fetch tracker error', error)
     return { data: [], count: 0 }
   }
 }

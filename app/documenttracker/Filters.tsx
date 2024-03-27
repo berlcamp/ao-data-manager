@@ -266,7 +266,7 @@ const Filters = ({
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel className="app__form_label">
-                      Date Forwarded to Other Department
+                      Date Forwarded/Received
                     </FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -308,14 +308,16 @@ const Filters = ({
                 name="forwardedTo"
                 render={({ field }) => (
                   <FormItem className="w-[240px]">
-                    <FormLabel className="app__form_label">&nbsp;</FormLabel>
+                    <FormLabel className="app__form_label">
+                      Received/Forward To
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
                       defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Choose Department" />
+                          <SelectValue placeholder="Choose" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

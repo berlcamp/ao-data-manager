@@ -1,15 +1,14 @@
 'use client'
 
-import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { CustomButton } from '@/components/index'
 import { statusList } from '@/constants/TrackerConstants'
-import { useSupabase } from '@/context/SupabaseProvider'
-import type { AccountTypes, DocumentRemarksTypes, DocumentTypes } from '@/types'
+import type { DocumentTypes } from '@/types'
 import { format } from 'date-fns'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Attachment from './Attachment'
-import RemarksList from './RemarksList'
+import Remarks from './Remarks'
+import RouteLogs from './RouteLogs'
 
 interface ModalProps {
   hideModal: () => void
@@ -25,57 +24,12 @@ export default function TrackerModal({
   //
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const { supabase, session, systemUsers } = useSupabase()
-  const user: AccountTypes = systemUsers.find(
-    (user: AccountTypes) => user.id === session.user.id
-  )
-
   // states
   const [documentData, setDocumentData] = useState(documentDataProp) // create state for document data so we can mutate the data when there is updates in redux
-  const [remarks, setRemarks] = useState('')
 
   // Redux staff
   const globallist = useSelector((state: any) => state.list.value)
   const dispatch = useDispatch()
-
-  const handleSubmitRemarks = async () => {
-    if (remarks.trim().length === 0) {
-      return
-    }
-
-    try {
-      const newData = {
-        tracker_id: documentData.id,
-        user_id: session.user.id,
-        timestamp: format(new Date(), 'yyyy-MM-dd h:mm a'),
-        user: `${user.firstname} ${user.middlename || ''} ${
-          user.lastname || ''
-        }`,
-        remarks: remarks,
-      }
-
-      const { error } = await supabase
-        .from('adm_tracker_remarks')
-        .insert(newData)
-
-      if (error) throw new Error(error.message)
-
-      // Append new data in redux
-      const items = [...globallist]
-      const updatedData = {
-        ...newData,
-        id: documentData.id,
-        adm_tracker_remarks: [...documentData.adm_tracker_remarks, newData],
-      }
-      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
-      items[foundIndex] = { ...items[foundIndex], ...updatedData }
-      dispatch(updateList(items))
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setRemarks('')
-    }
-  }
 
   const getStatusColor = (status: string): string => {
     const statusArr = statusList?.filter((item) => item.status === status)
@@ -108,13 +62,6 @@ export default function TrackerModal({
     )
     setDocumentData(updatedData)
   }, [globallist])
-
-  let rawRemarks: DocumentRemarksTypes[] | [] =
-    documentData.adm_tracker_remarks?.length > 0
-      ? [...documentData.adm_tracker_remarks] // duplicate the array first in order to mutate it
-      : []
-
-  let remarksArray = rawRemarks.length > 0 ? rawRemarks.reverse() : []
 
   return (
     <>
@@ -309,93 +256,11 @@ export default function TrackerModal({
               <div className="py-2 md:flex">
                 <div className="md:w-1/2">
                   <div className="mx-2 px-4 py-4 text-gray-600 bg-gray-100">
-                    <div className="mb-6 px-4">
-                      <span className="font-bold text-xs">Route Logs</span>
-                    </div>
-                    <div className="w-full text-xs">
-                      {documentData.adm_tracker_routes?.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex">
-                          <div
-                            className={`px-4 ${
-                              index === 0 ||
-                              index + 1 < documentData.adm_tracker_routes.length
-                                ? 'border-r-2 border-gray-600 border-dashed'
-                                : ''
-                            }`}>
-                            <div>
-                              {format(new Date(item.date), 'dd MMM yyyy')}
-                            </div>
-                            <div>{item.time}</div>
-                          </div>
-                          <div className="relative">
-                            <span
-                              className={`absolute -top-1 ${
-                                index === 0 ||
-                                index + 1 <
-                                  documentData.adm_tracker_routes.length
-                                  ? '-left-[11px]'
-                                  : '-left-[9px]'
-                              } inline-flex items-center justify-center border border-gray-600 rounded-full bg-white w-5 h-5`}>
-                              <span className="rounded-full px-1 text-white text-xs"></span>
-                            </span>
-                          </div>
-                          <div
-                            className={`${
-                              documentData.adm_tracker_routes.length > 1 &&
-                              index + 1 < documentData.adm_tracker_routes.length
-                                ? 'text-gray-500 font-light'
-                                : 'text-gray-700 font-bold'
-                            } flex-1 ml-8 pb-4`}>
-                            <div>{item.title}</div>
-                            <div>{item.message}</div>
-                            <div className="font-medium">by {item.user}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <RouteLogs documentData={documentData} />
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="w-full relative">
-                    <div className="mx-2 mb-10 outline-none overflow-x-hidden overflow-y-auto text-xs text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400">
-                      <div className="flex space-x-2 px-4 py-4">
-                        <span className="font-bold">Remarks:</span>
-                      </div>
-                      {/* Remarks Box */}
-                      <div className="w-full flex-col space-y-2 px-4 mb-5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                        <textarea
-                          onChange={(e) => setRemarks(e.target.value)}
-                          value={remarks}
-                          placeholder="Write your remarks here.."
-                          className="w-full h-20 border resize-none focus:ring-0 focus:outline-none p-2 text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                        />
-                        <div className="flex items-start">
-                          <span className="flex-1">&nbsp;</span>
-
-                          <CustomButton
-                            containerStyles="app__btn_green"
-                            title="Submit"
-                            handleClick={handleSubmitRemarks}
-                            btnType="button"
-                          />
-                        </div>
-                      </div>
-                      {remarksArray.length > 0 ? (
-                        remarksArray.map((remarks, idx) => (
-                          <RemarksList
-                            key={idx}
-                            remarks={remarks}
-                          />
-                        ))
-                      ) : (
-                        <div className="px-4 pb-4 text-center">
-                          No remarks added yet.
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <Remarks documentData={documentData} />
                 </div>
               </div>
             </div>

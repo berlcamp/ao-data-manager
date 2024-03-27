@@ -37,6 +37,7 @@ import { useDropzone, type FileWithPath } from 'react-dropzone'
 // Redux imports
 import { useDispatch, useSelector } from 'react-redux'
 
+import { updateRoutesList } from '@/GlobalRedux/Features/routesSlice'
 import { Input } from '@/components/ui/input'
 import {
   docRouting,
@@ -60,9 +61,7 @@ const FormSchema = z.object({
   status: z.string().min(1, {
     message: 'Status is required.',
   }),
-  requester: z.string().min(1, {
-    message: 'Requester name is required.',
-  }),
+  requester: z.string().optional(),
   amount: z.string().optional(),
   agency: z.string().min(1, {
     message: 'Requesting department/agency is required.',
@@ -84,7 +83,7 @@ interface ModalProps {
   editData: DocumentTypes | null
 }
 
-export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
+export default function AddEditModal({ hideModal, editData }: ModalProps) {
   const { setToast } = useFilter()
   const { supabase, session, systemUsers } = useSupabase()
 
@@ -112,6 +111,7 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
 
   // Redux staff
   const globallist = useSelector((state: any) => state.list.value)
+  const globalRoutesList = useSelector((state: any) => state.routes.value)
   const dispatch = useDispatch()
 
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
@@ -224,8 +224,6 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
         ...newData,
         asenso_user: user,
         id: data[0].id,
-        adm_tracker_routes: [trackerRoutes],
-        adm_tracker_remarks: [],
         attachments: uploadedFiles,
         date_received: data[0].date_received,
         activity_date: data[0].activity_date || null,
@@ -293,6 +291,9 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
       }
       if (formdata.location !== editData.location) {
         await supabase.from('adm_tracker_routes').insert(trackerRoutes)
+
+        // Append routes to redux
+        dispatch(updateRoutesList([...globalRoutesList, trackerRoutes]))
       }
 
       // Upload files
@@ -303,11 +304,6 @@ export default function AddDocumentModal({ hideModal, editData }: ModalProps) {
       const updatedData = {
         ...newData,
         id: editData.id,
-        adm_tracker_remarks: editData.adm_tracker_remarks,
-        adm_tracker_routes:
-          formdata.location !== editData.location
-            ? [...editData.adm_tracker_routes, trackerRoutes]
-            : editData.adm_tracker_routes,
         date_received: format(new Date(formdata.date_received), 'yyyy-MM-dd'),
         activity_date: formdata.activity_date
           ? format(new Date(formdata.activity_date), 'yyyy-MM-dd')

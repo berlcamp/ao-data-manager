@@ -1,7 +1,6 @@
 'use client'
-import type { DocumentRemarksTypes, DocumentTypes } from '@/types'
+import type { DocumentTypes } from '@/types'
 import { fetchDocuments } from '@/utils/fetchApi'
-import { format } from 'date-fns'
 import Excel from 'exceljs'
 import { saveAs } from 'file-saver'
 import { useState } from 'react'
@@ -50,14 +49,7 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
       // Data for the Excel file
       const data: any[] = []
       results?.forEach((item: DocumentTypes, index) => {
-        let remarks = ''
-        item.adm_tracker_remarks?.map((rem: DocumentRemarksTypes, index) => {
-          remarks = `${rem.user}(${format(
-            new Date(rem.timestamp),
-            'MM-dd-yyyy'
-          )}): ${rem.remarks}\n${remarks}`
-        })
-
+        let remarks = item.recent_remarks?.remarks
         data.push({
           no: index + 1,
           routing: item.routing_slip_no,

@@ -1,10 +1,11 @@
 /* eslint-disable react/display-name */
 'use client'
 
-import { DocumentTypes } from '@/types'
+import { useSupabase } from '@/context/SupabaseProvider'
+import { DocumentFlowchartTypes, DocumentTypes } from '@/types'
 import { format } from 'date-fns'
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
@@ -12,6 +13,25 @@ interface ChildProps {
 }
 
 const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
+  const [loading, setLoading] = useState(false)
+  const [routes, setRoutes] = useState<DocumentFlowchartTypes[] | []>([])
+
+  const { supabase } = useSupabase()
+
+  useEffect(() => {
+    // Fetch remarks
+    ;(async () => {
+      setLoading(true)
+      const { data } = await supabase
+        .from('adm_tracker_routes')
+        .select()
+        .eq('tracker_id', document.id)
+
+      setRoutes(data)
+
+      setLoading(false)
+    })()
+  }, [])
   return (
     <div
       ref={forwardedRef}
@@ -123,9 +143,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               colSpan={4}
               className="flex items-center space-x-1">
               <span>Received By: </span>
-              <span className="font-bold">
-                {document.asenso_user.firstname}
-              </span>
+              <span className="font-bold">{document.received_by}</span>
             </td>
           </tr>
           <tr>
@@ -210,17 +228,17 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               Date
             </td>
           </tr>
-          {document.adm_tracker_routes?.map((item, index) => (
+          {routes?.map((route, index) => (
             <tr key={index}>
               <td
                 colSpan={2}
                 className="px-1 border border-black">
-                {item.title}
+                {route.title}
               </td>
               <td
                 colSpan={2}
                 className="px-1 border border-black">
-                {item.date}
+                {route.date}
               </td>
             </tr>
           ))}

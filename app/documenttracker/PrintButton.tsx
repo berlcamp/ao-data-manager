@@ -8,6 +8,7 @@ import { useReactToPrint } from 'react-to-print'
 import PrintSlip from './PrintSlip'
 
 interface ModalProps {
+  hideModal: () => void
   document: DocumentTypes
 }
 
@@ -16,13 +17,13 @@ interface ChildProps {
   document: DocumentTypes
 }
 
-export default function PrintButton({ document }: ModalProps) {
+export default function PrintButton({ document, hideModal }: ModalProps) {
   const componentRef = useRef<HTMLDivElement>(null)
 
   // Using forwardRef to pass the ref down to the ChildComponent
   const ChildWithRef = forwardRef<HTMLDivElement, ChildProps>((props, ref) => {
     return (
-      <div style={{ display: 'none' }}>
+      <div>
         <PrintSlip
           {...props}
           forwardedRef={ref}
@@ -43,18 +44,38 @@ export default function PrintButton({ document }: ModalProps) {
 
   return (
     <>
-      <CustomButton
-        btnType="button"
-        title="Print&nbsp;Slip"
-        handleClick={handlePrint}
-        containerStyles="app__btn_blue_xs"
-      />
+      <div className="app__modal_wrapper">
+        <div className="app__modal_wrapper2">
+          <div className="app__modal_wrapper3">
+            <div className="app__modal_header">
+              <h5 className="app__modal_header_text">Print Slip</h5>
+              <div className="flex items-center space-x-2">
+                <CustomButton
+                  btnType="button"
+                  title="Print&nbsp;Slip"
+                  handleClick={handlePrint}
+                  containerStyles="app__btn_blue"
+                />
 
-      <ChildWithRef
-        document={document}
-        ref={componentRef}
-        forwardedRef={null}
-      />
+                <CustomButton
+                  btnType="button"
+                  title="Close"
+                  handleClick={hideModal}
+                  containerStyles="app__btn_gray"
+                />
+              </div>
+            </div>
+
+            <div className="app__modal_body">
+              <ChildWithRef
+                document={document}
+                ref={componentRef}
+                forwardedRef={null}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

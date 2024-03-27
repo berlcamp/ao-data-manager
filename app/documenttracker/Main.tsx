@@ -23,11 +23,11 @@ import {
 import { format } from 'date-fns'
 import React, { Fragment, useEffect, useState } from 'react'
 import ActivitiesModal from './ActivitiesModal'
-import AddDocumentModal from './AddDocumentModal'
+import AddEditModal from './AddEditModal'
 import Filters from './Filters'
 
 // Types
-import type { AccountTypes, DocumentTypes } from '@/types'
+import type { AccountTypes, DocumentRemarksTypes, DocumentTypes } from '@/types'
 
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
@@ -38,7 +38,7 @@ import {
 } from '@/constants/TrackerConstants'
 import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
-import { CheckIcon, ChevronDown, Trash2 } from 'lucide-react'
+import { CheckIcon, ChevronDown, PrinterIcon, Trash2 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Tooltip } from 'react-tooltip'
 import AddStickyModal from './AddStickyModal'
@@ -52,6 +52,7 @@ const Page: React.FC = () => {
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showPrintSlipModal, setShowPrintSlipModal] = useState(false)
   const [showArchiveModal, setShowArchiveModal] = useState(false)
   const [showStickiesModal, setShowStickiesModal] = useState(false)
   const [showAddStickyModal, setShowAddStickyModal] = useState(false)
@@ -105,12 +106,13 @@ const Page: React.FC = () => {
         perPageCount,
         0
       )
-
       // update the list in redux
       dispatch(updateList(result.data))
-
       setResultsCount(result.count ? result.count : 0)
       setShowingCount(result.data.length)
+      // dispatch(updateList([]))
+      // setResultsCount(0)
+      // setShowingCount(0)
     } catch (e) {
       console.error(e)
     } finally {
@@ -157,8 +159,8 @@ const Page: React.FC = () => {
   const handleMigrate = async () => {
     try {
       let eof = false
-      // let lastId = 118207
-      let lastId = 118732
+      let lastId = 118207
+      // let lastId = 125487
 
       while (!eof) {
         const { data, error } = await supabase
@@ -302,6 +304,56 @@ const Page: React.FC = () => {
     }
   }
 
+  const handleMigrate2 = async () => {
+    try {
+      const remarksInsertArray: any = []
+      const upsertArray: any = []
+
+      const { data, error } = await supabase
+        .from('adm_tracker_remarks')
+        .select()
+        .order('timestamp', { ascending: false })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      data.forEach((d: DocumentRemarksTypes) => {
+        //
+        const find = remarksInsertArray.find(
+          (f: DocumentRemarksTypes) => f.tracker_id === d.tracker_id
+        )
+        if (!find) {
+          const rem = {
+            tracker_id: d.tracker_id,
+            user_id: d.user_id,
+            timestamp: d.timestamp,
+            user: d.user,
+            remarks: d.remarks,
+          }
+          remarksInsertArray.push(rem)
+          upsertArray.push({
+            id: d.tracker_id,
+            recent_remarks: rem,
+          })
+        }
+      })
+
+      console.log('remarksInsertArray', remarksInsertArray)
+      console.log('upsertArray', upsertArray)
+      console.log('eof')
+
+      const { error: error2 } = await supabase
+        .from('adm_trackers')
+        .upsert(upsertArray)
+      if (error2) {
+        throw new Error(error2.message)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const handleArchive = (id: string) => {
     setSelectedId(id)
     setShowArchiveModal(true)
@@ -330,6 +382,10 @@ const Page: React.FC = () => {
     item: DocumentTypes,
     location: string
   ) => {
+    if (item.location === location) {
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('adm_trackers')
@@ -338,7 +394,17 @@ const Page: React.FC = () => {
 
       if (error) throw new Error(error.message)
 
-      // Add tracker route logs
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        id: item.id,
+        location,
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
+
+      // Add tracker route logs if route is changed
       const trackerRoutes = {
         tracker_id: item.id,
         date: format(new Date(), 'yyyy-MM-dd'),
@@ -350,22 +416,8 @@ const Page: React.FC = () => {
         title: location,
         message: '',
       }
-      const { error: error2 } = await supabase
-        .from('adm_tracker_routes')
-        .insert(trackerRoutes)
 
-      if (error2) throw new Error(error2.message)
-
-      // Append new data in redux
-      const items = [...globallist]
-      const updatedData = {
-        location,
-        id: item.id,
-        adm_tracker_routes: [...item.adm_tracker_routes, trackerRoutes],
-      }
-      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
-      items[foundIndex] = { ...items[foundIndex], ...updatedData }
-      dispatch(updateList(items))
+      await supabase.from('adm_tracker_routes').insert(trackerRoutes)
 
       // pop up the success message
       setToast('success', 'Successfully Saved.')
@@ -484,12 +536,12 @@ const Page: React.FC = () => {
               btnType="button"
               handleClick={handleAdd}
             />
-            {/* <CustomButton
+            <CustomButton
               containerStyles="app__btn_green"
               title="Migrate"
               btnType="button"
-              handleClick={handleMigrate}
-            /> */}
+              handleClick={handleMigrate2}
+            />
           </div>
 
           {/* Filters */}
@@ -520,16 +572,12 @@ const Page: React.FC = () => {
                   <th className="app__th w-10"></th>
                   <th className="app__th">Routing No</th>
                   <th className="hidden md:table-cell app__th">
-                    Requester/Payee/Amount
-                  </th>
-                  <th className="app__th">Particulars</th>
-                  <th className="hidden md:table-cell app__th">
-                    Recent Remarks
-                  </th>
-                  <th className="hidden md:table-cell app__th">
                     Current Location
                   </th>
                   <th className="hidden md:table-cell app__th">Status</th>
+                  <th className="hidden md:table-cell app__th">Requester</th>
+                  <th className="app__th">Particulars</th>
+                  <th className="app__th">Recent Remarks</th>
                 </tr>
               </thead>
               <tbody>
@@ -561,6 +609,17 @@ const Page: React.FC = () => {
                             leaveTo="transform opacity-0 scale-95">
                             <Menu.Items className="absolute left-0 z-30 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                               <div className="py-1">
+                                <Menu.Item>
+                                  <div
+                                    onClick={() => {
+                                      setShowPrintSlipModal(true)
+                                      setSelectedItem(item)
+                                    }}
+                                    className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 text-gray-700 hover:text-gray-900 px-4 py-2 text-xs">
+                                    <PrinterIcon className="cursor-pointer outline-none w-6 h-6 text-blue-500" />
+                                    <span>Print Slip</span>
+                                  </div>
+                                </Menu.Item>
                                 <Menu.Item>
                                   <div
                                     onClick={() => {
@@ -601,9 +660,6 @@ const Page: React.FC = () => {
                             </span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <div className="hidden md:flex">
-                              <PrintButton document={item} />
-                            </div>
                             <CustomButton
                               containerStyles="app__btn_green_xs"
                               title="View&nbsp;Details"
@@ -615,78 +671,6 @@ const Page: React.FC = () => {
                             />
                           </div>
                         </div>
-                      </td>
-                      <td className="hidden md:table-cell app__td">
-                        <div className="space-y-1">
-                          <div>
-                            <span className="font-medium">
-                              {item.requester}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="font-medium">{item.agency}</span>
-                          </div>
-                          <div>
-                            <span className="font-bold">{item.amount}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="app__td max-w-[300px]">
-                        <div className="space-y-2">
-                          <div>
-                            <span className="font-medium">
-                              {item.particulars.length > 100 ? (
-                                <span>
-                                  {item.particulars.substring(0, 100 - 3)}...
-                                  <span
-                                    className="cursor-pointer text-blue-500"
-                                    onClick={() => {
-                                      setSelectedItem(item)
-                                      setViewTrackerModal(true)
-                                    }}>
-                                    See&nbsp;More
-                                  </span>
-                                </span>
-                              ) : (
-                                <span>{item.particulars}</span>
-                              )}
-                            </span>
-                          </div>
-                          {item.attachments?.length > 0 && (
-                            <div>
-                              <span className="font-medium">
-                                {item.attachments.length} File/s Attached
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="hidden md:table-cell app__td max-w-[200px]">
-                        {item.adm_tracker_remarks?.length > 0 && (
-                          <div className="space-x-1 font-medium">
-                            <span>
-                              {
-                                item.adm_tracker_remarks[
-                                  item.adm_tracker_remarks.length - 1
-                                ].user
-                              }
-                              :{' '}
-                              {
-                                item.adm_tracker_remarks[
-                                  item.adm_tracker_remarks.length - 1
-                                ].remarks
-                              }
-                            </span>
-                            <span
-                              className="cursor-pointer text-blue-500"
-                              onClick={() => {
-                                setSelectedItem(item)
-                                setViewTrackerModal(true)
-                              }}>
-                              View&nbsp;All
-                            </span>
-                          </div>
-                        )}
                       </td>
                       <td className="hidden md:table-cell app__td">
                         <div className="flex items-center">
@@ -786,6 +770,84 @@ const Page: React.FC = () => {
                           </Menu>
                         </div>
                       </td>
+                      <td className="hidden md:table-cell app__td max-w-[150px]">
+                        <div className="space-y-1">
+                          <div>
+                            <span className="font-medium">
+                              {item.requester}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="font-medium">{item.agency}</span>
+                          </div>
+                          <div>
+                            <span className="font-bold">{item.amount}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="app__td max-w-[300px]">
+                        <div className="space-y-2">
+                          <div>
+                            <span className="font-medium">
+                              {item.particulars.length > 100 ? (
+                                <span>
+                                  {item.particulars.substring(0, 100 - 3)}...
+                                  <span
+                                    className="cursor-pointer text-blue-500"
+                                    onClick={() => {
+                                      setSelectedItem(item)
+                                      setViewTrackerModal(true)
+                                    }}>
+                                    See&nbsp;More
+                                  </span>
+                                </span>
+                              ) : (
+                                <span>{item.particulars}</span>
+                              )}
+                            </span>
+                          </div>
+                          {item.attachments?.length > 0 && (
+                            <div>
+                              <span className="font-medium">
+                                {item.attachments.length} File/s Attached
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="app__td max-w-[200px]">
+                        <div className="w-full">
+                          {item.recent_remarks && (
+                            <>
+                              <div className="w-full">
+                                <div className="flex items-center space-x-2">
+                                  <div className="flex flex-1 items-center space-x-2">
+                                    <div className="flex items-center space-x-1">
+                                      <div className="font-bold">
+                                        <span>{item.recent_remarks.user} </span>
+                                      </div>
+                                      <div className="text-gray-500  focus:ring-0 focus:outline-none text-xs text-left inline-flex items-center">
+                                        {format(
+                                          new Date(
+                                            item.recent_remarks.timestamp
+                                          ),
+                                          'MMM dd h:mm'
+                                        )}
+                                        :
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Message */}
+                                <div className="mt-1">
+                                  <div>{item.recent_remarks.remarks}</div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 {loading && (
@@ -841,6 +903,14 @@ const Page: React.FC = () => {
             <StickiesModal hideModal={() => setShowStickiesModal(false)} />
           )}
 
+          {/* Print Slip Modal */}
+          {showPrintSlipModal && selectedItem && (
+            <PrintButton
+              document={selectedItem}
+              hideModal={() => setShowPrintSlipModal(false)}
+            />
+          )}
+
           {/* Add to Sticky Modal */}
           {showAddStickyModal && (
             <AddStickyModal
@@ -850,7 +920,7 @@ const Page: React.FC = () => {
           )}
           {/* Add Document Modal */}
           {showAddModal && (
-            <AddDocumentModal
+            <AddEditModal
               editData={selectedItem}
               hideModal={() => setShowAddModal(false)}
             />
