@@ -536,12 +536,12 @@ const Page: React.FC = () => {
               btnType="button"
               handleClick={handleAdd}
             />
-            <CustomButton
+            {/* <CustomButton
               containerStyles="app__btn_green"
               title="Migrate"
               btnType="button"
               handleClick={handleMigrate2}
-            />
+            /> */}
           </div>
 
           {/* Filters */}
