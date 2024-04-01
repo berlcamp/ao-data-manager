@@ -179,6 +179,14 @@ export default function TrackerModal({
                         )}
                         <tr>
                           <td className="px-2 py-2 font-light text-right align-top">
+                            Amount:
+                          </td>
+                          <td className="text-sm font-medium">
+                            {documentData.amount}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="px-2 py-2 font-light text-right align-top">
                             Particulars:
                           </td>
                           <td className="text-sm font-medium">
