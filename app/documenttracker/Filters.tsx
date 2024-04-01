@@ -39,6 +39,7 @@ interface FilterTypes {
   setFilterTypes: (type: any[]) => void
   setFilterStatus: (status: string) => void
   setFilterKeyword: (keyword: string) => void
+  setFilterAgency: (agency: string) => void
   setFilterCurrentRoute: (route: string) => void
   setFilterRoute: (route: string) => void
   setFilterDateForwarded: (date: Date | undefined) => void
@@ -50,12 +51,14 @@ const FormSchema = z.object({
   status: z.string().optional(),
   forwardedTo: z.string().optional(),
   keyword: z.string().optional(),
+  agency: z.string().optional(),
 })
 
 const Filters = ({
   setFilterTypes,
   setFilterStatus,
   setFilterKeyword,
+  setFilterAgency,
   setFilterCurrentRoute,
   setFilterRoute,
   setFilterDateForwarded,
@@ -72,6 +75,7 @@ const Filters = ({
       currentRoute: '',
       forwardedTo: '',
       keyword: '',
+      agency: '',
     },
   })
 
@@ -79,6 +83,7 @@ const Filters = ({
     setFilterTypes(selectedTypes)
     setFilterStatus(data.status || '')
     setFilterKeyword(data.keyword || '')
+    setFilterAgency(data.agency || '')
     setFilterCurrentRoute(data.currentRoute || '')
     setFilterRoute(data.forwardedTo || '')
     setFilterDateForwarded(data.dateForwarded)
@@ -92,6 +97,7 @@ const Filters = ({
     setSelectedTypes([])
     setFilterStatus('')
     setFilterKeyword('')
+    setFilterAgency('')
     setFilterCurrentRoute('')
     setFilterRoute('')
     setFilterDateForwarded(undefined)
@@ -113,6 +119,21 @@ const Filters = ({
                     <FormLabel className="app__form_label">Search</FormLabel>
                     <Input
                       placeholder="Search keyword"
+                      {...field}
+                    />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="agency"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="app__form_label">Agency</FormLabel>
+                    <Input
+                      placeholder="Agency"
                       {...field}
                     />
                   </FormItem>

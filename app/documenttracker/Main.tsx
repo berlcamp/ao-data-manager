@@ -67,6 +67,7 @@ const Page: React.FC = () => {
   const [filterTypes, setFilterTypes] = useState<any[] | []>([])
   const [filterStatus, setFilterStatus] = useState('')
   const [filterKeyword, setFilterKeyword] = useState('')
+  const [filterAgency, setFilterAgency] = useState('')
   const [filterCurrentRoute, setFilterCurrentRoute] = useState('')
   const [filterRoute, setFilterRoute] = useState('')
   const [filterDateForwarded, setFilterDateForwarded] = useState<
@@ -98,6 +99,7 @@ const Page: React.FC = () => {
         {
           filterTypes,
           filterKeyword,
+          filterAgency,
           filterStatus,
           filterCurrentRoute,
           filterRoute,
@@ -129,6 +131,7 @@ const Page: React.FC = () => {
         {
           filterTypes,
           filterKeyword,
+          filterAgency,
           filterStatus,
           filterCurrentRoute,
           filterRoute,
@@ -469,6 +472,7 @@ const Page: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filterKeyword,
+    filterAgency,
     filterStatus,
     filterTypes,
     filterCurrentRoute,
@@ -552,6 +556,7 @@ const Page: React.FC = () => {
               setFilterKeyword={setFilterKeyword}
               setFilterCurrentRoute={setFilterCurrentRoute}
               setFilterRoute={setFilterRoute}
+              setFilterAgency={setFilterAgency}
               setFilterDateForwarded={setFilterDateForwarded}
             />
           </div>

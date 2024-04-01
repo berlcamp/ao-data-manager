@@ -7,6 +7,7 @@ const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, proc
 export interface DocumentFilterTypes {
   filterTypes?: any[]
   filterKeyword?: string
+  filterAgency?: string
   filterStatus?: string
   filterCurrentRoute?: string
   filterRoute?: string
@@ -49,6 +50,11 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
     // Filter Current Location
     if (filters.filterCurrentRoute && filters.filterCurrentRoute.trim() !== '') {
       query = query.eq('location', filters.filterCurrentRoute)
+    }
+
+    // Filter Agency
+    if (filters.filterAgency && filters.filterAgency.trim() !== '') {
+      query = query.or(`agency.ilike.%${filters.filterAgency}%`)
     }
 
     // Filter status
