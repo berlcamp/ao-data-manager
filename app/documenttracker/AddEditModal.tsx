@@ -172,7 +172,7 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
     setSaving(true)
 
     const type = documentTypes.find((t) => t.type === formdata.type)?.shortcut
-    const routingNo = generateRandomNumber(6)
+    const routingNo = await getLatestRoutingNo(formdata.type)
     const routingSlipNo = `${type || 'DOC'}-${routingNo}`
 
     try {
@@ -182,6 +182,9 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
         type: formdata.type,
         location: formdata.location,
         status: formdata.status,
+        received_by: `${user.firstname} ${user.middlename || ''} ${
+          user.lastname || ''
+        }`,
         contact_number: formdata.contact_number,
         cheque_no: formdata.cheque_no,
         agency: formdata.agency,
@@ -248,8 +251,17 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
     if (!editData) return
 
     const type = documentTypes.find((t) => t.type === formdata.type)?.shortcut
-    const routingNo = editData.routing_no
-    const routingSlipNo = `${type || 'DOC'}-${routingNo}`
+
+    let routingNo = 1
+    let routingSlipNo = ''
+
+    if (editData.type !== formdata.type) {
+      routingNo = await getLatestRoutingNo(formdata.type)
+      routingSlipNo = `${type || 'DOC'}-${routingNo}`
+    } else {
+      routingNo = editData.routing_no
+      routingSlipNo = `${type || 'DOC'}-${routingNo}`
+    }
 
     try {
       const newData = {
@@ -334,6 +346,30 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
     }
 
     setSaving(false)
+  }
+
+  const getLatestRoutingNo = async (type: string) => {
+    const { data, error } = await supabase
+      .from('adm_trackers')
+      .select('routing_no')
+      .not('routing_no', 'is', null)
+      .eq('archived', false)
+      .eq('type', type)
+      .order('routing_no', { ascending: false })
+      .limit(1)
+
+    if (!error) {
+      if (data.length > 0) {
+        const rn = !isNaN(data[0].routing_no)
+          ? Number(data[0].routing_no) + 1
+          : 1
+        return rn
+      } else {
+        return 1
+      }
+    } else {
+      return 1
+    }
   }
 
   const handleUploadFiles = async (id: string) => {

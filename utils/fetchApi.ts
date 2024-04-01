@@ -81,7 +81,7 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
     query = query.range(from, to)
 
     // Order By
-    query = query.order('id', { ascending: false })
+    query = query.order('created_at', { ascending: false })
 
     const { data, count, error } = await query
 

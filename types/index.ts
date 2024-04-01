@@ -103,7 +103,7 @@ export interface DocumentTypes {
   attachments: { name: string}[]
   amount: string
   received_from: string
-  routing_no: string
+  routing_no: number
   routing_slip_no: string
   received_by: string
 }

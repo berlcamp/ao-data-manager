@@ -35,7 +35,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
   return (
     <div
       ref={forwardedRef}
-      className="w-[350px] mx-auto mt-8 text-xs">
+      className="w-[300px] mx-auto mt-8 text-xs">
       <table className="w-full">
         <thead>
           <tr>
@@ -105,19 +105,11 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
             </td>
           </tr>
           <tr>
-            <td
-              colSpan={4}
-              className="flex items-center space-x-1">
-              <span>Type: </span>
-              <span className="font-bold">{document.type}</span>
-            </td>
-          </tr>
-          <tr>
-            <td
-              colSpan={4}
-              className="flex items-center space-x-1">
-              <span>Particulars: </span>
-              <span className="font-bold">{document.particulars}</span>
+            <td colSpan={4}>
+              <div className="flex space-x-1">
+                <span>Type: </span>
+                <span className="font-bold">{document.particulars}</span>
+              </div>
             </td>
           </tr>
           {document.amount && document.amount.trim() !== '' && (
@@ -222,11 +214,8 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               className="text-center border border-black">
               Office
             </td>
-            <td
-              colSpan={2}
-              className="text-center border border-black">
-              Date
-            </td>
+            <td className="text-center border border-black">Date</td>
+            <td className="text-center border border-black">Sign</td>
           </tr>
           {routes?.map((route, index) => (
             <tr key={index}>
@@ -235,11 +224,8 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
                 className="px-1 border border-black">
                 {route.title}
               </td>
-              <td
-                colSpan={2}
-                className="px-1 border border-black">
-                {route.date}
-              </td>
+              <td className="px-1 border border-black">{route.date}</td>
+              <td className="px-1 border border-black"></td>
             </tr>
           ))}
           <tr>
@@ -248,11 +234,8 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               className="border border-black">
               &nbsp;
             </td>
-            <td
-              colSpan={2}
-              className="border border-black">
-              &nbsp;
-            </td>
+            <td className="border border-black">&nbsp;</td>
+            <td className="border border-black">&nbsp;</td>
           </tr>
           <tr>
             <td
@@ -260,11 +243,8 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
               className="border border-black">
               &nbsp;
             </td>
-            <td
-              colSpan={2}
-              className="border border-black">
-              &nbsp;
-            </td>
+            <td className="border border-black">&nbsp;</td>
+            <td className="border border-black">&nbsp;</td>
           </tr>
         </tbody>
       </table>
