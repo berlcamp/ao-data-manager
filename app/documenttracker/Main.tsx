@@ -378,8 +378,12 @@ const Page: React.FC = () => {
                   <th className="hidden md:table-cell app__th">Status</th>
                   <th className="hidden md:table-cell app__th">Requester</th>
                   <th className="app__th">Particulars</th>
-                  <th className="app__th">Recent Remarks</th>
-                  <th className="app__th">Date Received</th>
+                  <th className="hidden md:table-cell app__th">
+                    Recent Remarks
+                  </th>
+                  <th className="hidden md:table-cell app__th">
+                    Date Received
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -617,7 +621,7 @@ const Page: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="app__td max-w-[200px]">
+                      <td className="hidden md:table-cell app__td">
                         <div className="w-full">
                           {item.recent_remarks && (
                             <>
@@ -650,7 +654,7 @@ const Page: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="app__td">
+                      <td className="hidden md:table-cell app__td">
                         {format(new Date(item.date_received), 'MMM dd, yyyy')}
                       </td>
                     </tr>
