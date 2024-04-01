@@ -23,7 +23,7 @@ export default function PrintButton({ document, hideModal }: ModalProps) {
   // Using forwardRef to pass the ref down to the ChildComponent
   const ChildWithRef = forwardRef<HTMLDivElement, ChildProps>((props, ref) => {
     return (
-      <div className="flex justify-center border">
+      <div className="flex justify-center">
         <PrintSlip
           {...props}
           forwardedRef={ref}
@@ -67,7 +67,7 @@ export default function PrintButton({ document, hideModal }: ModalProps) {
             </div>
 
             <div className="app__modal_body">
-              <div className="flex justify-center border">
+              <div className="flex justify-center">
                 <ChildWithRef
                   document={document}
                   ref={componentRef}
