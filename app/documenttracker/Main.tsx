@@ -27,7 +27,7 @@ import AddEditModal from './AddEditModal'
 import Filters from './Filters'
 
 // Types
-import type { AccountTypes, DocumentRemarksTypes, DocumentTypes } from '@/types'
+import type { AccountTypes, DocumentTypes } from '@/types'
 
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
@@ -157,204 +157,6 @@ const Page: React.FC = () => {
   const handleAdd = () => {
     setShowAddModal(true)
     setSelectedItem(null)
-  }
-
-  const handleMigrate = async () => {
-    try {
-      let eof = false
-      let lastId = 118207
-      // let lastId = 125487
-
-      while (!eof) {
-        const { data, error } = await supabase
-          .from('document_trackers')
-          .select('*, document_tracker_replies(*)', { count: 'exact' })
-          .gt('id', lastId)
-          .limit(100)
-
-        if (error) {
-          throw new Error(error.message)
-        }
-
-        // insert array
-        const insertArray: any[] = []
-        const remarksInsertArray: any = []
-        const routesInsertArray: any = []
-
-        if (data && data.length > 0) {
-          console.log(
-            'Migration length: ' + data.length,
-            'last id: ',
-            data[data.length - 1].id
-          )
-          lastId = data[data.length - 1].id
-
-          data.forEach((dataItem: any) => {
-            let status = 'Open'
-            let route = 'Received at OCM'
-            if (dataItem.status === 'Approved') {
-              status = 'Approved'
-            } else if (dataItem.status === 'For File') {
-              status = 'For File'
-            } else if (dataItem.status === 'Disapproved') {
-              status = 'Disapproved'
-            } else if (dataItem.status === 'For Further Instruction') {
-              status = 'For Further Instruction'
-            } else if (dataItem.status === 'Cancelled') {
-              status = 'Cancelled'
-            } else if (dataItem.status === 'Resolved') {
-              status = 'Resolved'
-            }
-
-            if (dataItem.route === 'Received at OCM') {
-              route = 'Received at OCM'
-            } else if (dataItem.status === 'Received at CADM') {
-              route = 'Received at CADM'
-            } else if (dataItem.status === 'Forwarded') {
-              route = 'Forwarded'
-            } else if (dataItem.status === 'Forwarded to Atty Rhea') {
-              route = 'Forwarded to Atty Rhea'
-            } else if (dataItem.status === 'Forwarded to CADM') {
-              route = 'Forwarded to CADM'
-            }
-
-            const parsedActivityDate = Date.parse(dataItem.activity_date)
-
-            insertArray.push({
-              id: dataItem.id,
-              date_received: dataItem.date,
-              time_received: dataItem.time,
-              routing_slip_no: dataItem.routing_slip_no,
-              routing_no: dataItem.routing_no,
-              type: dataItem.type,
-              agency: dataItem.agency,
-              requester: dataItem.name,
-              particulars: dataItem.particulars,
-              amount: dataItem.amount,
-              status: status,
-              received_from: dataItem.received_from,
-              received_by: dataItem.received_by,
-              activity_date:
-                !isNaN(parsedActivityDate) && isFinite(parsedActivityDate)
-                  ? format(new Date(dataItem.activity_date), 'yyyy-MM-dd')
-                  : null,
-              location: route,
-              contact_number: dataItem.contact_number,
-              cheque_no: dataItem.cheque_no,
-              user_id: dataItem.user_id,
-            })
-
-            routesInsertArray.push({
-              date: dataItem.date,
-              time: dataItem.time,
-              user: dataItem.received_by,
-              title: route,
-              tracker_id: dataItem.id,
-              user_id: dataItem.user_id,
-            })
-
-            dataItem.document_tracker_replies?.map((remarks: any) => {
-              if (remarks.reply_type !== 'system') {
-                remarksInsertArray.push({
-                  user_id: remarks.sender_id,
-                  tracker_id: remarks.document_tracker_id,
-                  timestamp: format(
-                    new Date(remarks.created_at),
-                    'yyyy-MM-dd h:mm a'
-                  ),
-                  user:
-                    systemUsers.find(
-                      (user: AccountTypes) => user.id === remarks.sender_id
-                    )?.firstname || 'User',
-                  remarks: remarks.message,
-                })
-              }
-            })
-          })
-
-          // Insert data to db
-          const { error: error2 } = await supabase
-            .from('adm_trackers')
-            .insert(insertArray)
-          if (error2) {
-            throw new Error(error2.message)
-          }
-
-          const { error: error3 } = await supabase
-            .from('adm_tracker_remarks')
-            .insert(remarksInsertArray)
-          if (error3) {
-            throw new Error(error3.message)
-          }
-
-          const { error: error4 } = await supabase
-            .from('adm_tracker_routes')
-            .insert(routesInsertArray)
-          if (error4) {
-            throw new Error(error4.message)
-          }
-
-          console.log('inserted remarksInsertArray')
-          console.log('inserted insertArray')
-          console.log('inserted routesArray')
-        } else {
-          eof = true
-          console.log('eof')
-        }
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const handleMigrate2 = async () => {
-    try {
-      const remarksInsertArray: any = []
-      const upsertArray: any = []
-
-      const { data, error } = await supabase
-        .from('adm_tracker_remarks')
-        .select()
-        .order('timestamp', { ascending: false })
-
-      if (error) {
-        throw new Error(error.message)
-      }
-
-      data.forEach((d: DocumentRemarksTypes) => {
-        //
-        const find = remarksInsertArray.find(
-          (f: DocumentRemarksTypes) => f.tracker_id === d.tracker_id
-        )
-        if (!find) {
-          const rem = {
-            tracker_id: d.tracker_id,
-            user_id: d.user_id,
-            timestamp: d.timestamp,
-            user: d.user,
-            remarks: d.remarks,
-          }
-          remarksInsertArray.push(rem)
-          upsertArray.push({
-            id: d.tracker_id,
-            recent_remarks: rem,
-          })
-        }
-      })
-
-      console.log('remarksInsertArray', remarksInsertArray)
-      console.log('upsertArray', upsertArray)
-      console.log('eof')
-
-      const { error: error2 } = await supabase
-        .from('adm_trackers')
-        .upsert(upsertArray)
-      if (error2) {
-        throw new Error(error2.message)
-      }
-    } catch (e) {
-      console.error(e)
-    }
   }
 
   const handleArchive = (id: string) => {
@@ -540,12 +342,6 @@ const Page: React.FC = () => {
               btnType="button"
               handleClick={handleAdd}
             />
-            {/* <CustomButton
-              containerStyles="app__btn_green"
-              title="Migrate"
-              btnType="button"
-              handleClick={handleMigrate2}
-            /> */}
           </div>
 
           {/* Filters */}
@@ -583,6 +379,7 @@ const Page: React.FC = () => {
                   <th className="hidden md:table-cell app__th">Requester</th>
                   <th className="app__th">Particulars</th>
                   <th className="app__th">Recent Remarks</th>
+                  <th className="app__th">Date Received</th>
                 </tr>
               </thead>
               <tbody>
@@ -853,11 +650,14 @@ const Page: React.FC = () => {
                           )}
                         </div>
                       </td>
+                      <td className="app__td">
+                        {format(new Date(item.date_received), 'MMM dd, yyyy')}
+                      </td>
                     </tr>
                   ))}
                 {loading && (
                   <TableRowLoading
-                    cols={7}
+                    cols={8}
                     rows={2}
                   />
                 )}
