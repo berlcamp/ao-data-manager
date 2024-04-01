@@ -189,6 +189,7 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
         cheque_no: formdata.cheque_no,
         agency: formdata.agency,
         specify: formdata.specify,
+        amount: formdata.amount,
         date_received: format(new Date(formdata.date_received), 'yyyy-MM-dd'),
         activity_date: formdata.activity_date
           ? format(new Date(formdata.activity_date), 'yyyy-MM-dd')
@@ -270,6 +271,7 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
         status: formdata.status,
         type: formdata.type,
         specify: formdata.specify,
+        amount: formdata.amount,
         contact_number: formdata.contact_number,
         cheque_no: formdata.cheque_no,
         agency: formdata.agency,

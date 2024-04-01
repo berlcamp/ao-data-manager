@@ -2,12 +2,15 @@ import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { CustomButton, TwoColTableLoading } from '@/components/index'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { AccountTypes, DocumentRemarksTypes, DocumentTypes } from '@/types'
+import { XMarkIcon } from '@heroicons/react/20/solid'
 import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import Avatar from 'react-avatar'
 import { useDispatch, useSelector } from 'react-redux'
 
 const RemarksList = ({ remarks }: { remarks: DocumentRemarksTypes }) => {
+  const { supabase, session } = useSupabase()
+
   return (
     <div className="w-full flex-col space-y-1 px-4 py-4 border-t text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
       <div className="w-full group">
@@ -26,6 +29,9 @@ const RemarksList = ({ remarks }: { remarks: DocumentRemarksTypes }) => {
                 {format(new Date(remarks.timestamp), 'dd MMM yyyy h:mm a')}
               </div>
             </div>
+          </div>
+          <div>
+            <XMarkIcon className="w-5 h-5 text-red-500 cursor-pointer" />
           </div>
         </div>
 
