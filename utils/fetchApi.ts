@@ -11,31 +11,41 @@ export interface DocumentFilterTypes {
   filterStatus?: string
   filterCurrentRoute?: string
   filterRoute?: string
-  filterDateForwarded?: Date | undefined
+  filterDateForwardedFrom?: Date | undefined
+  filterDateForwardedTo?: Date | undefined
 }
 
 export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount: number, rangeFrom: number) {
   try {
     // Advance filters
     const trackerIds: string[] = []
-    if (filters.filterDateForwarded) {
+    if (filters.filterDateForwardedFrom || filters.filterDateForwardedTo) {
       let query1 = supabase.from('adm_tracker_routes')
         .select('tracker_id')
-        .eq('date', format(new Date(filters.filterDateForwarded), 'yyyy-MM-dd'))
-        .limit(200)
+        .limit(900)
 
       if(filters.filterRoute && filters.filterRoute !== '') {
         query1 = query1.eq('title', filters.filterRoute)
+      }
+      if(filters.filterDateForwardedFrom) {
+        query1 = query1.gte('date', format(new Date(filters.filterDateForwardedFrom), 'yyyy-MM-dd'))
+      }
+      if(filters.filterDateForwardedTo) {
+        query1 = query1.lte('date', format(new Date(filters.filterDateForwardedTo), 'yyyy-MM-dd'))
       }
 
       const { data: data1 } = await query1
 
       if (data1) {
+        if(data1.length > 0) {
         data1.forEach(d => trackerIds.push(d.tracker_id))
-      } else {
-        trackerIds.push('99999999')
+        } else {
+          trackerIds.push('99999999')
+        }
       }
+      console.log('data1', data1)
     }
+    console.log('trackerIds', trackerIds)
 
     let query = supabase
       .from('adm_trackers')

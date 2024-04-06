@@ -70,7 +70,10 @@ const Page: React.FC = () => {
   const [filterAgency, setFilterAgency] = useState('')
   const [filterCurrentRoute, setFilterCurrentRoute] = useState('')
   const [filterRoute, setFilterRoute] = useState('')
-  const [filterDateForwarded, setFilterDateForwarded] = useState<
+  const [filterDateForwardedFrom, setFilterDateForwardedFrom] = useState<
+    Date | undefined
+  >(undefined)
+  const [filterDateForwardedTo, setFilterDateForwardedTo] = useState<
     Date | undefined
   >(undefined)
 
@@ -103,7 +106,8 @@ const Page: React.FC = () => {
           filterStatus,
           filterCurrentRoute,
           filterRoute,
-          filterDateForwarded,
+          filterDateForwardedFrom,
+          filterDateForwardedTo,
         },
         perPageCount,
         0
@@ -135,7 +139,8 @@ const Page: React.FC = () => {
           filterStatus,
           filterCurrentRoute,
           filterRoute,
-          filterDateForwarded,
+          filterDateForwardedFrom,
+          filterDateForwardedTo,
         },
         perPageCount,
         list.length
@@ -279,7 +284,8 @@ const Page: React.FC = () => {
     filterTypes,
     filterCurrentRoute,
     filterRoute,
-    filterDateForwarded,
+    filterDateForwardedFrom,
+    filterDateForwardedTo,
     perPageCount,
   ])
 
@@ -311,7 +317,8 @@ const Page: React.FC = () => {
                     filterTypes,
                     filterCurrentRoute,
                     filterRoute,
-                    filterDateForwarded,
+                    filterDateForwardedFrom,
+                    filterDateForwardedTo,
                   }}
                 />
               </div>
@@ -353,7 +360,8 @@ const Page: React.FC = () => {
               setFilterCurrentRoute={setFilterCurrentRoute}
               setFilterRoute={setFilterRoute}
               setFilterAgency={setFilterAgency}
-              setFilterDateForwarded={setFilterDateForwarded}
+              setFilterDateForwardedFrom={setFilterDateForwardedFrom}
+              setFilterDateForwardedTo={setFilterDateForwardedTo}
             />
           </div>
 
@@ -639,7 +647,6 @@ const Page: React.FC = () => {
                                           ),
                                           'MMM dd h:mm'
                                         )}
-                                        :
                                       </div>
                                     </div>
                                   </div>

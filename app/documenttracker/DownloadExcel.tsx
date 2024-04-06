@@ -13,7 +13,8 @@ interface DocumentFilterTypes {
   filterStatus?: string
   filterCurrentRoute?: string
   filterRoute?: string
-  filterDateForwarded?: Date | undefined
+  filterDateForwardedFrom?: Date | undefined
+  filterDateForwardedTo?: Date | undefined
 }
 
 const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {

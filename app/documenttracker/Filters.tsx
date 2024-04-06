@@ -42,11 +42,13 @@ interface FilterTypes {
   setFilterAgency: (agency: string) => void
   setFilterCurrentRoute: (route: string) => void
   setFilterRoute: (route: string) => void
-  setFilterDateForwarded: (date: Date | undefined) => void
+  setFilterDateForwardedFrom: (date: Date | undefined) => void
+  setFilterDateForwardedTo: (date: Date | undefined) => void
 }
 
 const FormSchema = z.object({
-  dateForwarded: z.date().optional(),
+  dateForwardedFrom: z.date().optional(),
+  dateForwardedTo: z.date().optional(),
   currentRoute: z.string().optional(),
   status: z.string().optional(),
   forwardedTo: z.string().optional(),
@@ -61,7 +63,8 @@ const Filters = ({
   setFilterAgency,
   setFilterCurrentRoute,
   setFilterRoute,
-  setFilterDateForwarded,
+  setFilterDateForwardedFrom,
+  setFilterDateForwardedTo,
 }: FilterTypes) => {
   //
   const [selectedTypes, setSelectedTypes] = useState<string[] | []>([])
@@ -70,7 +73,8 @@ const Filters = ({
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-      dateForwarded: undefined,
+      dateForwardedFrom: undefined,
+      dateForwardedTo: undefined,
       status: '',
       currentRoute: '',
       forwardedTo: '',
@@ -86,7 +90,8 @@ const Filters = ({
     setFilterAgency(data.agency || '')
     setFilterCurrentRoute(data.currentRoute || '')
     setFilterRoute(data.forwardedTo || '')
-    setFilterDateForwarded(data.dateForwarded)
+    setFilterDateForwardedFrom(data.dateForwardedFrom)
+    setFilterDateForwardedTo(data.dateForwardedTo)
   }
 
   // clear all filters
@@ -100,7 +105,8 @@ const Filters = ({
     setFilterAgency('')
     setFilterCurrentRoute('')
     setFilterRoute('')
-    setFilterDateForwarded(undefined)
+    setFilterDateForwardedFrom(undefined)
+    setFilterDateForwardedTo(undefined)
 
     setToggleAdvanceFilter(false)
   }
@@ -283,11 +289,11 @@ const Filters = ({
             <div className="items-center inline-flex app__filter_field_container">
               <FormField
                 control={form.control}
-                name="dateForwarded"
+                name="dateForwardedFrom"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel className="app__form_label">
-                      Date Forwarded/Received
+                      Date Received/Forwarded
                     </FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -301,7 +307,48 @@ const Filters = ({
                             {field.value ? (
                               format(field.value, 'PPP')
                             ) : (
-                              <span>Pick a date</span>
+                              <span>From</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0"
+                        align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date('1900-01-01')}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="dateForwardedTo"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="app__form_label">&nbsp;</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}>
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>To</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
