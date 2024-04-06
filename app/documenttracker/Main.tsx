@@ -641,12 +641,13 @@ const Page: React.FC = () => {
                                         <span>{item.recent_remarks.user} </span>
                                       </div>
                                       <div className="text-gray-500  focus:ring-0 focus:outline-none text-xs text-left inline-flex items-center">
-                                        {format(
-                                          new Date(
-                                            item.recent_remarks.timestamp
-                                          ),
-                                          'MMM dd h:mm'
-                                        )}
+                                        {item.recent_remarks.timestamp &&
+                                          format(
+                                            new Date(
+                                              item.recent_remarks.timestamp
+                                            ),
+                                            'MMM dd h:mm'
+                                          )}
                                       </div>
                                     </div>
                                   </div>

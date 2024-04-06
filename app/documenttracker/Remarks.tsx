@@ -1,15 +1,118 @@
 import { updateList } from '@/GlobalRedux/Features/listSlice'
-import { CustomButton, TwoColTableLoading } from '@/components/index'
+import {
+  ConfirmModal,
+  CustomButton,
+  TwoColTableLoading,
+} from '@/components/index'
+import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { AccountTypes, DocumentRemarksTypes, DocumentTypes } from '@/types'
-import { XMarkIcon } from '@heroicons/react/20/solid'
+import { TrashIcon } from '@heroicons/react/20/solid'
 import { format } from 'date-fns'
+import { PencilLineIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Avatar from 'react-avatar'
 import { useDispatch, useSelector } from 'react-redux'
 
-const RemarksList = ({ remarks }: { remarks: DocumentRemarksTypes }) => {
+const RemarksList = ({
+  remarks,
+  isRecent,
+  refetch,
+}: {
+  remarks: DocumentRemarksTypes
+  isRecent: boolean
+  refetch: () => void
+}) => {
   const { supabase, session } = useSupabase()
+  const { setToast } = useFilter()
+
+  const [editMode, setEditMode] = useState(false)
+  const [origRemarks, setOrigRemarks] = useState(remarks.remarks)
+  const [remarksContent, setRemarksContent] = useState(remarks.remarks)
+  const [saving, setSaving] = useState(false)
+
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [selectedId, setSelectedId] = useState('')
+
+  // Redux staff
+  const globallist = useSelector((state: any) => state.list.value)
+  const dispatch = useDispatch()
+
+  // Delete confirmation
+  const deleteReply = (id: string) => {
+    setShowConfirmation(true)
+    setSelectedId(id)
+  }
+  const handleCancel = () => {
+    setShowConfirmation(false)
+    setSelectedId('')
+  }
+  const handleConfirm = async () => {
+    await handleDeleteReply()
+    setShowConfirmation(false)
+  }
+  const handleDeleteReply = async () => {
+    try {
+      const { error } = await supabase
+        .from('adm_tracker_remarks')
+        .delete()
+        .eq('id', selectedId)
+
+      if (error) throw new Error(error.message)
+
+      setSelectedId('')
+      setToast('success', 'Successfully Deleted!')
+      refetch()
+    } catch (e) {
+      setToast('error', 'Something went wrong')
+    }
+  }
+
+  const handleUpdateRemarks = async () => {
+    if (remarksContent.trim().length === 0) {
+      return
+    }
+
+    setSaving(true)
+
+    try {
+      const newData = {
+        remarks: remarksContent,
+      }
+
+      const { error } = await supabase
+        .from('adm_tracker_remarks')
+        .update(newData)
+        .eq('id', remarks.id)
+
+      if (error) throw new Error(error.message)
+
+      if (isRecent) {
+        const { error: error2 } = await supabase
+          .from('adm_trackers')
+          .update({ recent_remarks: { ...remarks, ...newData } })
+          .eq('id', remarks.tracker_id)
+
+        if (error2) throw new Error(error.message)
+      }
+
+      // Append to recent_remarks in redux
+      const items = [...globallist]
+      const foundIndex = items.findIndex((x) => x.id === remarks.tracker_id)
+      items[foundIndex] = {
+        ...items[foundIndex],
+        recent_remarks: { ...remarks, ...newData },
+      }
+      dispatch(updateList(items))
+
+      setOrigRemarks(remarksContent)
+      setEditMode(false)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="w-full flex-col space-y-1 px-4 py-4 border-t text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
@@ -30,16 +133,63 @@ const RemarksList = ({ remarks }: { remarks: DocumentRemarksTypes }) => {
               </div>
             </div>
           </div>
-          <div>
-            <XMarkIcon className="w-5 h-5 text-red-500 cursor-pointer" />
-          </div>
+          {remarks.user_id === session.user.id && !editMode && (
+            <div className="flex items-center space-x-2 justify-end">
+              <PencilLineIcon
+                onClick={() => setEditMode(true)}
+                className="w-4 h-4 cursor-pointer text-blue-500"
+              />
+              <TrashIcon
+                onClick={() => deleteReply(remarks.id!)}
+                className="w-4 h-4 cursor-pointer text-red-500"
+              />
+            </div>
+          )}
         </div>
 
         {/* Message */}
         <div className="pl-10 mt-2">
-          <div>{remarks.remarks}</div>
+          {!editMode && <div>{origRemarks}</div>}
+          {/* Edit Box */}
+          {editMode && (
+            <div className="w-full space-y-2 mb-5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+              <textarea
+                onChange={(e) => setRemarksContent(e.target.value)}
+                value={remarksContent}
+                placeholder="Write your remarks here.."
+                className="w-full h-20 border resize-none focus:ring-0 focus:outline-none p-2 text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-300"
+              />
+              <div className="flex space-x-2 items-start">
+                <span className="flex-1">&nbsp;</span>
+
+                <CustomButton
+                  containerStyles="app__btn_green"
+                  title="Save"
+                  isDisabled={saving}
+                  handleClick={handleUpdateRemarks}
+                  btnType="button"
+                />
+                <CustomButton
+                  containerStyles="app__btn_gray"
+                  title="Cancel"
+                  isDisabled={saving}
+                  handleClick={() => setEditMode(false)}
+                  btnType="button"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
+      {showConfirmation && (
+        <ConfirmModal
+          message="Are you sure you want to perform this action?"
+          header="Confirm delete"
+          btnText="Confirm"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   )
 }
@@ -54,6 +204,7 @@ export default function Remarks({
     []
   )
 
+  const [refetch, setRefetch] = useState(false)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -84,9 +235,10 @@ export default function Remarks({
         remarks: remarks,
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('adm_tracker_remarks')
         .insert(newData)
+        .select()
 
       if (error) throw new Error(error.message)
 
@@ -98,7 +250,7 @@ export default function Remarks({
       if (error2) throw new Error(error.message)
 
       // Append new remarks to list
-      setRemarksLists([...remarksLists, newData])
+      setRemarksLists([...remarksLists, { ...newData, id: data[0].id }])
 
       // Append to recent_remarks in redux
       const items = [...globallist]
@@ -125,7 +277,7 @@ export default function Remarks({
       setRemarksLists(data)
       setLoading(false)
     })()
-  }, [])
+  }, [refetch])
 
   return (
     <div className="w-full relative">
@@ -159,7 +311,9 @@ export default function Remarks({
             {remarksLists.length > 0 ? (
               remarksLists.map((remarks, idx) => (
                 <RemarksList
+                  isRecent={remarksLists.length === idx + 1}
                   key={idx}
+                  refetch={() => setRefetch(!refetch)}
                   remarks={remarks}
                 />
               ))
