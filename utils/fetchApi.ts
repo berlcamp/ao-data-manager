@@ -43,9 +43,7 @@ export async function fetchDocuments (filters: DocumentFilterTypes, perPageCount
           trackerIds.push('99999999')
         }
       }
-      console.log('data1', data1)
     }
-    console.log('trackerIds', trackerIds)
 
     let query = supabase
       .from('adm_trackers')
