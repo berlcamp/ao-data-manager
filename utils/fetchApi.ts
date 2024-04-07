@@ -278,7 +278,7 @@ export async function fetchActivities (today: string, endDate: Date) {
       .gte('activity_date', today)
       .lt('activity_date', endDate.toISOString())
       .order('activity_date', { ascending: true })
-      .limit(30)
+      .limit(100)
 
     if (error) {
       throw new Error(error.message)

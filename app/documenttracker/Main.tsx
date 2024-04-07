@@ -242,6 +242,7 @@ const Page: React.FC = () => {
   }
 
   const handleViewActivities = () => {
+    void fetchActivitiesData()
     setViewActivity(true)
   }
 
@@ -269,7 +270,6 @@ const Page: React.FC = () => {
   // Update list whenever list in redux updates
   useEffect(() => {
     setList(globallist)
-    void fetchActivitiesData()
   }, [globallist])
 
   // Featch data
