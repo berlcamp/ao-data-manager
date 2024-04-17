@@ -83,7 +83,8 @@ export const statusList = [
   { status: 'For File', color: '#997c00' },
   { status: 'Resolved', color: '#a44508' },
   { status: 'Open', color: '#2154db' },
-  { status: 'Approved', color: '#287f00' }
+  { status: 'Approved', color: '#287f00' },
+  { status: 'Canceled', color: '#e02626' }
 ]
 
 export const superAdmins = [
