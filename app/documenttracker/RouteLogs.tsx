@@ -30,6 +30,7 @@ export default function RouteLogs({
         .from('adm_tracker_routes')
         .select()
         .eq('tracker_id', documentData.id)
+        .order('id', { ascending: true })
 
       // update the list in redux
       dispatch(updateRoutesList(data))

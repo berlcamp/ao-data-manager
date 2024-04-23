@@ -37,7 +37,7 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
         { header: '#', key: 'no', width: 20 },
         { header: 'Routing No', key: 'routing', width: 20 },
         { header: 'Name/Payee', key: 'requester', width: 20 },
-        { header: 'Amount', key: 'amoount', width: 20 },
+        { header: 'Amount', key: 'amount', width: 20 },
         { header: 'Agency/Department', key: 'agency', width: 20 },
         { header: 'Current Location ', key: 'location', width: 20 },
         { header: 'Particulars ', key: 'particulars', width: 20 },
