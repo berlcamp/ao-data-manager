@@ -35,9 +35,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone, type FileWithPath } from 'react-dropzone'
 
 // Redux imports
-import { useDispatch, useSelector } from 'react-redux'
-
-import { updateRoutesList } from '@/GlobalRedux/Features/routesSlice'
+import { recount } from '@/GlobalRedux/Features/recountSlice'
 import { Input } from '@/components/ui/input'
 import {
   docRouting,
@@ -49,6 +47,7 @@ import { generateRandomNumber } from '@/utils/text-helper'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
 import Attachment from './Attachment'
 
 const FormSchema = z.object({
@@ -291,23 +290,105 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
 
       if (error) throw new Error(error.message)
 
-      // Add tracker route logs if route is changed
-      const trackerRoutes = {
-        tracker_id: editData.id,
-        date: format(new Date(), 'yyyy-MM-dd'),
-        time: format(new Date(), 'h:mm a'),
-        user_id: session.user.id,
-        user: `${user.firstname} ${user.middlename || ''} ${
-          user.lastname || ''
-        }`,
-        title: formdata.location,
-        message: '',
+      // Add tracker route logs
+      const trackerRoutes = []
+      const logMessages = []
+
+      if (formdata.status !== editData.status) {
+        logMessages.push({
+          field: 'Status',
+          before: editData.status,
+          after: formdata.status,
+        })
+      }
+      if (formdata.type !== editData.type) {
+        logMessages.push({
+          field: 'Type',
+          before: editData.type,
+          after: formdata.type,
+        })
+      }
+      if (formdata.amount !== editData.amount) {
+        logMessages.push({
+          field: 'Amount',
+          before: editData.amount,
+          after: formdata.amount,
+        })
+      }
+      if (formdata.cheque_no !== editData.cheque_no) {
+        logMessages.push({
+          field: 'Cheque No',
+          before: editData.cheque_no,
+          after: formdata.cheque_no,
+        })
+      }
+      if (formdata.agency !== editData.agency) {
+        logMessages.push({
+          field: 'Agency',
+          before: editData.agency,
+          after: formdata.agency,
+        })
+      }
+      if (
+        format(new Date(formdata.date_received), 'yyyy-MM-dd') !==
+        format(new Date(editData.date_received), 'yyyy-MM-dd')
+      ) {
+        logMessages.push({
+          field: 'Date Received',
+          before: format(new Date(editData.date_received), 'yyyy-MM-dd'),
+          after: format(new Date(formdata.date_received), 'yyyy-MM-dd'),
+        })
+      }
+      if (
+        formdata.activity_date &&
+        format(new Date(formdata.activity_date), 'yyyy-MM-dd') !==
+          format(new Date(editData.activity_date), 'yyyy-MM-dd')
+      ) {
+        logMessages.push({
+          field: 'Activity Date',
+          before: format(new Date(editData.activity_date), 'yyyy-MM-dd'),
+          after: format(new Date(formdata.activity_date), 'yyyy-MM-dd'),
+        })
+      }
+      if (formdata.requester !== editData.requester) {
+        logMessages.push({
+          field: 'Requester',
+          before: editData.requester,
+          after: formdata.requester,
+        })
+      }
+
+      if (logMessages.length > 0) {
+        trackerRoutes.push({
+          tracker_id: editData.id,
+          date: format(new Date(), 'yyyy-MM-dd'),
+          time: format(new Date(), 'h:mm a'),
+          user_id: session.user.id,
+          user: `${user.firstname} ${user.middlename || ''} ${
+            user.lastname || ''
+          }`,
+          title: 'Details updated',
+          message: logMessages,
+        })
       }
       if (formdata.location !== editData.location) {
+        trackerRoutes.push({
+          tracker_id: editData.id,
+          date: format(new Date(), 'yyyy-MM-dd'),
+          time: format(new Date(), 'h:mm a'),
+          user_id: session.user.id,
+          user: `${user.firstname} ${user.middlename || ''} ${
+            user.lastname || ''
+          }`,
+          title: formdata.location,
+        })
+      }
+
+      if (trackerRoutes.length > 0) {
         await supabase.from('adm_tracker_routes').insert(trackerRoutes)
 
-        // Append routes to redux
-        dispatch(updateRoutesList([...globalRoutesList, trackerRoutes]))
+        // Reload route logs
+        dispatch(recount())
       }
 
       // Upload files
