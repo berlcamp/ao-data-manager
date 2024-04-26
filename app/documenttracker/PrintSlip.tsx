@@ -25,6 +25,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
       const { data } = await supabase
         .from('adm_tracker_routes')
         .select()
+        .neq('title', 'Details updated')
         .eq('tracker_id', document.id)
 
       setRoutes(data)
