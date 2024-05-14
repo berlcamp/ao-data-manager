@@ -36,6 +36,21 @@ const MainMenu: React.FC = () => {
                 </div>
               </Link>
             )}
+            {hasAccess('voters') && (
+              <Link href="/voters">
+                <div className="app__menu_item">
+                  <div className="pt-1">
+                    <DocumentDuplicateIcon className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <div className="app__menu_item_label">Registered Voters</div>
+                    <div className="app__menu_item_label_description">
+                    Registered Voters
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
             {hasAccess('tracker') && (
               <Link href="/documenttracker">
                 <div className="app__menu_item">

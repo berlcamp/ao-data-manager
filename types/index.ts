@@ -181,3 +181,28 @@ export interface RisDepartmentTypes {
   name: string
   office: string
 }
+
+export interface VoterBarangayTypes {
+  id: string
+  address: string
+}
+
+export interface ServiceProviderTypes {
+  id: string
+  new: string
+  name: string
+  new_number: string
+  contact_number: string
+}
+
+export interface VoterTypes {
+  id?: string
+  fullname: string
+  address?: string
+  category?: string
+  precinct?: string
+  category_recommended: string
+  category_prior_bsk: string
+  petition: string
+  service_provider?: ServiceProviderTypes
+}

@@ -65,6 +65,12 @@ const Page: React.FC = () => {
                 />
                 <ChooseUsers
                   multiple={true}
+                  type="voters"
+                  users={users}
+                  title="Who can access Registered Voters"
+                />
+                <ChooseUsers
+                  multiple={true}
                   type="ris"
                   users={users}
                   title="Who can access R.I.S."
