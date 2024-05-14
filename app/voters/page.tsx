@@ -206,7 +206,7 @@ const Page: React.FC = () => {
                               <span><span className='font-normal'>Category:</span> {item.category}</span>
                               <span>
                                 {
-                                  (item.category_recommended).trim() !== '' && `(RC - ${item.category_recommended})`
+                                  ((item.category_recommended).trim() !== '' && item.category !== item.category_recommended) && `(RC - ${item.category_recommended})`
                                 }
                               </span>
                             </div>
@@ -237,7 +237,7 @@ const Page: React.FC = () => {
                           <span>{item.category}</span>
                           <span>
                             {
-                              (item.category_recommended).trim() !== '' && `(RC - ${item.category_recommended})`
+                              ((item.category_recommended).trim() !== '' && item.category !== item.category_recommended) && `(RC - ${item.category_recommended})`
                             }
                           </span>
                         </div>
