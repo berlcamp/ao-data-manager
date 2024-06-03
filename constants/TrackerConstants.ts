@@ -5,7 +5,7 @@ export const docTypes = [
   'Invitation',
   'Infrastructure Request',
   'Request Endorsement/Applicants',
-  'Others'
+  'Others',
 ]
 
 export const docRouting = [
@@ -13,6 +13,7 @@ export const docRouting = [
   'Forwarded to Accounting',
   'Forwarded to Agri',
   'Forwarded to Assesors',
+  'Forwarded to Atty Cassie',
   'Forwarded to Atty Rhea',
   'Forwarded to BAC',
   'Forwarded to Budget',
@@ -74,7 +75,7 @@ export const documentTypes = [
   { type: 'Salary Loan', shortcut: 'SAL-LOAN' },
   { type: 'Show Cause', shortcut: 'SHW-CAUSE' },
   { type: 'Special Order', shortcut: 'SO' },
-  { type: 'Travel Order', shortcut: 'TO' }
+  { type: 'Travel Order', shortcut: 'TO' },
 ]
 
 export const statusList = [
@@ -84,16 +85,9 @@ export const statusList = [
   { status: 'Resolved', color: '#a44508' },
   { status: 'Open', color: '#2154db' },
   { status: 'Approved', color: '#287f00' },
-  { status: 'Canceled', color: '#e02626' }
+  { status: 'Canceled', color: '#e02626' },
 ]
 
-export const superAdmins = [
-  'berlcamp@gmail.com',
-  'berlcampomanes@gmail.com',
-]
+export const superAdmins = ['berlcamp@gmail.com', 'berlcampomanes@gmail.com']
 
-export const risOffices = [
-  'OCM',
-  'DepEd',
-  'POC',
-]
+export const risOffices = ['OCM', 'DepEd', 'POC']
