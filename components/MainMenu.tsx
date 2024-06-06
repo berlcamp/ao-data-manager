@@ -43,9 +43,11 @@ const MainMenu: React.FC = () => {
                     <DocumentDuplicateIcon className="w-8 h-8" />
                   </div>
                   <div>
-                    <div className="app__menu_item_label">Registered Voters</div>
+                    <div className="app__menu_item_label">
+                      Registered Voters
+                    </div>
                     <div className="app__menu_item_label_description">
-                    Registered Voters
+                      Registered Voters
                     </div>
                   </div>
                 </div>
@@ -61,6 +63,23 @@ const MainMenu: React.FC = () => {
                     <div className="app__menu_item_label">Document Tracker</div>
                     <div className="app__menu_item_label_description">
                       Document Tracker
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
+            {hasAccess('voters') && (
+              <Link href="/medicalassistance">
+                <div className="app__menu_item">
+                  <div className="pt-1">
+                    <DocumentDuplicateIcon className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <div className="app__menu_item_label">
+                      AO Medical Assistance
+                    </div>
+                    <div className="app__menu_item_label_description">
+                      AO Medical Assistance
                     </div>
                   </div>
                 </div>

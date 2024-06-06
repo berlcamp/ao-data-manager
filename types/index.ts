@@ -100,7 +100,7 @@ export interface DocumentTypes {
   user_id: string
   recent_remarks: DocumentRemarksTypes
   asenso_user: AccountTypes
-  attachments: { name: string}[]
+  attachments: { name: string }[]
   amount: string
   received_from: string
   routing_no: number
@@ -205,4 +205,104 @@ export interface VoterTypes {
   category_prior_bsk: string
   petition: string
   service_provider?: ServiceProviderTypes
+}
+
+export interface MedicalAssistanceTypes {
+  id: string
+  fullname: string
+  patient_previous_name: string
+  requester_category: string
+  patient_category: string
+  patient_profession: string
+  guarantee_no: string
+  guarantee_no_text: string
+  patient_barangay_id: string
+  requester_barangay_id: string
+  bill_type: string
+  request_type: string
+  request_type_others: string
+  address: string
+  reason: string
+  gender: string
+  age: string
+  status: string
+  referral: string
+  referral_address: string
+  referral_profession: string
+  referral_gender: string
+  referral_previous_name: string
+  referral_age: string
+  referral_remarks: string
+  is_patient_registered: string
+  is_referral_registered: string
+  is_maip: string
+  relationship: string
+  sp: string
+  referral_sp: string
+  philhealth: string
+  room_type: string
+  category: string
+  hospital: string
+  pcso_amount: string
+  dswd_amount: string
+  amount: string
+  include_on_bill: string
+  granted_amount: string
+  lgu_amount: string
+  families: FamilyCompositionTypes[]
+  doctors: DoctorTypes[]
+  professional_fee: string
+  remarks: string
+  patient_remarks: string
+  diagnosis: string
+  cause_of_death: string
+  deleted: string
+  date: string
+  date_approved: string
+  date_death: string
+  purpose: string
+  funeral: string
+  requested_amount: string
+  hospital_or_funeral: string
+  total_professional_fee: string
+  professional_fee_remarks: string
+  professional_fee_discount_senior: string
+  professional_fee_discount_philhealth: string
+  professional_fee_discount_others: string
+  reason_not_ward: string
+  reason_not_mhars: string
+  from_lgu: string
+  sffo_amounts: string
+  others_amounts: string
+  other_expenses: string
+  date_admitted: string
+  date_discharged: string
+  pwd_discount: string
+  total_bill: string
+  excess_bill: string
+  phc_status: string
+  patient_barangay: BarangayTypes
+}
+
+export interface BarangayTypes {
+  id: string
+  barangay: string
+  municipality: string
+}
+
+export interface FamilyCompositionTypes {
+  fullname: string
+  category: string
+  remarks: string
+  ref: number
+}
+
+export interface DoctorTypes {
+  fullname: string
+  professional_fee: string
+  ref: number
+}
+
+export interface PatientTypes {
+  fullname: string
 }

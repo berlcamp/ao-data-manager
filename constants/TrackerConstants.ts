@@ -1,3 +1,17 @@
+export const hospitalsList = [
+  'MUMC',
+  'Faith',
+  'SPPMC',
+  'St.Joseph',
+  'St.Padre Pio Dialysis Center',
+  'Medina',
+  'S.M.Lao',
+  'Dr. Ditching Eye Center',
+  'Tagaloguin-Adona',
+  'It Works',
+  'JD Rehabilitation Center',
+]
+
 export const docTypes = [
   'Solicitation / Financial Assistance',
   'Medical Assistance',
