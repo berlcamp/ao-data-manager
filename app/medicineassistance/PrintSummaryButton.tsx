@@ -16,7 +16,7 @@ interface ChildProps {
   items: MedicalAssistanceTypes[]
 }
 
-export default function PrintGLButton({ selectedItems }: ModalProps) {
+export default function PrintSummaryButton({ selectedItems }: ModalProps) {
   const componentRef = useRef<HTMLDivElement>(null)
 
   // Using forwardRef to pass the ref down to the ChildComponent
@@ -37,7 +37,7 @@ export default function PrintGLButton({ selectedItems }: ModalProps) {
       <ReactToPrint
         trigger={() => (
           <button className="app__btn_blue flex items-center justify-center space-x-2">
-            <PrinterIcon className="w-4 h-4" /> <span>Print GL</span>
+            <PrinterIcon className="w-4 h-4" /> <span>Print Summary</span>
           </button>
         )}
         content={() => document.getElementById('print-container')}

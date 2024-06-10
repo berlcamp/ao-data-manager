@@ -31,6 +31,7 @@ import { format } from 'date-fns'
 import { useDispatch, useSelector } from 'react-redux'
 import AddEditModal from './AddEditModal'
 import PrintGLButton from './PrintGLButton'
+import PrintSummaryButton from './PrintSummaryButton'
 
 const Page: React.FC = () => {
   const [loading, setLoading] = useState(false)
@@ -282,6 +283,13 @@ const Page: React.FC = () => {
               setFilterKeyword={setFilterKeyword}
             />
           </div>
+
+          {/* Export Button */}
+          {!isDataEmpty && (
+            <div className="mx-4 mb-4 flex justify-end space-x-2">
+              <PrintSummaryButton selectedItems={list} />
+            </div>
+          )}
 
           {/* Per Page */}
           <PerPage

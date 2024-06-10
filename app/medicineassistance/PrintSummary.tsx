@@ -37,8 +37,8 @@ const PrintSummary: React.FC<ChildProps> = ({
               className="text-center">
               <div className="border border-red-500 border-dashed"></div>
               <div className="border border-red-500 border-dashed mt-px"></div>
-              <div className="text-xl underline underline-offset-2 mt-4">
-                Medicine Assistant Summary
+              <div className="text-xl underline underline-offset-2 mt-4 mb-6">
+                AO Medicine Assistance Summary
               </div>
             </td>
           </tr>
@@ -54,9 +54,18 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border p-1">{i + 1}</td>
               <td className="border p-1">
                 <div>{med.fullname}</div>
-                <div>{med.other_details.address}</div>
+                <div className="capitalize">
+                  {med.other_details.gender} / {med.other_details.age} /{' '}
+                  {med.other_details.patient_barangay.barangay}
+                </div>
               </td>
-              <td className="border p-1">{med.requester}</td>
+              <td className="border p-1">
+                <div>{med.requester}</div>
+                <div className="capitalize">
+                  {med.other_details.gender} / {med.other_details.age} /{' '}
+                  {med.other_details.requester_barangay.barangay}
+                </div>
+              </td>
               <td className="border p-1">{med.pharmacy}</td>
               <td className="border p-1">{countTotal(med)}</td>
             </tr>
