@@ -75,6 +75,12 @@ const Page: React.FC = () => {
                   users={users}
                   title="Who can access R.I.S."
                 />
+                <ChooseUsers
+                  multiple={true}
+                  type="medicine"
+                  users={users}
+                  title="Who can access Medicine Assistance"
+                />
               </>
             )}
           </div>

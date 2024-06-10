@@ -48,7 +48,9 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="border border-red-500 border-dashed"></div>
               <div className="border border-red-500 border-dashed mt-px"></div>
               <div className="text-xl underline underline-offset-2 mt-4">
-                GUARANTEE NOTE - NO. {selectedItem.gl_no}
+                GUARANTEE NOTE - NO.{' '}
+                {format(new Date(selectedItem.date_approved), 'yy')}
+                -AO-OZC-MED-000{selectedItem.gl_no}
               </div>
             </td>
           </tr>

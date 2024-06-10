@@ -68,7 +68,7 @@ const MainMenu: React.FC = () => {
                 </div>
               </Link>
             )}
-            {hasAccess('voters') && (
+            {hasAccess('medicine') && (
               <Link href="/medicineassistance">
                 <div className="app__menu_item">
                   <div className="pt-1">
