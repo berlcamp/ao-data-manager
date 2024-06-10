@@ -68,7 +68,11 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     setSaving(true)
 
-    void handleCreate(formdata)
+    if (editData) {
+      void handleUpdate(formdata)
+    } else {
+      void handleCreate(formdata)
+    }
   }
 
   const handleCreate = async (formdata: MedicalAssistanceTypes) => {
@@ -106,6 +110,41 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
           results: Number(resultsCounter.results) + 1,
         })
       )
+
+      setToast('success', 'Successfully saved.')
+      setSaving(false)
+      hideModal()
+    } catch (error) {
+      console.error('error', error)
+    }
+  }
+
+  const handleUpdate = async (formdata: MedicalAssistanceTypes) => {
+    if (!editData) return
+
+    const params = {
+      pharmacy: formdata.pharmacy,
+      date_requested: formdata.date_requested,
+      medicines,
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('adm_medicine_clients')
+        .update(params)
+        .eq('id', editData.id)
+
+      if (error) throw new Error(error.message)
+
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        ...params,
+        id: editData.id,
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
 
       setToast('success', 'Successfully saved.')
       setSaving(false)
