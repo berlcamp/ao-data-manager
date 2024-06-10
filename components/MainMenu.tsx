@@ -69,17 +69,17 @@ const MainMenu: React.FC = () => {
               </Link>
             )}
             {hasAccess('voters') && (
-              <Link href="/medicalassistance">
+              <Link href="/medicineassistance">
                 <div className="app__menu_item">
                   <div className="pt-1">
                     <DocumentDuplicateIcon className="w-8 h-8" />
                   </div>
                   <div>
                     <div className="app__menu_item_label">
-                      AO Medical Assistance
+                      AO Medicine Assistance
                     </div>
                     <div className="app__menu_item_label_description">
-                      AO Medical Assistance
+                      AO Medicine Assistance
                     </div>
                   </div>
                 </div>

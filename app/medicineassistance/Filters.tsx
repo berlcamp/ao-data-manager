@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { hospitalsList } from '@/constants/TrackerConstants'
+import { pharmacyList } from '@/constants/TrackerConstants'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
@@ -29,8 +29,8 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface FilterTypes {
-  setFilterHospital: (ca: string) => void
-  setFilterBillType: (po: string) => void
+  setFilterPharmacy: (ca: string) => void
+  // setFilterBillType: (po: string) => void
   setFilterDateFrom: (date: Date | undefined) => void
   setFilterDateTo: (date: Date | undefined) => void
   setFilterDateRequested: (date: Date | undefined) => void
@@ -42,13 +42,13 @@ const FormSchema = z.object({
   dateRequested: z.date().optional(),
   dateFrom: z.date().optional(),
   dateTo: z.date().optional(),
-  hospital: z.string().optional(),
+  pharmacy: z.string().optional(),
   billType: z.string().optional(),
 })
 
 const Filters = ({
-  setFilterBillType,
-  setFilterHospital,
+  // setFilterBillType,
+  setFilterPharmacy,
   setFilterDateRequested,
   setFilterDateFrom,
   setFilterDateTo,
@@ -59,15 +59,15 @@ const Filters = ({
       dateFrom: undefined,
       dateTo: undefined,
       dateRequested: undefined,
-      hospital: '',
+      pharmacy: '',
       billType: '',
       keyword: '',
     },
   })
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setFilterBillType(data.billType || 'All')
-    setFilterHospital(data.hospital || 'All')
+    // setFilterBillType(data.billType || 'All')
+    setFilterPharmacy(data.pharmacy || 'All')
     setFilterDateRequested(data.dateRequested)
     setFilterDateFrom(data.dateFrom)
     setFilterDateTo(data.dateTo)
@@ -77,8 +77,8 @@ const Filters = ({
   // clear all filters
   const handleClear = () => {
     form.reset()
-    setFilterBillType('All')
-    setFilterHospital('All')
+    // setFilterBillType('All')
+    setFilterPharmacy('All')
     setFilterDateRequested(undefined)
     setFilterDateFrom(undefined)
     setFilterDateTo(undefined)
@@ -98,7 +98,7 @@ const Filters = ({
                   <FormItem className="flex flex-col">
                     <FormLabel className="app__form_label">Search</FormLabel>
                     <Input
-                      placeholder="Patient Name / Requester"
+                      placeholder="Patient Name"
                       className="w-[200px]"
                       {...field}
                     />
@@ -238,10 +238,10 @@ const Filters = ({
             <div className="items-center inline-flex app__filter_field_container">
               <FormField
                 control={form.control}
-                name="hospital"
+                name="pharmacy"
                 render={({ field }) => (
                   <FormItem className="w-[240px]">
-                    <FormLabel className="app__form_label">Hospital</FormLabel>
+                    <FormLabel className="app__form_label">Pharmacy</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
@@ -252,38 +252,13 @@ const Filters = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {hospitalsList.map((h, index) => (
+                        {pharmacyList.map((p, index) => (
                           <SelectItem
                             key={index}
-                            value={h}>
-                            {h}
+                            value={p.pharmacy}>
+                            {p.pharmacy}
                           </SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="items-center inline-flex app__filter_field_container">
-              <FormField
-                control={form.control}
-                name="hospital"
-                render={({ field }) => (
-                  <FormItem className="w-[240px]">
-                    <FormLabel className="app__form_label">Hospital</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="GAD">GAD</SelectItem>
-                        <SelectItem value="DONATION">DONATION</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>

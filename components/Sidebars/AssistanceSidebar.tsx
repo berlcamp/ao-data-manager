@@ -14,7 +14,7 @@ export default function AssistanceSidebar() {
             <span>AO Assistance</span>
           </div>
         </li>
-        <li>
+        {/* <li>
           <Link
             href="/medicalassistance"
             className={`app__menu_link ${
@@ -26,7 +26,7 @@ export default function AssistanceSidebar() {
               Medical Assistance
             </span>
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link
             href="/medicineassistance"

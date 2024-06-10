@@ -221,10 +221,12 @@ export interface MedicalAssistanceTypes {
   bill_type: string
   request_type: string
   request_type_others: string
+  barangay: string
   address: string
   reason: string
   gender: string
   age: string
+  total_amount: string
   status: string
   referral: string
   referral_address: string
@@ -278,10 +280,17 @@ export interface MedicalAssistanceTypes {
   date_admitted: string
   date_discharged: string
   pwd_discount: string
+  gl_no: number
   total_bill: string
   excess_bill: string
   phc_status: string
+  requester: string
   patient_barangay: BarangayTypes
+  requester_barangay: BarangayTypes
+  pharmacy: string
+  date_requested: string
+  other_details: MedicalAssistanceTypes
+  medicines: MedicineItemTypes[]
 }
 
 export interface BarangayTypes {
@@ -294,6 +303,14 @@ export interface FamilyCompositionTypes {
   fullname: string
   category: string
   remarks: string
+  ref: number
+}
+
+export interface MedicineItemTypes {
+  description: string
+  unit: string
+  quantity: string
+  price: string
   ref: number
 }
 

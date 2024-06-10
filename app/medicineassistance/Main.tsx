@@ -24,25 +24,29 @@ import type { MedicalAssistanceTypes } from '@/types'
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
 import AssistanceSidebar from '@/components/Sidebars/AssistanceSidebar'
-import {
-  ChevronDownIcon,
-  PencilSquareIcon,
-  PrinterIcon,
-} from '@heroicons/react/20/solid'
+import { fetchMedicineClients } from '@/utils/fetchApi'
+import { ChevronDownIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { useDispatch, useSelector } from 'react-redux'
 import AddEditModal from './AddEditModal'
+import PrintGLButton from './PrintGLButton'
 
 const Page: React.FC = () => {
   const [loading, setLoading] = useState(false)
+
+  // List
   const [list, setList] = useState<MedicalAssistanceTypes[]>([])
+  const [perPageCount, setPerPageCount] = useState<number>(10)
+  const [showingCount, setShowingCount] = useState<number>(0)
+  const [resultsCount, setResultsCount] = useState<number>(0)
 
   const [showAddModal, setShowAddModal] = useState(false)
   const [editData, setEditData] = useState<MedicalAssistanceTypes | null>(null)
 
-  const [filterBillType, setFilterBillType] = useState('All')
-  const [filterHospital, setFilterHospital] = useState('All')
+  // Filters
+  // const [filterBillType, setFilterBillType] = useState('All')
+  const [filterPharmacy, setFilterPharmacy] = useState('All')
   const [filterDateRequested, setFilterDateRequested] = useState<
     Date | undefined
   >(undefined)
@@ -52,45 +56,37 @@ const Page: React.FC = () => {
   const [filterDateTo, setFilterDateTo] = useState<Date | undefined>(undefined)
   const [filterKeyword, setFilterKeyword] = useState('')
 
-  const [perPageCount, setPerPageCount] = useState<number>(10)
-
   // Redux staff
   const globallist = useSelector((state: any) => state.list.value)
   const resultsCounter = useSelector((state: any) => state.results.value)
   const dispatch = useDispatch()
 
-  const { session } = useSupabase()
-  const { hasAccess } = useFilter()
+  const { session, supabase } = useSupabase()
+  const { hasAccess, setToast } = useFilter()
 
   const apiUrl = process.env.NEXT_PUBLIC_AO_API_URL ?? ''
 
   const fetchData = async () => {
     setLoading(true)
 
-    const params = {
-      filterKeyword,
-      filterHospital,
-      filterBillType,
-      filterDateRequested,
-      filterDateFrom,
-      filterDateTo,
-      take: perPageCount,
-      skip: 0,
-    }
-
     try {
-      await axios.get(`${apiUrl}/distassist`, { params }).then((response) => {
-        // update the list in redux
-        dispatch(updateList(response.data.data))
+      const result = await fetchMedicineClients(
+        {
+          filterKeyword,
+          filterPharmacy,
+          filterDateRequested,
+          filterDateFrom,
+          filterDateTo,
+        },
+        perPageCount,
+        0
+      )
 
-        // Updating showing text in redux
-        dispatch(
-          updateResultCounter({
-            showing: response.data.data.length,
-            results: response.data.total_results,
-          })
-        )
-      })
+      // update the list in redux
+      dispatch(updateList(result.data))
+
+      setResultsCount(result.count ? result.count : 0)
+      setShowingCount(result.data.length)
     } catch (error) {
       console.error('error', error)
     }
@@ -103,8 +99,8 @@ const Page: React.FC = () => {
 
     const params = {
       filterKeyword,
-      filterHospital,
-      filterBillType,
+      filterPharmacy,
+      // filterBillType,
       filterDateRequested,
       filterDateFrom,
       filterDateTo,
@@ -143,12 +139,89 @@ const Page: React.FC = () => {
     setEditData(item)
   }
 
-  const handleApprove = (id: string) => {
-    //
+  const generateGLNo = async () => {
+    const { data, error } = await supabase
+      .from('adm_medicine_clients')
+      .select('gl_no')
+      .eq('status', 'Approved')
+      .not('gl_no', 'is', null)
+      .order('gl_no', { ascending: false })
+      .limit(1)
+
+    if (!error) {
+      if (data.length > 0) {
+        const rn = !isNaN(data[0].gl_no) ? Number(data[0].gl_no) + 1 : 1
+        return rn
+      } else {
+        return 1
+      }
+    } else {
+      return 1
+    }
   }
 
-  const handleDisapprove = (id: string) => {
-    //
+  const handleApprove = async (id: string) => {
+    try {
+      const g = await generateGLNo()
+      const newData = {
+        status: 'Approved',
+        gl_no: g,
+        date_approved: format(new Date(), 'yyyy-MM-dd'),
+      }
+
+      const { error } = await supabase
+        .from('adm_medicine_clients')
+        .update(newData)
+        .eq('id', id)
+
+      if (error) throw new Error(error.message)
+
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        ...newData,
+        id,
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
+
+      // pop up the success message
+      setToast('success', 'Successfully approved.')
+    } catch (error) {
+      console.error('error', error)
+    }
+  }
+
+  const handleDisapprove = async (id: string) => {
+    try {
+      const newData = {
+        status: 'Disapproved',
+        date_approved: format(new Date(), 'yyyy-MM-dd'),
+      }
+
+      const { error } = await supabase
+        .from('adm_medicine_clients')
+        .update(newData)
+        .eq('id', id)
+
+      if (error) throw new Error(error.message)
+
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        ...newData,
+        id,
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
+
+      // pop up the success message
+      setToast('success', 'Successfully disapproved.')
+    } catch (error) {
+      console.error('error', error)
+    }
   }
 
   const handleReset = (id: string) => {
@@ -167,8 +240,8 @@ const Page: React.FC = () => {
   }, [
     filterKeyword,
     perPageCount,
-    filterBillType,
-    filterHospital,
+    // filterBillType,
+    filterPharmacy,
     filterDateRequested,
     filterDateFrom,
     filterDateTo,
@@ -192,7 +265,7 @@ const Page: React.FC = () => {
       <div className="app__main">
         <div>
           <div className="app__title">
-            <Title title="AO Medical Assistance" />
+            <Title title="AO Medicine Assistance" />
             <CustomButton
               containerStyles="app__btn_green"
               title="Add New Record"
@@ -204,8 +277,8 @@ const Page: React.FC = () => {
           {/* Filters */}
           <div className="app__filters">
             <Filters
-              setFilterBillType={setFilterBillType}
-              setFilterHospital={setFilterHospital}
+              // setFilterBillType={setFilterBillType}
+              setFilterPharmacy={setFilterPharmacy}
               setFilterDateRequested={setFilterDateRequested}
               setFilterDateFrom={setFilterDateFrom}
               setFilterDateTo={setFilterDateTo}
@@ -215,8 +288,8 @@ const Page: React.FC = () => {
 
           {/* Per Page */}
           <PerPage
-            showingCount={resultsCounter.showing}
-            resultsCount={resultsCounter.results}
+            showingCount={showingCount}
+            resultsCount={resultsCount}
             perPageCount={perPageCount}
             setPerPageCount={setPerPageCount}
           />
@@ -226,20 +299,13 @@ const Page: React.FC = () => {
             <table className="app__table">
               <thead className="app__thead">
                 <tr>
-                  <th className="hidden md:table-cell app__th pl-4"></th>
-                  <th className="hidden md:table-cell app__th">Patient</th>
-                  <th className="hidden md:table-cell app__th">Status</th>
-                  <th className="hidden md:table-cell app__th">
-                    Date Requested
-                  </th>
-                  <th className="hidden md:table-cell app__th">
-                    Date Approved
-                  </th>
-                  <th className="hidden md:table-cell app__th">Request Type</th>
-                  <th className="hidden md:table-cell app__th">
-                    Granted Amount
-                  </th>
-                  <th className="hidden md:table-cell app__th">Address</th>
+                  <th className="app__th pl-4"></th>
+                  <th className="app__th">Patient</th>
+                  <th className="app__th">Status</th>
+                  <th className="app__th">Date Requested</th>
+                  <th className="app__th">Date Approved</th>
+                  <th className="app__th">Pharmacy</th>
+                  <th className="app__th">Address</th>
                 </tr>
               </thead>
               <tbody>
@@ -282,32 +348,13 @@ const Page: React.FC = () => {
                                 {item.status === 'Approved' && (
                                   <Menu.Item>
                                     <div className="app__dropdown_item">
-                                      <PrinterIcon className="w-4 h-4" />
-                                      <span>Print GL</span>
+                                      <PrintGLButton selectedItem={item} />
                                     </div>
                                   </Menu.Item>
                                 )}
-                                {(item.status === 'Approved' ||
-                                  item.status === 'Disapproved') && (
-                                  <>
-                                    <Menu.Item>
-                                      <div className="app__dropdown_item2">
-                                        <CustomButton
-                                          containerStyles="app__btn_orange_xs"
-                                          title="Change to For Evaluation"
-                                          btnType="button"
-                                          handleClick={() =>
-                                            handleReset(item.id)
-                                          }
-                                        />
-                                      </div>
-                                    </Menu.Item>
-                                  </>
-                                )}
                                 <Menu.Item>
                                   <div className="app__dropdown_item2">
-                                    {(item.status === 'For Evaluation' ||
-                                      item.status === 'Charged To MAIP') && (
+                                    {item.status === 'For Evaluation' && (
                                       <>
                                         <CustomButton
                                           containerStyles="app__btn_green_xs"
@@ -336,33 +383,8 @@ const Page: React.FC = () => {
                       </td>
                       <th className="app__th_firstcol">
                         <div>{item.fullname}</div>
-                        {/* <div className='text-xs text-gray-500'>ID: {item.id}</div> */}
-                        {item.status === 'Approved' && (
-                          <>
-                            <div className="text-xs text-gray-500">
-                              GL No: {item.guarantee_no_text}
-                            </div>
-                          </>
-                        )}
-                        {/* Mobile View */}
-                        <div>
-                          <div className="md:hidden app__td_mobile">
-                            <div>
-                              {item.status === 'Approved' ? (
-                                <span className="app__status_container_green">
-                                  {item.status}
-                                </span>
-                              ) : (
-                                <span className="app__status_container_orange">
-                                  {item.status}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        {/* End - Mobile View */}
                       </th>
-                      <td className="hidden md:table-cell app__td">
+                      <td className="app__td">
                         <div className="flex space-x-1 items-center">
                           {item.status === 'Approved' && (
                             <span className="app__status_container_green">
@@ -374,59 +396,21 @@ const Page: React.FC = () => {
                               {item.status}
                             </span>
                           )}
-                          {item.status === 'Charged To MAIP' && (
-                            <span className="app__status_container_blue">
-                              Charged&nbsp;To&nbsp;MAIP
-                            </span>
-                          )}
-                          {item.status === 'Approved and Charged to LGU' && (
-                            <div>
-                              <div>
-                                <span className="app__status_container_blue">
-                                  {item.status}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="font-semibold">Reason:</span>{' '}
-                                <span>{item.reason}</span>
-                              </div>
-                            </div>
-                          )}
-                          {item.status === 'Disapproved' && (
-                            <div>
-                              <div>
-                                <span className="app__status_container_red">
-                                  {item.status}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="font-semibold">Reason:</span>{' '}
-                                <span>{item.reason}</span>
-                              </div>
-                            </div>
-                          )}
-                          {item.lgu_amount !== '' && (
-                            <span className="app__status_container_blue">
-                              Charged an Amount to LGU
-                            </span>
-                          )}
-                          {item.from_lgu === 'Yes' && (
-                            <span className="app__status_container_blue">
-                              From&nbsp;LGU
-                            </span>
-                          )}
                         </div>
                       </td>
-                      <td className="hidden md:table-cell app__td">
-                        {item.date && item.date !== '' ? (
+                      <td className="app__td">
+                        {item.date_requested && item.date_requested !== '' ? (
                           <span>
-                            {format(new Date(item.date), 'MMM dd, yyyy')}
+                            {format(
+                              new Date(item.date_requested),
+                              'MMM dd, yyyy'
+                            )}
                           </span>
                         ) : (
                           <span>-</span>
                         )}
                       </td>
-                      <td className="hidden md:table-cell app__td">
+                      <td className="app__td">
                         {item.date_approved && item.date_approved !== '' ? (
                           <span>
                             {format(
@@ -438,18 +422,9 @@ const Page: React.FC = () => {
                           <span>-</span>
                         )}
                       </td>
-                      <td className="hidden md:table-cell app__td">
-                        {item.request_type}
-                      </td>
-                      <td className="hidden md:table-cell app__td">
-                        <div className="font-medium">{item.granted_amount}</div>
-                        {item.lgu_amount !== '' && (
-                          <div>LGU: {item.lgu_amount}</div>
-                        )}
-                      </td>
-                      <td className="hidden md:table-cell app__td">
-                        {item.patient_barangay?.barangay},{' '}
-                        {item.patient_barangay?.municipality}
+                      <td className="app__td">{item.pharmacy}</td>
+                      <td className="app__td">
+                        {item.barangay}, {item.address}
                       </td>
                     </tr>
                   ))}
@@ -467,7 +442,7 @@ const Page: React.FC = () => {
           </div>
 
           {/* Show More */}
-          {resultsCounter.results > resultsCounter.showing && !loading && (
+          {resultsCount > showingCount && !loading && (
             <ShowMore handleShowMore={handleShowMore} />
           )}
         </div>

@@ -1,3 +1,62 @@
+export const pharmacyList = [
+  {
+    pharmacy: 'Farmacia Susana - Rizal',
+    director: 'DR. Leo A. Tan',
+    dear: 'DR. Tan',
+    title: 'Proprietor',
+    address: '50th District, Ozamiz City',
+  },
+  {
+    pharmacy: 'Farmacia Susana - Tinago',
+    director: 'DR. Leo A. Tan',
+    dear: 'DR. Tan',
+    title: 'Proprietor',
+    address: 'Tinago, Ozamiz City',
+  },
+  {
+    pharmacy: 'Farmacia Susana - Lam-an',
+    director: 'DR. Leo A. Tan',
+    dear: 'DR. Tan',
+    title: 'Proprietor',
+    address: 'Lam-an, Ozamiz City',
+  },
+  {
+    pharmacy: 'Farmacia Susana - DABA',
+    director: 'DR. Leo A. Tan',
+    dear: 'DR. Tan',
+    title: 'Proprietor',
+    address: 'Maningcol, Ozamiz City',
+  },
+  {
+    pharmacy: 'Lourdes Pharmacy - Public Mall San Roque',
+    director: 'DR. Caesar K. Lim',
+    dear: 'DR. Lim',
+    title: 'Proprietor',
+    address: 'Baybay San Roque, Ozamiz City',
+  },
+  {
+    pharmacy: 'Lourdes Pharmacy - Geegee ',
+    director: 'DR. Caesar K. Lim',
+    dear: 'DR. Lim',
+    title: 'Proprietor',
+    address: 'Tinago, Ozamiz City',
+  },
+  {
+    pharmacy: 'Lourdes Pharmacy - Catadman-Manabay ',
+    director: 'DR. Caesar K. Lim',
+    dear: 'DR. Lim',
+    title: 'Proprietor',
+    address: 'Catadman-Manabay, Ozamiz City',
+  },
+  {
+    pharmacy: 'City Health Office',
+    director: 'DR. MARIA FLORELYN DATU YROGIROG',
+    dear: 'DR. YROGIROG',
+    title: 'Medical Officer V',
+    address: 'Aguada, Ozamiz City',
+  },
+]
+
 export const hospitalsList = [
   'MUMC',
   'Faith',
