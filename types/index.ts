@@ -288,6 +288,7 @@ export interface MedicalAssistanceTypes {
   patient_barangay: BarangayTypes
   requester_barangay: BarangayTypes
   pharmacy: string
+  pharmacy_code: string
   date_requested: string
   other_details: MedicalAssistanceTypes
   medicines: MedicineItemTypes[]

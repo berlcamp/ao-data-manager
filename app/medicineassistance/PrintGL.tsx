@@ -22,8 +22,26 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
   )
 
   const convertToWord = (amount: number) => {
-    const toWords = new ToWords()
-    return toWords.convert(amount)
+    const toWords = new ToWords({
+      converterOptions: {
+        currency: true,
+        ignoreDecimal: false,
+        ignoreZeroCurrency: false,
+        doNotAddOnly: false,
+        currencyOptions: {
+          // can be used to override defaults for the selected locale
+          name: 'Peso',
+          plural: 'Pesos',
+          symbol: 'P',
+          fractionalUnit: {
+            name: 'Centavo',
+            plural: 'Centavos',
+            symbol: '',
+          },
+        },
+      },
+    })
+    return toWords.convert(amount, { currency: true })
   }
 
   useEffect(() => {
@@ -113,6 +131,16 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               </td>
             </tr>
           ))}
+          <tr>
+            <td
+              colSpan={5}
+              className="text-xs border font-bold p-px text-right">
+              Total:
+            </td>
+            <td className="text-xs border font-bold p-px">
+              {totalAmount.toLocaleString()}
+            </td>
+          </tr>
           <tr>
             <td colSpan={6}>
               <div className="mt-6">

@@ -76,6 +76,8 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   }
 
   const handleCreate = async (formdata: MedicalAssistanceTypes) => {
+    const pharmacy = pharmacyList.find((p) => p.pharmacy === formdata.pharmacy)
+
     const params = {
       status: 'For Evaluation',
       fullname: selectedPatient?.fullname,
@@ -83,6 +85,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       barangay: selectedPatient?.patient_barangay?.barangay,
       address: selectedPatient?.patient_barangay?.municipality,
       pharmacy: formdata.pharmacy,
+      pharmacy_code: pharmacy?.code,
       date_requested: formdata.date_requested,
       patient_id: selectedPatient?.id,
       other_details: selectedPatient,
@@ -122,10 +125,13 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   const handleUpdate = async (formdata: MedicalAssistanceTypes) => {
     if (!editData) return
 
+    const pharmacy = pharmacyList.find((p) => p.pharmacy === formdata.pharmacy)
+
     const params = {
       pharmacy: formdata.pharmacy,
       date_requested: formdata.date_requested,
       medicines,
+      pharmacy_code: pharmacy?.code,
     }
 
     try {

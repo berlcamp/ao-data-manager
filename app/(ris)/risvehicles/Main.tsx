@@ -2,6 +2,7 @@
 
 import {
   CustomButton,
+  DeleteModal,
   PerPage,
   RisSidebar,
   ShowMore,
@@ -33,6 +34,8 @@ const Page: React.FC = () => {
   // Modals
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState<RisVehicleTypes | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [selectedId, setSelectedId] = useState<string>('')
 
   // Filters
   const [filterKeyword, setFilterKeyword] = useState('')
@@ -103,6 +106,11 @@ const Page: React.FC = () => {
   const handleAdd = () => {
     setShowAddModal(true)
     setSelectedItem(null)
+  }
+
+  const handleDelete = (id: string) => {
+    setSelectedId(id)
+    setShowDeleteModal(true)
   }
 
   const handleEdit = (item: RisVehicleTypes) => {
@@ -211,6 +219,19 @@ const Page: React.FC = () => {
             <AddEditModal
               editData={selectedItem}
               hideModal={() => setShowAddModal(false)}
+            />
+          )}
+
+          {/* Confirm Delete Modal */}
+          {showDeleteModal && (
+            <DeleteModal
+              table="adm_medicine_clients"
+              selectedId={selectedId}
+              showingCount={showingCount}
+              setShowingCount={setShowingCount}
+              resultsCount={resultsCount}
+              setResultsCount={setResultsCount}
+              hideModal={() => setShowDeleteModal(false)}
             />
           )}
         </div>

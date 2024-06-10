@@ -2,6 +2,7 @@
 
 import {
   CustomButton,
+  DeleteModal,
   PerPage,
   ShowMore,
   Sidebar,
@@ -10,7 +11,7 @@ import {
   TopBar,
   Unauthorized,
 } from '@/components/index'
-import { superAdmins } from '@/constants/TrackerConstants'
+import { pharmacyList, superAdmins } from '@/constants/TrackerConstants'
 import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { Menu, Transition } from '@headlessui/react'
@@ -28,6 +29,7 @@ import { fetchMedicineClients } from '@/utils/fetchApi'
 import { ChevronDownIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
 import axios from 'axios'
 import { format } from 'date-fns'
+import { TrashIcon } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import AddEditModal from './AddEditModal'
 import PrintGLButton from './PrintGLButton'
@@ -44,6 +46,8 @@ const Page: React.FC = () => {
 
   const [showAddModal, setShowAddModal] = useState(false)
   const [editData, setEditData] = useState<MedicalAssistanceTypes | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [selectedId, setSelectedId] = useState<string>('')
 
   // Filters
   // const [filterBillType, setFilterBillType] = useState('All')
@@ -140,11 +144,17 @@ const Page: React.FC = () => {
     setEditData(item)
   }
 
-  const generateGLNo = async () => {
+  const handleDelete = (id: string) => {
+    setSelectedId(id)
+    setShowDeleteModal(true)
+  }
+
+  const generateGLNo = async (pcode: string) => {
     const { data, error } = await supabase
       .from('adm_medicine_clients')
       .select('gl_no')
       .eq('status', 'Approved')
+      .eq('pharmacy_code', pcode)
       .not('gl_no', 'is', null)
       .order('gl_no', { ascending: false })
       .limit(1)
@@ -161,9 +171,17 @@ const Page: React.FC = () => {
     }
   }
 
-  const handleApprove = async (id: string) => {
+  const handleApprove = async (item: MedicalAssistanceTypes) => {
+    const pharmacy = pharmacyList.find((p) => p.pharmacy === item.pharmacy)
+
+    if (!pharmacy) {
+      // pop up the error message
+      setToast('error', 'Something went wrong, please contact Berl.')
+      return
+    }
+
     try {
-      const g = await generateGLNo()
+      const g = await generateGLNo(pharmacy?.code)
       const newData = {
         status: 'Approved',
         gl_no: g,
@@ -173,7 +191,7 @@ const Page: React.FC = () => {
       const { error } = await supabase
         .from('adm_medicine_clients')
         .update(newData)
-        .eq('id', id)
+        .eq('id', item.id)
 
       if (error) throw new Error(error.message)
 
@@ -181,7 +199,7 @@ const Page: React.FC = () => {
       const items = [...globallist]
       const updatedData = {
         ...newData,
-        id,
+        id: item.id,
       }
       const foundIndex = items.findIndex((x) => x.id === updatedData.id)
       items[foundIndex] = { ...items[foundIndex], ...updatedData }
@@ -194,36 +212,36 @@ const Page: React.FC = () => {
     }
   }
 
-  const handleDisapprove = async (id: string) => {
-    try {
-      const newData = {
-        status: 'Disapproved',
-        date_approved: format(new Date(), 'yyyy-MM-dd'),
-      }
+  // const handleDisapprove = async (id: string) => {
+  //   try {
+  //     const newData = {
+  //       status: 'Disapproved',
+  //       date_approved: format(new Date(), 'yyyy-MM-dd'),
+  //     }
 
-      const { error } = await supabase
-        .from('adm_medicine_clients')
-        .update(newData)
-        .eq('id', id)
+  //     const { error } = await supabase
+  //       .from('adm_medicine_clients')
+  //       .update(newData)
+  //       .eq('id', id)
 
-      if (error) throw new Error(error.message)
+  //     if (error) throw new Error(error.message)
 
-      // Append new data in redux
-      const items = [...globallist]
-      const updatedData = {
-        ...newData,
-        id,
-      }
-      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
-      items[foundIndex] = { ...items[foundIndex], ...updatedData }
-      dispatch(updateList(items))
+  //     // Append new data in redux
+  //     const items = [...globallist]
+  //     const updatedData = {
+  //       ...newData,
+  //       id,
+  //     }
+  //     const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+  //     items[foundIndex] = { ...items[foundIndex], ...updatedData }
+  //     dispatch(updateList(items))
 
-      // pop up the success message
-      setToast('success', 'Successfully disapproved.')
-    } catch (error) {
-      console.error('error', error)
-    }
-  }
+  //     // pop up the success message
+  //     setToast('success', 'Successfully disapproved.')
+  //   } catch (error) {
+  //     console.error('error', error)
+  //   }
+  // }
 
   const handleReset = (id: string) => {
     //
@@ -350,6 +368,16 @@ const Page: React.FC = () => {
                                     <span>Edit</span>
                                   </div>
                                 </Menu.Item>
+                                {
+                                  <Menu.Item>
+                                    <div
+                                      onClick={() => handleDelete(item.id)}
+                                      className="app__dropdown_item">
+                                      <TrashIcon className="w-4 h-4" />
+                                      <span>Delete</span>
+                                    </div>
+                                  </Menu.Item>
+                                }
                                 {item.status === 'Approved' && (
                                   <Menu.Item>
                                     <div className="app__dropdown_item">
@@ -366,17 +394,17 @@ const Page: React.FC = () => {
                                           title="Approve"
                                           btnType="button"
                                           handleClick={() =>
-                                            handleApprove(item.id)
+                                            handleApprove(item)
                                           }
                                         />
-                                        <CustomButton
+                                        {/* <CustomButton
                                           containerStyles="app__btn_red_xs"
                                           title="Disapprove"
                                           btnType="button"
                                           handleClick={() =>
                                             handleDisapprove(item.id)
                                           }
-                                        />
+                                        /> */}
                                       </>
                                     )}
                                   </div>
@@ -452,11 +480,25 @@ const Page: React.FC = () => {
           )}
         </div>
       </div>
+
       {/* Add/Edit Modal */}
       {showAddModal && (
         <AddEditModal
           editData={editData}
           hideModal={() => setShowAddModal(false)}
+        />
+      )}
+
+      {/* Confirm Delete Modal */}
+      {showDeleteModal && (
+        <DeleteModal
+          table="adm_medicine_clients"
+          selectedId={selectedId}
+          showingCount={showingCount}
+          setShowingCount={setShowingCount}
+          resultsCount={resultsCount}
+          setResultsCount={setResultsCount}
+          hideModal={() => setShowDeleteModal(false)}
         />
       )}
     </>
