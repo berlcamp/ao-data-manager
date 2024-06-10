@@ -86,10 +86,14 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="mt-6 font-bold">Dear {pharmacy?.dear}</div>
               <div className="mt-6">
                 <div>
-                  <span className="font-bold">{selectedItem.fullname}</span>{' '}
+                  <span className="font-bold uppercase">
+                    {selectedItem.fullname}
+                  </span>{' '}
                   sought help from the Office of the City Mayor for financial
                   assistance for his/her medication needs through{' '}
-                  <span className="font-bold">{selectedItem.requester}.</span>
+                  <span className="font-bold uppercase">
+                    {selectedItem.requester}.
+                  </span>
                 </div>
                 <div className="mt-2">
                   In an effort to strengthen the social assistance program of
@@ -101,9 +105,13 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                   In accordance with the abovementioned program, and pursuant to
                   the Prescription attached herein, we hereby guarantee the
                   payment for the medicines listed below in the amount of{' '}
-                  <span className="font-bold">
-                    {convertToWord(totalAmount)} ({totalAmount.toLocaleString()}
-                    ) pesos.
+                  <span className="font-bold uppercase">
+                    {convertToWord(totalAmount)} (
+                    {totalAmount.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    ).
                   </span>
                 </div>
               </div>
@@ -124,10 +132,16 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <td className="text-xs border p-px">{med.unit}</td>
               <td className="text-xs border p-px">{med.quantity}</td>
               <td className="text-xs border p-px">
-                {med.price.toLocaleString()}
+                {Number(med.price).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </td>
               <td className="text-xs border p-px">
-                {(Number(med.price) * Number(med.quantity)).toLocaleString()}
+                {(Number(med.price) * Number(med.quantity)).toLocaleString(
+                  'en-US',
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                )}
               </td>
             </tr>
           ))}
@@ -138,7 +152,10 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               Total:
             </td>
             <td className="text-xs border font-bold p-px">
-              {totalAmount.toLocaleString()}
+              {totalAmount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </td>
           </tr>
           <tr>

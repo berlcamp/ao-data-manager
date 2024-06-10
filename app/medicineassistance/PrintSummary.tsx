@@ -3,6 +3,7 @@
 
 import LogoHeader from '@/components/LogoHeader'
 import { MedicalAssistanceTypes } from '@/types'
+import { format } from 'date-fns'
 import React, { useEffect } from 'react'
 
 interface ChildProps {
@@ -46,6 +47,7 @@ const PrintSummary: React.FC<ChildProps> = ({
             <td className="border p-1">#</td>
             <td className="border p-1">Patient</td>
             <td className="border p-1">Requester</td>
+            <td className="border p-1">Date Approved</td>
             <td className="border p-1">Pharmacy</td>
             <td className="border p-1">Total Amount</td>
           </tr>
@@ -65,6 +67,9 @@ const PrintSummary: React.FC<ChildProps> = ({
                   {med.other_details.gender} / {med.other_details.age} /{' '}
                   {med.other_details.requester_barangay.barangay}
                 </div>
+              </td>
+              <td className="border p-1">
+                {format(new Date(med.date_approved), 'MM/dd/yyyy')}
               </td>
               <td className="border p-1">{med.pharmacy}</td>
               <td className="border p-1">{countTotal(med)}</td>
