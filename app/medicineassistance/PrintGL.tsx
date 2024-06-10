@@ -73,7 +73,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                   In an effort to strengthen the social assistance program of
                   the local government unit of Ozamiz, the Asenso Ozamiz
                   administration enacted Ordinance No. 1291-2024, also as the
-                  "OZAMIZ CITY FREE MEDICATION PROGRAM".
+                  &quot;OZAMIZ CITY FREE MEDICATION PROGRAM&quot;.
                 </div>
                 <div className="mt-2 mb-6">
                   In accordance with the abovementioned program, and pursuant to
@@ -119,7 +119,9 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                 payable in the Philippine peso.
               </div>
               <div className="mt-10">By the authority of: </div>
-              <div className="mt-6">ATTY. HENRY "INDY" F. OAMINAL, JR.</div>
+              <div className="mt-6">
+                ATTY. HENRY &quot;INDY&quot; F. OAMINAL, JR.
+              </div>
               <div className="mt-2">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
               <div className="mt-10">CAROLYN N. GO</div>
