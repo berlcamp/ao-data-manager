@@ -59,11 +59,13 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="mt-2">
                 {format(new Date(selectedItem.date_approved), 'dd MMMM yyyy')}
               </div>
-              <div className="mt-2 font-bold">{pharmacy?.director}</div>
+              <div className="uppercase mt-2 font-bold">
+                {pharmacy?.director}
+              </div>
               <div className="">{pharmacy?.title}</div>
               <div className="">{pharmacy?.pharmacy}</div>
               <div className="">{pharmacy?.address}</div>
-              <div className="mt-4 font-bold">{pharmacy?.dear}</div>
+              <div className="mt-4 font-bold">Dear {pharmacy?.dear}</div>
               <div className="mt-4">
                 <div>
                   <span className="font-bold">{selectedItem.fullname}</span>{' '}
