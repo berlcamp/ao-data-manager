@@ -64,7 +64,8 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border p-1">
                 <div>{med.requester}</div>
                 <div className="capitalize">
-                  {med.other_details.gender} / {med.other_details.age} /{' '}
+                  {med.other_details.referral_gender} /{' '}
+                  {med.other_details.referral_age} /{' '}
                   {med.other_details.requester_barangay.barangay}
                 </div>
               </td>
