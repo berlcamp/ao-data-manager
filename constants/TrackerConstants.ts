@@ -2,6 +2,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Farmacia Susana - Rizal',
     director: 'Mr. Leo A. Tan',
+    code: 'SUS',
     dear: 'Mr. Tan',
     title: 'Proprietor',
     address: '50th District, Ozamiz City',
@@ -9,6 +10,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Farmacia Susana - Tinago',
     director: 'Mr. Leo A. Tan',
+    code: 'SUS',
     dear: 'Mr. Tan',
     title: 'Proprietor',
     address: 'Tinago, Ozamiz City',
@@ -16,6 +18,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Farmacia Susana - Lam-an',
     director: 'Mr. Leo A. Tan',
+    code: 'SUS',
     dear: 'Mr. Tan',
     title: 'Proprietor',
     address: 'Lam-an, Ozamiz City',
@@ -23,6 +26,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Farmacia Susana - DABA',
     director: 'Mr. Leo A. Tan',
+    code: 'SUS',
     dear: 'Mr. Tan',
     title: 'Proprietor',
     address: 'Maningcol, Ozamiz City',
@@ -30,6 +34,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Lourdes Pharmacy - Public Mall San Roque',
     director: 'Mr. Caesar K. Lim',
+    code: 'LOUR',
     dear: 'Mr. Lim',
     title: 'Proprietor',
     address: 'Baybay San Roque, Ozamiz City',
@@ -37,6 +42,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Lourdes Pharmacy - Geegee ',
     director: 'Mr. Caesar K. Lim',
+    code: 'LOUR',
     dear: 'Mr. Lim',
     title: 'Proprietor',
     address: 'Tinago, Ozamiz City',
@@ -44,6 +50,7 @@ export const pharmacyList = [
   {
     pharmacy: 'Lourdes Pharmacy - Catadman-Manabay ',
     director: 'Mr. Caesar K. Lim',
+    code: 'LOUR',
     dear: 'Mr. Lim',
     title: 'Proprietor',
     address: 'Catadman-Manabay, Ozamiz City',
@@ -51,6 +58,7 @@ export const pharmacyList = [
   {
     pharmacy: 'City Health Office',
     director: 'DR. MARIA FLORELYN DATU YROGIROG',
+    code: 'CHO',
     dear: 'DR. YROGIROG',
     title: 'Medical Officer V',
     address: 'Aguada, Ozamiz City',

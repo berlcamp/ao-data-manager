@@ -50,23 +50,23 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="text-xl underline underline-offset-2 mt-4">
                 GUARANTEE NOTE - NO.{' '}
                 {format(new Date(selectedItem.date_approved), 'yy')}
-                -AO-OZC-MED-000{selectedItem.gl_no}
+                -AO-OZC-MED-{pharmacy?.code}-000{selectedItem.gl_no}
               </div>
             </td>
           </tr>
           <tr>
             <td colSpan={6}>
-              <div className="mt-2">
+              <div className="mt-6">
                 {format(new Date(selectedItem.date_approved), 'dd MMMM yyyy')}
               </div>
-              <div className="uppercase mt-2 font-bold">
+              <div className="uppercase mt-6 font-bold">
                 {pharmacy?.director}
               </div>
               <div className="">{pharmacy?.title}</div>
               <div className="">{pharmacy?.pharmacy}</div>
               <div className="">{pharmacy?.address}</div>
-              <div className="mt-4 font-bold">Dear {pharmacy?.dear}</div>
-              <div className="mt-4">
+              <div className="mt-6 font-bold">Dear {pharmacy?.dear}</div>
+              <div className="mt-6">
                 <div>
                   <span className="font-bold">{selectedItem.fullname}</span>{' '}
                   sought help from the Office of the City Mayor for financial
@@ -92,21 +92,23 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
             </td>
           </tr>
           <tr>
-            <td className="border p-1">#</td>
-            <td className="border p-1">Description</td>
-            <td className="border p-1">Unit</td>
-            <td className="border p-1">Quantity</td>
-            <td className="border p-1">Price</td>
-            <td className="border p-1">Total Amount</td>
+            <td className="text-xs border p-px">#</td>
+            <td className="text-xs border p-px">Description</td>
+            <td className="text-xs border p-px">Unit</td>
+            <td className="text-xs border p-px">Quantity</td>
+            <td className="text-xs border p-px">Price</td>
+            <td className="text-xs border p-px">Total Amount</td>
           </tr>
           {selectedItem.medicines.map((med, i) => (
             <tr key={i}>
-              <td className="border p-1">{i + 1}</td>
-              <td className="border p-1">{med.description}</td>
-              <td className="border p-1">{med.unit}</td>
-              <td className="border p-1">{med.quantity}</td>
-              <td className="border p-1">{med.price.toLocaleString()}</td>
-              <td className="border p-1">
+              <td className="text-xs border p-px">{i + 1}</td>
+              <td className="text-xs border p-px">{med.description}</td>
+              <td className="text-xs border p-px">{med.unit}</td>
+              <td className="text-xs border p-px">{med.quantity}</td>
+              <td className="text-xs border p-px">
+                {med.price.toLocaleString()}
+              </td>
+              <td className="text-xs border p-px">
                 {(Number(med.price) * Number(med.quantity)).toLocaleString()}
               </td>
             </tr>
@@ -123,12 +125,12 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                 payable in the Philippine peso.
               </div>
               <div className="mt-10">By the authority of: </div>
-              <div className="mt-6">
+              <div className="mt-6 font-bold">
                 ATTY. HENRY &quot;INDY&quot; F. OAMINAL, JR.
               </div>
               <div className="mt-2">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
-              <div className="mt-10">CAROLYN N. GO</div>
+              <div className="mt-10 font-bold">CAROLYN N. GO</div>
               <div className="mt-2">Executive Assistant V</div>
             </td>
           </tr>
