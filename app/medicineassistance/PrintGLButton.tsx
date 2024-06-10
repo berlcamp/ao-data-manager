@@ -40,10 +40,10 @@ export default function PrintGLButton({ selectedItem }: ModalProps) {
             <PrinterIcon className="w-4 h-4" /> <span>Print GL</span>
           </button>
         )}
-        content={() => document.getElementById('print-container')}
+        content={() => document.getElementById('print-container-gl')}
       />
       <div className="hidden">
-        <div id="print-container">
+        <div id="print-container-gl">
           <ChildWithRef
             item={selectedItem}
             ref={componentRef}
