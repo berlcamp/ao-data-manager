@@ -76,10 +76,10 @@ const MainMenu: React.FC = () => {
                   </div>
                   <div>
                     <div className="app__menu_item_label">
-                      AO Medicine Assistance
+                      AO Medication Assistance
                     </div>
                     <div className="app__menu_item_label_description">
-                      AO Medicine Assistance
+                      AO Medication Assistance
                     </div>
                   </div>
                 </div>

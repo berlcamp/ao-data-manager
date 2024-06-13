@@ -4,7 +4,7 @@
 import LogoHeader from '@/components/LogoHeader'
 import { MedicalAssistanceTypes } from '@/types'
 import { format } from 'date-fns'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
@@ -15,6 +15,9 @@ const PrintSummary: React.FC<ChildProps> = ({
   forwardedRef,
   selectedItems,
 }) => {
+  //
+  const [totalAmount, setTotalAmount] = useState(0)
+
   const countTotal = (item: MedicalAssistanceTypes) => {
     const t = item.medicines.reduce(
       (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
@@ -23,7 +26,17 @@ const PrintSummary: React.FC<ChildProps> = ({
     return t
   }
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    let total = 0
+    selectedItems.forEach((s) => {
+      const t = s.medicines.reduce(
+        (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
+        0
+      )
+      total += t
+    })
+    setTotalAmount(total)
+  }, [])
 
   return (
     <div
@@ -39,7 +52,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               <div className="border border-red-500 border-dashed"></div>
               <div className="border border-red-500 border-dashed mt-px"></div>
               <div className="text-xl underline underline-offset-2 mt-4 mb-6">
-                AO Medicine Assistance Summary
+                AO Medication Assistance Summary
               </div>
             </td>
           </tr>
@@ -77,6 +90,19 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border p-1">{countTotal(med)}</td>
             </tr>
           ))}
+          <tr>
+            <td
+              colSpan={5}
+              className="text-xs border font-bold p-px text-right">
+              Total:
+            </td>
+            <td className="text-xs border font-bold p-px">
+              {totalAmount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

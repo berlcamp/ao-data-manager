@@ -102,7 +102,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                   the &quot;OZAMIZ CITY FREE MEDICATION PROGRAM&quot;.
                 </div>
                 <div className="mt-2 mb-6">
-                  In accordance with the abovementioned program, and pursuant to
+                  In accordance with the abovementioned program and pursuant to
                   the Prescription attached herein, your Office is hereby
                   requested to dispense the medicine/s listed below.
                 </div>

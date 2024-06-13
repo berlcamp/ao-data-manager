@@ -281,7 +281,7 @@ const Page: React.FC = () => {
       <div className="app__main">
         <div>
           <div className="app__title">
-            <Title title="AO Medicine Assistance" />
+            <Title title="AO Medication Assistance" />
             <CustomButton
               containerStyles="app__btn_green"
               title="Add New Record"
