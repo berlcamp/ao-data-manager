@@ -23,11 +23,9 @@ import type { MedicalAssistanceTypes } from '@/types'
 
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
-import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
 import AssistanceSidebar from '@/components/Sidebars/AssistanceSidebar'
 import { fetchMedicineClients } from '@/utils/fetchApi'
 import { ChevronDownIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
-import axios from 'axios'
 import { format } from 'date-fns'
 import { TrashIcon } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -102,31 +100,25 @@ const Page: React.FC = () => {
   const handleShowMore = async () => {
     setLoading(true)
 
-    const params = {
-      filterKeyword,
-      filterPharmacy,
-      // filterBillType,
-      filterDateRequested,
-      filterDateFrom,
-      filterDateTo,
-      take: perPageCount,
-      skip: resultsCounter.showing,
-    }
-
     try {
-      await axios.get(`${apiUrl}/distassist`, { params }).then((response) => {
-        // update the list in redux
-        const newList = [...list, ...response.data.data]
-        dispatch(updateList(newList))
+      const result = await fetchMedicineClients(
+        {
+          filterKeyword,
+          filterPharmacy,
+          filterDateRequested,
+          filterDateFrom,
+          filterDateTo,
+        },
+        perPageCount,
+        list.length
+      )
 
-        // Updating showing text in redux
-        dispatch(
-          updateResultCounter({
-            showing: newList.length,
-            results: response.data.total_results,
-          })
-        )
-      })
+      // update the list in redux
+      const newList = [...list, ...result.data]
+      dispatch(updateList(newList))
+
+      setResultsCount(result.count ? result.count : 0)
+      setShowingCount(newList.length)
     } catch (error) {
       console.error('error', error)
     }

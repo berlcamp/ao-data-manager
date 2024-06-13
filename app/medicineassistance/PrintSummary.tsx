@@ -93,10 +93,20 @@ const PrintSummary: React.FC<ChildProps> = ({
           <tr>
             <td
               colSpan={5}
-              className="text-xs border font-bold p-px text-right">
-              Total:
+              className="text-xs font-bold p-px text-right pt-10">
+              Total Granted:
             </td>
-            <td className="text-xs border font-bold p-px">
+            <td className="text-xs font-bold p-px pt-10">
+              {selectedItems.length}
+            </td>
+          </tr>
+          <tr>
+            <td
+              colSpan={5}
+              className="text-xs font-bold p-px text-right">
+              Total Beneficiaries:
+            </td>
+            <td className="text-xs font-bold p-px">
               {totalAmount.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
