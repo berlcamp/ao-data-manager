@@ -167,7 +167,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="mt-2">
                 We undertake to pay the said amount after fifteen (15) days from
                 receipt of written demand. All sums owing under this letter are
-                payable in the Philippine peso.
+                payable in Philippine peso.
               </div>
               <div className="mt-10">By the authority of: </div>
               <div className="mt-6 font-bold">
