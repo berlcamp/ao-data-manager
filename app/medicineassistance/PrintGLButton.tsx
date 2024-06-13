@@ -6,6 +6,7 @@ import { PrinterIcon } from 'lucide-react'
 import React, { forwardRef, useRef } from 'react'
 import ReactToPrint from 'react-to-print'
 import PrintGL from './PrintGL'
+import PrintGLCHO from './PrintGLCHO'
 
 interface ModalProps {
   selectedItem: MedicalAssistanceTypes
@@ -23,11 +24,19 @@ export default function PrintGLButton({ selectedItem }: ModalProps) {
   const ChildWithRef = forwardRef<HTMLDivElement, ChildProps>((props, ref) => {
     return (
       <div style={{ pageBreakBefore: 'always' }}>
-        <PrintGL
-          {...props}
-          forwardedRef={ref}
-          selectedItem={props.item}
-        />
+        {props.item.pharmacy_code === 'CHO' ? (
+          <PrintGLCHO
+            {...props}
+            forwardedRef={ref}
+            selectedItem={props.item}
+          />
+        ) : (
+          <PrintGL
+            {...props}
+            forwardedRef={ref}
+            selectedItem={props.item}
+          />
+        )}
       </div>
     )
   })

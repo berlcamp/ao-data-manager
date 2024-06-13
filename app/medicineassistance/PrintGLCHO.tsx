@@ -13,7 +13,7 @@ interface ChildProps {
   selectedItem: MedicalAssistanceTypes
 }
 
-const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
+const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
   //
   const [totalAmount, setTotalAmount] = useState(0)
 
@@ -103,71 +103,39 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                 </div>
                 <div className="mt-2 mb-6">
                   In accordance with the abovementioned program, and pursuant to
-                  the Prescription attached herein, we hereby guarantee the
-                  payment for the medicine/s listed below in the amount of{' '}
-                  <span className="font-bold uppercase">
-                    {convertToWord(totalAmount)} (
-                    {totalAmount.toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                    ).
-                  </span>
+                  the Prescription attached herein, your Office is hereby
+                  requested to dispense the medicine/s listed below.
                 </div>
               </div>
             </td>
           </tr>
           <tr>
             <td className="text-xs border p-px">#</td>
-            <td className="text-xs border p-px">Description</td>
+            <td
+              colSpan={3}
+              className="text-xs border p-px">
+              Description
+            </td>
             <td className="text-xs border p-px">Unit</td>
             <td className="text-xs border p-px">Quantity</td>
-            <td className="text-xs border p-px">Price</td>
-            <td className="text-xs border p-px">Total Amount</td>
           </tr>
           {selectedItem.medicines.map((med, i) => (
             <tr key={i}>
               <td className="text-xs border p-px">{i + 1}</td>
-              <td className="text-xs border p-px">{med.description}</td>
+              <td
+                colSpan={3}
+                className="text-xs border p-px">
+                {med.description}
+              </td>
               <td className="text-xs border p-px">{med.unit}</td>
               <td className="text-xs border p-px">{med.quantity}</td>
-              <td className="text-xs border p-px">
-                {Number(med.price).toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </td>
-              <td className="text-xs border p-px">
-                {(Number(med.price) * Number(med.quantity)).toLocaleString(
-                  'en-US',
-                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                )}
-              </td>
             </tr>
           ))}
-          <tr>
-            <td
-              colSpan={5}
-              className="text-xs border font-bold p-px text-right">
-              Total:
-            </td>
-            <td className="text-xs border font-bold p-px">
-              {totalAmount.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </td>
-          </tr>
           <tr>
             <td colSpan={6}>
               <div className="mt-6">
                 This must be claimed within 3 days from the issue of this
                 guarantee note.
-              </div>
-              <div className="mt-2">
-                We undertake to pay the said amount after fifteen (15) days from
-                receipt of written demand. All sums owing under this letter are
-                payable in the Philippine peso.
               </div>
               <div className="mt-10">By the authority of: </div>
               <div className="mt-6 font-bold">
@@ -197,4 +165,4 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
     </div>
   )
 }
-export default PrintGL
+export default PrintGLCHO
