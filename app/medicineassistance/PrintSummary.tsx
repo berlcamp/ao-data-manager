@@ -70,7 +70,8 @@ const PrintSummary: React.FC<ChildProps> = ({
                 </div>
               </td>
               <td className="border p-1">
-                {format(new Date(med.date_approved), 'MM/dd/yyyy')}
+                {med.date_approved &&
+                  format(new Date(med.date_approved), 'MM/dd/yyyy')}
               </td>
               <td className="border p-1">{med.pharmacy}</td>
               <td className="border p-1">{countTotal(med)}</td>
