@@ -43,8 +43,8 @@ const PrintSummary: React.FC<ChildProps> = ({
       ref={forwardedRef}
       className="w-full mx-auto px-10 mt-8 text-xs">
       <table className="w-full">
-        <LogoHeader />
         <tbody className="text-sm">
+          <LogoHeader />
           <tr>
             <td
               colSpan={6}
