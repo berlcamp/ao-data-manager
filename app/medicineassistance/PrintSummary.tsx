@@ -41,7 +41,7 @@ const PrintSummary: React.FC<ChildProps> = ({
   return (
     <div
       ref={forwardedRef}
-      className="w-full mx-auto px-10 mt-8 text-xs">
+      className="w-full mx-auto px-10 my-8 text-xs">
       <table className="w-full">
         <tbody className="text-sm">
           <LogoHeader />
@@ -90,6 +90,10 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border p-1">{countTotal(med)}</td>
             </tr>
           ))}
+        </tbody>
+      </table>
+      <table className="w-full">
+        <tbody className="text-sm">
           <tr>
             <td
               colSpan={5}
