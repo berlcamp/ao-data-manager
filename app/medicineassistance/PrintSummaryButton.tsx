@@ -2,13 +2,18 @@
 'use client'
 
 import { MedicalAssistanceTypes } from '@/types'
+import { fetchMedicineClients } from '@/utils/fetchApi'
 import { PrinterIcon } from 'lucide-react'
-import React, { forwardRef, useRef } from 'react'
+import React, { forwardRef, useEffect, useRef, useState } from 'react'
 import ReactToPrint from 'react-to-print'
 import PrintSummary from './PrintSummary'
 
 interface ModalProps {
-  selectedItems: MedicalAssistanceTypes[]
+  filterKeyword: string
+  filterPharmacy: string
+  filterDateRequested: Date | undefined
+  filterDateFrom: Date | undefined
+  filterDateTo: Date | undefined
 }
 
 interface ChildProps {
@@ -16,7 +21,17 @@ interface ChildProps {
   items: MedicalAssistanceTypes[]
 }
 
-export default function PrintSummaryButton({ selectedItems }: ModalProps) {
+export default function PrintSummaryButton({
+  filterKeyword,
+  filterPharmacy,
+  filterDateRequested,
+  filterDateFrom,
+  filterDateTo,
+}: ModalProps) {
+  //
+  const [selectedItems, setSelectedItems] = useState<
+    MedicalAssistanceTypes[] | []
+  >([])
   const componentRef = useRef<HTMLDivElement>(null)
 
   // Using forwardRef to pass the ref down to the ChildComponent
@@ -32,16 +47,36 @@ export default function PrintSummaryButton({ selectedItems }: ModalProps) {
     )
   })
 
+  useEffect(() => {
+    ;(async () => {
+      const result = await fetchMedicineClients(
+        {
+          filterKeyword,
+          filterPharmacy,
+          filterDateRequested,
+          filterDateFrom,
+          filterDateTo,
+        },
+        999,
+        0
+      )
+
+      setSelectedItems(result.data)
+    })()
+  }, [])
+
   return (
     <>
-      <ReactToPrint
-        trigger={() => (
-          <button className="app__btn_blue flex items-center justify-center space-x-2">
-            <PrinterIcon className="w-4 h-4" /> <span>Print Summary</span>
-          </button>
-        )}
-        content={() => document.getElementById('print-container')}
-      />
+      {filterDateFrom && filterDateTo && (
+        <ReactToPrint
+          trigger={() => (
+            <button className="app__btn_blue flex items-center justify-center space-x-2">
+              <PrinterIcon className="w-4 h-4" /> <span>Print Summary</span>
+            </button>
+          )}
+          content={() => document.getElementById('print-container')}
+        />
+      )}
       <div className="hidden">
         <div id="print-container">
           <ChildWithRef

@@ -75,7 +75,7 @@
   }
   @media print {
     @page {
-      margin: 5mm; /* Adjust margins as needed */
+      margin: 10mm 5mm 10mm 5mm; /* Adjust margins as needed */
     }
   }
 }

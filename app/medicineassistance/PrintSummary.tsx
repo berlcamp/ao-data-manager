@@ -57,12 +57,12 @@ const PrintSummary: React.FC<ChildProps> = ({
             </td>
           </tr>
           <tr>
-            <td className="border_black p-1">#</td>
-            <td className="border_black p-1">Patient</td>
-            <td className="border_black p-1">Requester</td>
-            <td className="border_black p-1">Date Approved</td>
-            <td className="border_black p-1">Pharmacy</td>
-            <td className="border_black p-1">Total Amount</td>
+            <td className="text-center border_black p-1">#</td>
+            <td className="text-center border_black p-1">Patient</td>
+            <td className="text-center border_black p-1">Requester</td>
+            <td className="text-center border_black p-1">Date Approved</td>
+            <td className="text-center border_black p-1">Pharmacy</td>
+            <td className="text-center border_black p-1">Total Amount</td>
           </tr>
           {selectedItems.map((med, i) => (
             <tr key={i}>
@@ -87,29 +87,32 @@ const PrintSummary: React.FC<ChildProps> = ({
                   format(new Date(med.date_approved), 'MM/dd/yyyy')}
               </td>
               <td className="border_black p-1">{med.pharmacy}</td>
-              <td className="border_black p-1">{countTotal(med)}</td>
+              <td className="border_black p-1">
+                {countTotal(med).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </td>
             </tr>
           ))}
           <tr>
             <td
-              colSpan={5}
-              className="text-xs font-bold p-px text-right pt-4">
-              Total Amount:
-            </td>
-            <td className="text-xs font-bold p-px pt-4">
-              {totalAmount.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </td>
-          </tr>
-          <tr>
+              colSpan={4}
+              className="text-xs font-bold p-px text-right"></td>
             <td
-              colSpan={5}
-              className="text-xs font-bold p-px text-right">
-              Total Beneficiaries:
+              colSpan={2}
+              className="text-xs font-bold p-px">
+              <div className="mt-2 pl-20">
+                Total Amount:{' '}
+                {totalAmount.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </div>
+              <div className="mt-2 pl-20">
+                Total Beneficiaries: {selectedItems.length}
+              </div>
             </td>
-            <td className="text-xs font-bold p-px">{selectedItems.length}</td>
           </tr>
           <tr>
             <td

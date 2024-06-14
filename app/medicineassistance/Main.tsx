@@ -297,7 +297,13 @@ const Page: React.FC = () => {
           {/* Export Button */}
           {!isDataEmpty && (
             <div className="mx-4 mb-4 flex justify-end space-x-2">
-              <PrintSummaryButton selectedItems={list} />
+              <PrintSummaryButton
+                filterKeyword={filterKeyword}
+                filterPharmacy={filterPharmacy}
+                filterDateRequested={filterDateRequested}
+                filterDateFrom={filterDateFrom}
+                filterDateTo={filterDateTo}
+              />
             </div>
           )}
 
