@@ -81,6 +81,12 @@ const Page: React.FC = () => {
                   users={users}
                   title="Who can access Medicine Assistance"
                 />
+                <ChooseUsers
+                  multiple={true}
+                  type="medicine_admin"
+                  users={users}
+                  title="Who can Approve/Delete on Medicine Assistance"
+                />
               </>
             )}
           </div>

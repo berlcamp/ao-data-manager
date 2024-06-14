@@ -352,24 +352,27 @@ const Page: React.FC = () => {
                             leaveTo="transform opacity-0 scale-95">
                             <Menu.Items className="app__dropdown_items">
                               <div className="py-1">
-                                <Menu.Item>
-                                  <div
-                                    onClick={() => handleEdit(item)}
-                                    className="app__dropdown_item">
-                                    <PencilSquareIcon className="w-4 h-4" />
-                                    <span>Edit</span>
-                                  </div>
-                                </Menu.Item>
-                                {
-                                  <Menu.Item>
-                                    <div
-                                      onClick={() => handleDelete(item.id)}
-                                      className="app__dropdown_item">
-                                      <TrashIcon className="w-4 h-4" />
-                                      <span>Delete</span>
-                                    </div>
-                                  </Menu.Item>
-                                }
+                                {hasAccess('medicine_admin') && (
+                                  <>
+                                    <Menu.Item>
+                                      <div
+                                        onClick={() => handleEdit(item)}
+                                        className="app__dropdown_item">
+                                        <PencilSquareIcon className="w-4 h-4" />
+                                        <span>Edit</span>
+                                      </div>
+                                    </Menu.Item>
+
+                                    <Menu.Item>
+                                      <div
+                                        onClick={() => handleDelete(item.id)}
+                                        className="app__dropdown_item">
+                                        <TrashIcon className="w-4 h-4" />
+                                        <span>Delete</span>
+                                      </div>
+                                    </Menu.Item>
+                                  </>
+                                )}
                                 {item.status === 'Approved' && (
                                   <Menu.Item>
                                     <div className="app__dropdown_item">
@@ -379,17 +382,18 @@ const Page: React.FC = () => {
                                 )}
                                 <Menu.Item>
                                   <div className="app__dropdown_item2">
-                                    {item.status === 'For Evaluation' && (
-                                      <>
-                                        <CustomButton
-                                          containerStyles="app__btn_green_xs"
-                                          title="Approve"
-                                          btnType="button"
-                                          handleClick={() =>
-                                            handleApprove(item)
-                                          }
-                                        />
-                                        {/* <CustomButton
+                                    {item.status === 'For Evaluation' &&
+                                      hasAccess('medicine_admin') && (
+                                        <>
+                                          <CustomButton
+                                            containerStyles="app__btn_green_xs"
+                                            title="Approve"
+                                            btnType="button"
+                                            handleClick={() =>
+                                              handleApprove(item)
+                                            }
+                                          />
+                                          {/* <CustomButton
                                           containerStyles="app__btn_red_xs"
                                           title="Disapprove"
                                           btnType="button"
@@ -397,8 +401,8 @@ const Page: React.FC = () => {
                                             handleDisapprove(item.id)
                                           }
                                         /> */}
-                                      </>
-                                    )}
+                                        </>
+                                      )}
                                   </div>
                                 </Menu.Item>
                               </div>

@@ -57,24 +57,24 @@ const PrintSummary: React.FC<ChildProps> = ({
             </td>
           </tr>
           <tr>
-            <td className="border p-1">#</td>
-            <td className="border p-1">Patient</td>
-            <td className="border p-1">Requester</td>
-            <td className="border p-1">Date Approved</td>
-            <td className="border p-1">Pharmacy</td>
-            <td className="border p-1">Total Amount</td>
+            <td className="border_black p-1">#</td>
+            <td className="border_black p-1">Patient</td>
+            <td className="border_black p-1">Requester</td>
+            <td className="border_black p-1">Date Approved</td>
+            <td className="border_black p-1">Pharmacy</td>
+            <td className="border_black p-1">Total Amount</td>
           </tr>
           {selectedItems.map((med, i) => (
             <tr key={i}>
-              <td className="border p-1">{i + 1}</td>
-              <td className="border p-1">
+              <td className="border_black p-1">{i + 1}</td>
+              <td className="border_black p-1">
                 <div>{med.fullname}</div>
                 <div className="capitalize">
                   {med.other_details.gender} / {med.other_details.age} /{' '}
                   {med.other_details.patient_barangay.barangay}
                 </div>
               </td>
-              <td className="border p-1">
+              <td className="border_black p-1">
                 <div>{med.requester}</div>
                 <div className="capitalize">
                   {med.other_details.referral_gender} /{' '}
@@ -82,21 +82,21 @@ const PrintSummary: React.FC<ChildProps> = ({
                   {med.other_details.requester_barangay.barangay}
                 </div>
               </td>
-              <td className="border p-1">
+              <td className="border_black p-1">
                 {med.date_approved &&
                   format(new Date(med.date_approved), 'MM/dd/yyyy')}
               </td>
-              <td className="border p-1">{med.pharmacy}</td>
-              <td className="border p-1">{countTotal(med)}</td>
+              <td className="border_black p-1">{med.pharmacy}</td>
+              <td className="border_black p-1">{countTotal(med)}</td>
             </tr>
           ))}
           <tr>
             <td
               colSpan={5}
-              className="text-xs font-bold p-px text-right pt-10">
-              Total Granted:
+              className="text-xs font-bold p-px text-right pt-4">
+              Total Amount:
             </td>
-            <td className="text-xs font-bold p-px pt-10">
+            <td className="text-xs font-bold p-px pt-4">
               {totalAmount.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -114,16 +114,16 @@ const PrintSummary: React.FC<ChildProps> = ({
           <tr>
             <td
               colSpan={2}
-              className="text-xs font-bold p-px text-center pt-10">
+              className="text-xs font-bold p-px text-center pt-4">
               <div>Prepared By:</div>
-              <div className="mt-10">RINO KARLO G. LIM</div>
+              <div className="mt-6">RINO KARLO G. LIM</div>
               <div>OCM Staff</div>
             </td>
             <td
               colSpan={4}
-              className="text-xs font-bold p-px text-center pt-10">
+              className="text-xs font-bold p-px text-center pt-4">
               <div>Noted By:</div>
-              <div className="mt-10">CAROLYN N. GO</div>
+              <div className="mt-6">CAROLYN N. GO</div>
               <div>Executive Assistant - V</div>
             </td>
           </tr>
