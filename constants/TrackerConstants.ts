@@ -32,6 +32,14 @@ export const pharmacyList = [
     address: 'Maningcol, Ozamiz City',
   },
   {
+    pharmacy: 'Generika Drugstore',
+    director: 'Mr. Jason Chiong Marave',
+    code: 'GEN',
+    dear: 'Mr. Marave',
+    title: 'Proprietor',
+    address: '50th District, Ozamiz City',
+  },
+  {
     pharmacy: 'Lourdes Pharmacy - Public Mall San Roque',
     director: 'Mr. Caesar K. Lim',
     code: 'LOUR',
