@@ -106,7 +106,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                   the Prescription attached herein, we hereby guarantee the
                   payment for the medicine/s listed below in the amount of{' '}
                   <span className="font-bold uppercase">
-                    {convertToWord(totalAmount)} (
+                    {convertToWord(totalAmount)} (₱
                     {totalAmount.toLocaleString('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
