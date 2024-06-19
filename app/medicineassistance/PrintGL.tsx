@@ -149,9 +149,10 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
             <td
               colSpan={5}
               className="text-xs border font-bold p-px text-right">
-              Total:
+              Total:{' '}
             </td>
             <td className="text-xs border font-bold p-px">
+              ₱{' '}
               {totalAmount.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
