@@ -36,7 +36,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
   return (
     <div
       ref={forwardedRef}
-      className="w-[340px] mx-auto mt-8 text-xs">
+      className="w-[340px] mx-auto mt-0 text-xs">
       <table className="w-full">
         <thead>
           <tr>
