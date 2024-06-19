@@ -101,7 +101,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                   administration enacted Ordinance No. 1291-2024, also known as
                   the &quot;OZAMIZ CITY FREE MEDICATION PROGRAM&quot;.
                 </div>
-                <div className="mt-2 mb-6">
+                <div className="mt-2 mb-4">
                   In accordance with the abovementioned program and pursuant to
                   the Prescription attached herein, we hereby guarantee the
                   payment for the medicine/s listed below in the amount of{' '}
@@ -161,7 +161,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
           </tr>
           <tr>
             <td colSpan={6}>
-              <div className="mt-6">
+              <div className="mt-4">
                 This must be claimed within 3 days from the issue of this
                 guarantee note.
               </div>
@@ -170,14 +170,14 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                 receipt of written demand. All sums owing under this letter are
                 payable in Philippine peso.
               </div>
-              <div className="mt-10">By the authority of: </div>
+              <div className="mt-8">By the authority of: </div>
               <div className="mt-6 font-bold">
                 ATTY. HENRY &quot;INDY&quot; F. OAMINAL, JR.
               </div>
-              <div className="mt-2">City Mayor</div>
+              <div className="">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
-              <div className="mt-10 font-bold">CAROLYN N. GO</div>
-              <div className="mt-2">Executive Assistant V</div>
+              <div className="mt-6 font-bold">CAROLYN N. GO</div>
+              <div className="">Executive Assistant V</div>
             </td>
           </tr>
         </tbody>
