@@ -143,6 +143,7 @@ export const documentTypes = [
   { type: 'Leave', shortcut: 'LEAVE' },
   { type: 'Liquidation', shortcut: 'LIQUIDATION' },
   { type: 'Retirement', shortcut: 'RET' },
+  { type: 'MOA', shortcut: 'MOA' },
   { type: 'Memorandum Order', shortcut: 'MEMO' },
   { type: 'Notice', shortcut: 'NOTICE' },
   { type: 'Notice of Violation', shortcut: 'NOTI-VIOL' },
