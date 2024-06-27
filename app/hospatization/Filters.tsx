@@ -268,10 +268,10 @@ const Filters = ({
             <div className="items-center inline-flex app__filter_field_container">
               <FormField
                 control={form.control}
-                name="hospital"
+                name="billType"
                 render={({ field }) => (
                   <FormItem className="w-[240px]">
-                    <FormLabel className="app__form_label">Hospital</FormLabel>
+                    <FormLabel className="app__form_label">Bill Type</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}

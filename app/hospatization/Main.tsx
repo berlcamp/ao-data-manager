@@ -79,7 +79,7 @@ const Page: React.FC = () => {
     }
 
     try {
-      await axios.get(`${apiUrl}/distassist`, { params }).then((response) => {
+      await axios.get(`${apiUrl}/aoassist`, { params }).then((response) => {
         // update the list in redux
         dispatch(updateList(response.data.data))
 
@@ -113,7 +113,7 @@ const Page: React.FC = () => {
     }
 
     try {
-      await axios.get(`${apiUrl}/distassist`, { params }).then((response) => {
+      await axios.get(`${apiUrl}/aoassist`, { params }).then((response) => {
         // update the list in redux
         const newList = [...list, ...response.data.data]
         dispatch(updateList(newList))
@@ -177,10 +177,7 @@ const Page: React.FC = () => {
   const isDataEmpty = !Array.isArray(list) || list.length < 1 || !list
 
   // Check access from permission settings or Super Admins
-  if (
-    !hasAccess('district_assistance') &&
-    !superAdmins.includes(session.user.email)
-  )
+  if (!hasAccess('hospatization') && !superAdmins.includes(session.user.email))
     return <Unauthorized />
 
   return (
@@ -192,7 +189,7 @@ const Page: React.FC = () => {
       <div className="app__main">
         <div>
           <div className="app__title">
-            <Title title="AO Medical Assistance" />
+            <Title title="AO Free Hospitalization Program" />
             <CustomButton
               containerStyles="app__btn_green"
               title="Add New Record"

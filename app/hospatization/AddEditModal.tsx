@@ -17,6 +17,7 @@ import axios from 'axios'
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
+import { hospitalsList } from '@/constants/TrackerConstants'
 import { useDispatch, useSelector } from 'react-redux'
 // import { useSupabase } from '@/context/SupabaseProvider'
 
@@ -25,15 +26,7 @@ interface ModalProps {
   editData: MedicalAssistanceTypes | null
 }
 
-const hospitals = ['Faith', 'St.Joseph']
-
-const requestTypes = [
-  'MAIP (DOH)',
-  'DSWD - Cash Assistance',
-  'DSWD - Medical Assistance',
-  'DSWD - Burial Assistance',
-  'Philippine Heart Center',
-]
+const hospitals = hospitalsList
 
 const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   const { setToast } = useFilter()
@@ -130,9 +123,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     console.log('params', params)
 
     try {
-      await axios.post(`${apiUrl}/distassist`, params).then((response) => {
-        console.log(response.data.status)
-
+      await axios.post(`${apiUrl}/aoassist`, params).then((response) => {
         // Append new data in redux
         const patientAddress = barangays.find(
           (item) =>
@@ -181,7 +172,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     }
 
     try {
-      await axios.put(`${apiUrl}/distassist`, params).then((response) => {
+      await axios.put(`${apiUrl}/aoassist`, params).then((response) => {
         console.log(response.data.status)
 
         // Append new data in redux
@@ -377,6 +368,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       patient_barangay_id: editData ? editData.patient_barangay_id : '',
       age: editData ? editData.age : '',
       patient_remarks: editData ? editData.patient_remarks : '',
+      patient_contact_number: editData ? editData.patient_contact_number : '',
       // requester details
       referral: editData ? editData.referral : '',
       referral_previous_name: editData ? editData.referral_previous_name : '',
@@ -387,6 +379,9 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       requester_barangay_id: editData ? editData.requester_barangay_id : '',
       referral_age: editData ? editData.referral_age : '',
       referral_remarks: editData ? editData.referral_remarks : '',
+      requester_contact_number: editData
+        ? editData.requester_contact_number
+        : '',
     })
   }, [editData, reset])
 
@@ -396,7 +391,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       try {
         console.log('refetching barangays')
         const apiUrl = process.env.NEXT_PUBLIC_AO_API_URL ?? ''
-        const response = await axios.get(`${apiUrl}/distassist/barangays`)
+        const response = await axios.get(`${apiUrl}/aoassist/barangays`)
         setBarangays(response.data)
 
         // prepopulate barangay
@@ -437,32 +432,6 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                   </legend>
                   <div className="app__form_field_inline_half">
                     <div className="w-full">
-                      <div className="app__label_standard">Request Type</div>
-                      <div>
-                        <select
-                          {...register('request_type', { required: true })}
-                          value={requestType}
-                          onChange={(e) => setRequestType(e.target.value)}
-                          className="app__input_standard">
-                          <option value="">Select</option>
-                          {requestTypes.map((type, index) => (
-                            <option
-                              key={index}
-                              value={type}>
-                              {type}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.request_type && (
-                          <div className="app__error_message">
-                            Request Type is required
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="app__form_field_inline_half">
-                    <div className="w-full">
                       <div className="app__label_standard">Date Requested</div>
                       <div>
                         <input
@@ -478,400 +447,158 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       </div>
                     </div>
                   </div>
-                  {/* Medical Assistances */}
-                  {(requestType === 'MAIP (DOH)' ||
-                    requestType === 'DSWD - Medical Assistance') && (
-                    <>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Hospital</div>
-                          <div>
-                            <select
-                              {...register('hospital', { required: true })}
-                              className="app__input_standard">
-                              <option value="">Select</option>
-                              {hospitals.map((hospital, index) => (
-                                <option
-                                  key={index}
-                                  value={hospital}>
-                                  {hospital}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.hospital && (
-                              <div className="app__error_message">
-                                Hospital is required
-                              </div>
-                            )}
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Hospital</div>
+                      <div>
+                        <select
+                          {...register('hospital', { required: true })}
+                          className="app__input_standard">
+                          <option value="">Select</option>
+                          {hospitals.map((hospital, index) => (
+                            <option
+                              key={index}
+                              value={hospital}>
+                              {hospital}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.hospital && (
+                          <div className="app__error_message">
+                            Hospital is required
                           </div>
-                        </div>
+                        )}
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Room Type</div>
-                          <div>
-                            <input
-                              {...register('room_type', { required: true })}
-                              placeholder="Room Type"
-                              type="text"
-                              className="app__input_standard"
-                            />
-                            {errors.room_type && (
-                              <div className="app__error_message">
-                                Room Type is required
-                              </div>
-                            )}
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Room Type</div>
+                      <div>
+                        <input
+                          {...register('room_type', { required: true })}
+                          placeholder="Room Type"
+                          type="text"
+                          className="app__input_standard"
+                        />
+                        {errors.room_type && (
+                          <div className="app__error_message">
+                            Room Type is required
                           </div>
-                        </div>
+                        )}
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            PhilHealth Amount
-                          </div>
-                          <div>
-                            <input
-                              {...register('philhealth')}
-                              placeholder="PhilHealth Discount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        PhilHealth Amount
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            PCSO Discount
-                          </div>
-                          <div>
-                            <input
-                              {...register('pcso_amount')}
-                              placeholder="PCSO Discount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
+                      <div>
+                        <input
+                          {...register('philhealth')}
+                          placeholder="PhilHealth Discount"
+                          type="number"
+                          step="any"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">DSWD Amount</div>
-                          <div>
-                            <input
-                              {...register('dswd_amount')}
-                              placeholder="DSWD Discount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">PCSO Discount</div>
+                      <div>
+                        <input
+                          {...register('pcso_amount')}
+                          placeholder="PCSO Discount"
+                          type="number"
+                          step="any"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Excess in Professional Fee
-                          </div>
-                          <div>
-                            <input
-                              {...register('total_professional_fee')}
-                              placeholder="Excess in Professional Fee"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">DSWD Amount</div>
+                      <div>
+                        <input
+                          {...register('dswd_amount')}
+                          placeholder="DSWD Discount"
+                          type="number"
+                          step="any"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Bill Amount</div>
-                          <div>
-                            <input
-                              {...register('amount', { required: true })}
-                              placeholder="Bill Amount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                            {errors.amount && (
-                              <div className="app__error_message">
-                                Bill Amount is required
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Excess in Professional Fee
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Reason Not Ward
-                          </div>
-                          <div>
-                            <textarea
-                              {...register('reason_not_ward')}
-                              placeholder="Reason Not Ward"
-                              className="app__input_standard resize-none"
-                            />
-                          </div>
-                        </div>
+                      <div>
+                        <input
+                          {...register('total_professional_fee')}
+                          placeholder="Excess in Professional Fee"
+                          type="number"
+                          step="any"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Reason Not Mhars
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Bill Amount</div>
+                      <div>
+                        <input
+                          {...register('amount', { required: true })}
+                          placeholder="Bill Amount"
+                          type="number"
+                          step="any"
+                          className="app__input_standard"
+                        />
+                        {errors.amount && (
+                          <div className="app__error_message">
+                            Bill Amount is required
                           </div>
-                          <div>
-                            <textarea
-                              {...register('reason_not_mhars')}
-                              placeholder="Reason Not Mhars"
-                              className="app__input_standard resize-none"
-                            />
-                          </div>
-                        </div>
+                        )}
                       </div>
-                    </>
-                  )}
-                  {/* Philippine Heart Center */}
-                  {requestType === 'Philippine Heart Center' && (
-                    <>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Date Admitted
-                          </div>
-                          <div>
-                            <input
-                              {...register('date_admitted')}
-                              type="date"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Reason Not Ward</div>
+                      <div>
+                        <textarea
+                          {...register('reason_not_ward')}
+                          placeholder="Reason Not Ward"
+                          className="app__input_standard resize-none"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Date Discharged
-                          </div>
-                          <div>
-                            <input
-                              {...register('date_discharged')}
-                              type="date"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Reason Not Mhars
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Room Type</div>
-                          <div>
-                            <input
-                              {...register('room_type', { required: true })}
-                              placeholder="Room Type"
-                              type="text"
-                              className="app__input_standard"
-                            />
-                            {errors.room_type && (
-                              <div className="app__error_message">
-                                Room Type is required
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                      <div>
+                        <textarea
+                          {...register('reason_not_mhars')}
+                          placeholder="Reason Not Mhars"
+                          className="app__input_standard resize-none"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            PhilHealth Discount
-                          </div>
-                          <div>
-                            <input
-                              {...register('philhealth')}
-                              placeholder="PhilHealth Discount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            PWD Discount
-                          </div>
-                          <div>
-                            <input
-                              {...register('pwd_discount')}
-                              placeholder="PWD Discount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Bill Amount</div>
-                          <div>
-                            <input
-                              {...register('amount', { required: true })}
-                              placeholder="Bill Amount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                            {errors.amount && (
-                              <div className="app__error_message">
-                                Bill Amount is required
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {/* Cash Assistance */}
-                  {requestType === 'DSWD - Cash Assistance' && (
-                    <>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Date Approved
-                          </div>
-                          <div>
-                            <input
-                              {...register('date_approved')}
-                              type="date"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Purpose</div>
-                          <div>
-                            <input
-                              {...register('purpose')}
-                              type="text"
-                              placeholder="Purpose"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Amount Requested
-                          </div>
-                          <div>
-                            <input
-                              {...register('requested_amount')}
-                              type="number"
-                              step="any"
-                              placeholder="Amount Requested"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Hospital or Funeral Homes
-                          </div>
-                          <div>
-                            <input
-                              {...register('hospital_or_funeral')}
-                              placeholder="Hospital or Funeral Ho"
-                              className="app__input_standard"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {/* Burial Assistance */}
-                  {requestType === 'DSWD - Burial Assistance' && (
-                    <>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Date of Death
-                          </div>
-                          <div>
-                            <input
-                              {...register('date_death', { required: true })}
-                              type="date"
-                              className="app__input_standard"
-                            />
-                            {errors.date_death && (
-                              <div className="app__error_message">
-                                Date of Death is required
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Funeral Homes
-                          </div>
-                          <div>
-                            <input
-                              {...register('funeral', { required: true })}
-                              type="text"
-                              className="app__input_standard"
-                            />
-                            {errors.funeral && (
-                              <div className="app__error_message">
-                                Funeral Homes is required
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Bill Amount</div>
-                          <div>
-                            <input
-                              {...register('amount', { required: true })}
-                              placeholder="Bill Amount"
-                              type="number"
-                              step="any"
-                              className="app__input_standard"
-                            />
-                            {errors.amount && (
-                              <div className="app__error_message">
-                                Bill Amount is required
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                    </div>
+                  </div>
                 </fieldset>
                 <fieldset className="border p-4 mt-8 bg-gray-100">
-                  {requestType === 'DSWD - Burial Assistance' ? (
-                    <legend className="text-center text-gray-700 text-lg font-semibold">
-                      Deceased Details
-                    </legend>
-                  ) : (
-                    <legend className="text-center text-gray-700 text-lg font-semibold">
-                      Patient Details
-                    </legend>
-                  )}
+                  <legend className="text-center text-gray-700 text-lg font-semibold">
+                    Patient Details
+                  </legend>
                   <div className="app__form_field_inline_half">
                     <div className="w-full">
                       <div className="app__label_standard">Full Name</div>
@@ -1131,6 +858,26 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       </div>
                     </div>
                   </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Contact Number</div>
+                      <div>
+                        <input
+                          {...register('patient_contact_number', {
+                            required: true,
+                          })}
+                          placeholder="Patient Contact No."
+                          type="text"
+                          className="app__input_standard"
+                        />
+                        {errors.room_type && (
+                          <div className="app__error_message">
+                            Patient Contact No.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </fieldset>
                 <fieldset className="border p-4 mt-8 bg-gray-100">
                   <legend className="text-center text-gray-700 text-lg font-semibold">
@@ -1375,6 +1122,26 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                           placeholder="Remarks"
                           className="app__input_standard resize-none"
                         />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Contact Number</div>
+                      <div>
+                        <input
+                          {...register('requester_contact_number', {
+                            required: true,
+                          })}
+                          placeholder="Requester Contact No."
+                          type="text"
+                          className="app__input_standard"
+                        />
+                        {errors.room_type && (
+                          <div className="app__error_message">
+                            Requester Contact No.
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

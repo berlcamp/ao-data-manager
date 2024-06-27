@@ -49,19 +49,21 @@ export default function PrintSummaryButton({
 
   useEffect(() => {
     ;(async () => {
-      const result = await fetchMedicineClients(
-        {
-          filterKeyword,
-          filterPharmacy,
-          filterDateRequested,
-          filterDateFrom,
-          filterDateTo,
-        },
-        999,
-        0
-      )
+      if (filterDateFrom && filterDateTo) {
+        const result = await fetchMedicineClients(
+          {
+            filterKeyword,
+            filterPharmacy,
+            filterDateRequested,
+            filterDateFrom,
+            filterDateTo,
+          },
+          999,
+          0
+        )
 
-      setSelectedItems(result.data)
+        setSelectedItems(result.data)
+      }
     })()
   }, [])
 

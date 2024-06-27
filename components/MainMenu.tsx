@@ -85,6 +85,23 @@ const MainMenu: React.FC = () => {
                 </div>
               </Link>
             )}
+            {hasAccess('hospatization') && (
+              <Link href="/hospatization">
+                <div className="app__menu_item">
+                  <div className="pt-1">
+                    <DocumentDuplicateIcon className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <div className="app__menu_item_label">
+                      Hospitalization Program
+                    </div>
+                    <div className="app__menu_item_label_description">
+                      Hospitalization Program
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
             {superAdmins.includes(email) && (
               <>
                 <Link href="/settings/system">

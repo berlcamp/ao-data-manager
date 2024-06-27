@@ -221,6 +221,8 @@ export interface MedicalAssistanceTypes {
   bill_type: string
   request_type: string
   request_type_others: string
+  patient_contact_number: string
+  requester_contact_number: string
   barangay: string
   address: string
   reason: string
@@ -292,6 +294,7 @@ export interface MedicalAssistanceTypes {
   date_requested: string
   other_details: MedicalAssistanceTypes
   medicines: MedicineItemTypes[]
+  patient_id: string
 }
 
 export interface BarangayTypes {

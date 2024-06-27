@@ -1,8 +1,10 @@
+import { useFilter } from '@/context/FilterContext'
 import { ListChecks } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function AssistanceSidebar() {
+  const { hasAccess } = useFilter()
   const currentRoute = usePathname()
 
   return (
@@ -14,32 +16,36 @@ export default function AssistanceSidebar() {
             <span>AO Assistance</span>
           </div>
         </li>
-        {/* <li>
-          <Link
-            href="/medicalassistance"
-            className={`app__menu_link ${
-              currentRoute === '/medicalassistance'
-                ? 'app_menu_link_active'
-                : ''
-            }`}>
-            <span className="flex-1 ml-3 whitespace-nowrap">
-              Medical Assistance
-            </span>
-          </Link>
-        </li> */}
-        <li>
-          <Link
-            href="/medicineassistance"
-            className={`app__menu_link ${
-              currentRoute === '/medicineassistance'
-                ? 'app_menu_link_active'
-                : ''
-            }`}>
-            <span className="flex-1 ml-3 whitespace-nowrap">
-              Medicine Assistance
-            </span>
-          </Link>
-        </li>
+        {hasAccess('hospatization') && (
+          <li>
+            <Link
+              href="/medicalassistance"
+              className={`app__menu_link ${
+                currentRoute === '/medicalassistance'
+                  ? 'app_menu_link_active'
+                  : ''
+              }`}>
+              <span className="flex-1 ml-3 whitespace-nowrap">
+                Hospitalization
+              </span>
+            </Link>
+          </li>
+        )}
+        {hasAccess('medicine') && (
+          <li>
+            <Link
+              href="/medicineassistance"
+              className={`app__menu_link ${
+                currentRoute === '/medicineassistance'
+                  ? 'app_menu_link_active'
+                  : ''
+              }`}>
+              <span className="flex-1 ml-3 whitespace-nowrap">
+                Medication Assistance
+              </span>
+            </Link>
+          </li>
+        )}
       </ul>
     </div>
   )

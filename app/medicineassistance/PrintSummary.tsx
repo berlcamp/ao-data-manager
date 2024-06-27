@@ -17,6 +17,7 @@ const PrintSummary: React.FC<ChildProps> = ({
 }) => {
   //
   const [totalAmount, setTotalAmount] = useState(0)
+  const [totalBeneficiaries, setTotalBeneficiaries] = useState(0)
 
   const countTotal = (item: MedicalAssistanceTypes) => {
     const t = item.medicines.reduce(
@@ -35,6 +36,7 @@ const PrintSummary: React.FC<ChildProps> = ({
       )
       total += t
     })
+
     setTotalAmount(total)
   }, [])
 
@@ -110,7 +112,7 @@ const PrintSummary: React.FC<ChildProps> = ({
                 })}
               </div>
               <div className="mt-2 pl-20">
-                Total Beneficiaries: {selectedItems.length}
+                Total Beneficiaries: {totalBeneficiaries}
               </div>
             </td>
           </tr>
