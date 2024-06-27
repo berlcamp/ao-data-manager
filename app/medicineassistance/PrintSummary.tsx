@@ -29,15 +29,21 @@ const PrintSummary: React.FC<ChildProps> = ({
 
   useEffect(() => {
     let total = 0
+    let b = 0
+    const uniqueFullNames = new Set()
+
     selectedItems.forEach((s) => {
       const t = s.medicines.reduce(
         (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
         0
       )
       total += t
+
+      uniqueFullNames.add(s.fullname)
     })
 
     setTotalAmount(total)
+    setTotalBeneficiaries(uniqueFullNames.size)
   }, [])
 
   return (
@@ -105,7 +111,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               colSpan={2}
               className="text-xs font-bold p-px">
               <div className="mt-2 pl-20">
-                Total Amount:{' '}
+                Total Amount: ₱
                 {totalAmount.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
