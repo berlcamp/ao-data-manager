@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  ConfirmModal,
   CustomButton,
   DeleteModal,
   PerPage,
@@ -43,6 +44,7 @@ const Page: React.FC = () => {
   const [showingCount, setShowingCount] = useState<number>(0)
   const [resultsCount, setResultsCount] = useState<number>(0)
 
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [editData, setEditData] = useState<MedicalAssistanceTypes | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -206,39 +208,47 @@ const Page: React.FC = () => {
     }
   }
 
-  // const handleDisapprove = async (id: string) => {
-  //   try {
-  //     const newData = {
-  //       status: 'Disapproved',
-  //       date_approved: format(new Date(), 'yyyy-MM-dd'),
-  //     }
+  // Cancel confirmation
+  const cancel = (id: string) => {
+    setShowConfirmation(true)
+    setSelectedId(id)
+  }
+  const handleCancel = () => {
+    setShowConfirmation(false)
+    setSelectedId('')
+  }
+  const handleConfirm = async () => {
+    await handleCancelGL()
+    setShowConfirmation(false)
+  }
+  const handleCancelGL = async () => {
+    try {
+      const newData = {
+        status: 'Cancelled',
+      }
 
-  //     const { error } = await supabase
-  //       .from('adm_medicine_clients')
-  //       .update(newData)
-  //       .eq('id', id)
+      const { error } = await supabase
+        .from('adm_medicine_clients')
+        .update(newData)
+        .eq('id', selectedId)
 
-  //     if (error) throw new Error(error.message)
+      if (error) throw new Error(error.message)
 
-  //     // Append new data in redux
-  //     const items = [...globallist]
-  //     const updatedData = {
-  //       ...newData,
-  //       id,
-  //     }
-  //     const foundIndex = items.findIndex((x) => x.id === updatedData.id)
-  //     items[foundIndex] = { ...items[foundIndex], ...updatedData }
-  //     dispatch(updateList(items))
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        ...newData,
+        id: selectedId,
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
 
-  //     // pop up the success message
-  //     setToast('success', 'Successfully disapproved.')
-  //   } catch (error) {
-  //     console.error('error', error)
-  //   }
-  // }
-
-  const handleReset = (id: string) => {
-    //
+      // pop up the success message
+      setToast('success', 'Successfully cancelled.')
+    } catch (error) {
+      console.error('error', error)
+    }
   }
 
   // Update list whenever list in redux updates
@@ -389,6 +399,16 @@ const Page: React.FC = () => {
                                         <span>Delete</span>
                                       </div>
                                     </Menu.Item>
+                                    {item.status !== 'Cancelled' && (
+                                      <Menu.Item>
+                                        <div
+                                          onClick={() => cancel(item.id)}
+                                          className="app__dropdown_item">
+                                          <TrashIcon className="w-4 h-4" />
+                                          <span>Mark as Cancelled</span>
+                                        </div>
+                                      </Menu.Item>
+                                    )}
                                   </>
                                 )}
                                 {item.status === 'Approved' && (
@@ -439,6 +459,11 @@ const Page: React.FC = () => {
                             </span>
                           )}
                           {item.status === 'For Evaluation' && (
+                            <span className="app__status_container_orange">
+                              {item.status}
+                            </span>
+                          )}
+                          {item.status === 'Cancelled' && (
                             <span className="app__status_container_orange">
                               {item.status}
                             </span>
@@ -513,6 +538,17 @@ const Page: React.FC = () => {
           resultsCount={resultsCount}
           setResultsCount={setResultsCount}
           hideModal={() => setShowDeleteModal(false)}
+        />
+      )}
+
+      {/* Confirm Cancel Modal */}
+      {showConfirmation && (
+        <ConfirmModal
+          message="Are you sure you want to cancel this GL?"
+          header="Confirm cancel"
+          btnText="Confirm"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
         />
       )}
     </>

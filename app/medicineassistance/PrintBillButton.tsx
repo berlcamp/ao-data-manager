@@ -76,7 +76,7 @@ export default function PrintBillButton({
 
         const filteredData = result.data.filter((d: MedicalAssistanceTypes) => {
           // all
-          if (filterBillType === 'All') {
+          if (filterBillType === 'All' && d.status === 'Approved') {
             return d
           }
 
@@ -89,7 +89,7 @@ export default function PrintBillButton({
             const patient_type =
               d.other_details.patient_type === null ||
               d.other_details.patient_type === ''
-            if (female && age && patient_type) {
+            if (female && age && patient_type && d.status === 'Approved') {
               return d
             }
           }
@@ -100,7 +100,7 @@ export default function PrintBillButton({
             const patient_type =
               d.other_details.patient_type === null ||
               d.other_details.patient_type === ''
-            if (age && patient_type) {
+            if (age && patient_type && d.status === 'Approved') {
               return d
             }
           }
@@ -114,7 +114,7 @@ export default function PrintBillButton({
             const patient_type =
               d.other_details.patient_type === null ||
               d.other_details.patient_type === ''
-            if (male && age && patient_type) {
+            if (male && age && patient_type && d.status === 'Approved') {
               return d
             }
           }
@@ -122,7 +122,7 @@ export default function PrintBillButton({
           // PWD
           if (filterBillType === 'PWD') {
             const patient_type = d.other_details.patient_type === 'PWD'
-            if (patient_type) {
+            if (patient_type && d.status === 'Approved') {
               return d
             }
           }
@@ -130,13 +130,11 @@ export default function PrintBillButton({
           // SENIOR
           if (filterBillType === 'SENIOR') {
             const patient_type = d.other_details.patient_type === 'Senior'
-            if (patient_type) {
+            if (patient_type && d.status === 'Approved') {
               return d
             }
           }
         })
-
-        console.log(filterBillType, filteredData)
 
         setSelectedItems(filteredData)
       }
