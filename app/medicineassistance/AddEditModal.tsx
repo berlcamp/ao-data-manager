@@ -80,6 +80,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       status: 'For Evaluation',
+      remarks: formdata.remarks,
       fullname: selectedPatient?.fullname,
       requester: selectedPatient?.referral,
       barangay: selectedPatient?.patient_barangay?.barangay,
@@ -129,6 +130,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       pharmacy: formdata.pharmacy,
+      remarks: formdata.remarks,
       date_requested: formdata.date_requested,
       medicines,
       pharmacy_code: pharmacy?.code,
@@ -245,7 +247,8 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     reset({
       // request details
       date_requested: editData ? editData.date_requested : dateString,
-      pharmacy: editData ? editData.pharmacy : dateString,
+      pharmacy: editData ? editData.pharmacy : '',
+      remarks: editData ? editData.remarks : '',
     })
   }, [editData, reset])
 
@@ -311,6 +314,18 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                             Pharmacy is required
                           </div>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Remarks</div>
+                      <div>
+                        <textarea
+                          {...register('remarks')}
+                          placeholder="Remarks"
+                          className="app__input_standard"
+                        />
                       </div>
                     </div>
                   </div>
