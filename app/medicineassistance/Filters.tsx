@@ -30,15 +30,17 @@ import { z } from 'zod'
 
 interface FilterTypes {
   setFilterPharmacy: (ca: string) => void
-  // setFilterBillType: (po: string) => void
+  setFilterBillType: (po: string) => void
   setFilterDateFrom: (date: Date | undefined) => void
   setFilterDateTo: (date: Date | undefined) => void
   setFilterDateRequested: (date: Date | undefined) => void
   setFilterKeyword: (keyword: string) => void
+  setFilterOffset: (offset: number) => void
 }
 
 const FormSchema = z.object({
   keyword: z.string().optional(),
+  offset: z.number().optional(),
   dateRequested: z.date().optional(),
   dateFrom: z.date().optional(),
   dateTo: z.date().optional(),
@@ -47,12 +49,13 @@ const FormSchema = z.object({
 })
 
 const Filters = ({
-  // setFilterBillType,
+  setFilterBillType,
   setFilterPharmacy,
   setFilterDateRequested,
   setFilterDateFrom,
   setFilterDateTo,
   setFilterKeyword,
+  setFilterOffset,
 }: FilterTypes) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
@@ -62,27 +65,30 @@ const Filters = ({
       pharmacy: '',
       billType: '',
       keyword: '',
+      offset: 0,
     },
   })
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    // setFilterBillType(data.billType || 'All')
+    setFilterBillType(data.billType || 'All')
     setFilterPharmacy(data.pharmacy || 'All')
     setFilterDateRequested(data.dateRequested)
     setFilterDateFrom(data.dateFrom)
     setFilterDateTo(data.dateTo)
     setFilterKeyword(data.keyword || '')
+    setFilterOffset(data.offset || 0)
   }
 
   // clear all filters
   const handleClear = () => {
     form.reset()
-    // setFilterBillType('All')
+    setFilterBillType('All')
     setFilterPharmacy('All')
     setFilterDateRequested(undefined)
     setFilterDateFrom(undefined)
     setFilterDateTo(undefined)
     setFilterKeyword('')
+    setFilterOffset(0)
   }
 
   return (
@@ -261,6 +267,52 @@ const Filters = ({
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="billType"
+                render={({ field }) => (
+                  <FormItem className="w-[240px]">
+                    <FormLabel className="app__form_label">Bill Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="All">All</SelectItem>
+                        <SelectItem value="WOMEN">WOMEN</SelectItem>
+                        <SelectItem value="CHILDREN">CHILDREN</SelectItem>
+                        <SelectItem value="SENIOR">SENIOR</SelectItem>
+                        <SelectItem value="PWD">PWD</SelectItem>
+                        <SelectItem value="DONATION">DONATION</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
+                name="offset"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="app__form_label">Offset</FormLabel>
+                    <Input
+                      type="number"
+                      placeholder="Offset"
+                      className="w-[200px]"
+                      {...field}
+                    />
                   </FormItem>
                 )}
               />

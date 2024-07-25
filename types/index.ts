@@ -220,6 +220,7 @@ export interface MedicalAssistanceTypes {
   requester_barangay_id: string
   bill_type: string
   request_type: string
+  patient_type: string
   request_type_others: string
   patient_contact_number: string
   requester_contact_number: string

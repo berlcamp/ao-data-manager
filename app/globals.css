@@ -77,6 +77,21 @@
     @page {
       margin: 5mm 5mm 10mm 5mm; /* Adjust margins as needed */
     }
+    thead {
+      display: table-header-group; /* Ensures headers are repeated on each page */
+    }
+
+    tfoot {
+      display: table-footer-group; /* Ensures footers are repeated on each page */
+    }
+
+    tr {
+      page-break-inside: avoid; /* Prevents row from being split across pages */
+    }
+
+    .break-after {
+      page-break-after: always; /* Forces a page break after these elements */
+    }
   }
 }
 

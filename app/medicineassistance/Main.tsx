@@ -30,6 +30,7 @@ import { format } from 'date-fns'
 import { TrashIcon } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import AddEditModal from './AddEditModal'
+import PrintBillButton from './PrintBillButton'
 import PrintGLButton from './PrintGLButton'
 import PrintSummaryButton from './PrintSummaryButton'
 
@@ -48,7 +49,7 @@ const Page: React.FC = () => {
   const [selectedId, setSelectedId] = useState<string>('')
 
   // Filters
-  // const [filterBillType, setFilterBillType] = useState('All')
+  const [filterBillType, setFilterBillType] = useState('All')
   const [filterPharmacy, setFilterPharmacy] = useState('All')
   const [filterDateRequested, setFilterDateRequested] = useState<
     Date | undefined
@@ -58,6 +59,7 @@ const Page: React.FC = () => {
   )
   const [filterDateTo, setFilterDateTo] = useState<Date | undefined>(undefined)
   const [filterKeyword, setFilterKeyword] = useState('')
+  const [filterOffset, setFilterOffset] = useState(0)
 
   // Redux staff
   const globallist = useSelector((state: any) => state.list.value)
@@ -285,12 +287,13 @@ const Page: React.FC = () => {
           {/* Filters */}
           <div className="app__filters">
             <Filters
-              // setFilterBillType={setFilterBillType}
+              setFilterBillType={setFilterBillType}
               setFilterPharmacy={setFilterPharmacy}
               setFilterDateRequested={setFilterDateRequested}
               setFilterDateFrom={setFilterDateFrom}
               setFilterDateTo={setFilterDateTo}
               setFilterKeyword={setFilterKeyword}
+              setFilterOffset={setFilterOffset}
             />
           </div>
 
@@ -303,6 +306,15 @@ const Page: React.FC = () => {
                 filterDateRequested={filterDateRequested}
                 filterDateFrom={filterDateFrom}
                 filterDateTo={filterDateTo}
+              />
+              <PrintBillButton
+                filterKeyword={filterKeyword}
+                filterPharmacy={filterPharmacy}
+                filterDateRequested={filterDateRequested}
+                filterDateFrom={filterDateFrom}
+                filterDateTo={filterDateTo}
+                filterBillType={filterBillType}
+                filterOffset={filterOffset}
               />
             </div>
           )}
