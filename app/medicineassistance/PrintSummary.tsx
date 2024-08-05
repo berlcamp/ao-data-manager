@@ -128,14 +128,14 @@ const PrintSummary: React.FC<ChildProps> = ({
               className="text-xs font-bold p-px text-center pt-4">
               <div>Prepared By:</div>
               <div className="mt-6">RINO KARLO G. LIM</div>
-              <div>OCM Staff</div>
+              <div>Executive Assistant IV</div>
             </td>
             <td
               colSpan={4}
               className="text-xs font-bold p-px text-center pt-4">
               <div>Noted By:</div>
               <div className="mt-6">CAROLYN N. GO</div>
-              <div>Executive Assistant - V</div>
+              <div>Executive Assistant V</div>
             </td>
           </tr>
         </tbody>
