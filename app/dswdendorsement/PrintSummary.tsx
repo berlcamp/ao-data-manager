@@ -4,7 +4,7 @@
 import LogoHeader from '@/components/LogoHeader'
 import { DswdEndorsementTypes } from '@/types'
 import { format } from 'date-fns'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
@@ -15,6 +15,18 @@ const PrintSummary: React.FC<ChildProps> = ({
   forwardedRef,
   selectedItems,
 }) => {
+  //
+  const [totalAmount, setTotalAmount] = useState(0)
+
+  useEffect(() => {
+    const t = selectedItems.reduce(
+      (accumulator, i) => accumulator + Number(i.amount),
+      0
+    )
+
+    setTotalAmount(t)
+  }, [])
+
   return (
     <div
       ref={forwardedRef}
@@ -65,6 +77,25 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border_black p-1">{med.amount}</td>
             </tr>
           ))}
+          <tr>
+            <td
+              colSpan={4}
+              className="text-xs font-bold p-px text-right"></td>
+            <td
+              colSpan={2}
+              className="text-xs font-bold p-px">
+              <div className="mt-2 pl-20">
+                Total Amount: ₱
+                {totalAmount.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </div>
+              <div className="mt-2 pl-20">
+                Total Beneficiaries: {selectedItems.length}
+              </div>
+            </td>
+          </tr>
           <tr>
             <td
               colSpan={2}
