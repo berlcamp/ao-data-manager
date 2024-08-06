@@ -124,7 +124,8 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                     {' '}
                     sought assistance from the City Mayor for the{' '}
                     <span>{gender_address} </span>
-                    <span className="font-bold lowercase">{request} of </span>
+                    <span className="font-bold lowercase">{request}</span>
+                    <span>{patient !== '' && ' of '}</span>
                     <span className="font-bold uppercase">{patient}.</span>
                   </span>{' '}
                   <span>{inline}</span>

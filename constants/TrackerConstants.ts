@@ -91,6 +91,7 @@ export const endorsementTypes = [
   'MRI',
   'EEG',
   'Medicines',
+  'Daily Sustenance',
   'Hospital Bill',
   'Funeral Bill',
 ]
