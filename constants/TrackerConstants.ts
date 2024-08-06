@@ -87,6 +87,14 @@ export const hospitalsList = [
   'JD Rehabilitation Center',
 ]
 
+export const endorsementTypes = [
+  'MRI',
+  'EEG',
+  'Medicines',
+  'Hospital Bill',
+  'Funeral Bill',
+]
+
 export const docTypes = [
   'Solicitation / Financial Assistance',
   'Medical Assistance',

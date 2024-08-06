@@ -328,3 +328,25 @@ export interface DoctorTypes {
 export interface PatientTypes {
   fullname: string
 }
+
+export interface DswdEndorsementTypes {
+  id: string
+  type: string
+  status: string
+  date: string
+  client_himself: boolean
+  docdor: string
+  relationship: string
+  amount: string
+  patient_fullname: string
+  patient_age: string
+  patient_gender: string
+  patient_address: string
+  patient_category: string
+  requester_fullname: string
+  requester_age: string
+  requester_gender: string
+  requester_address: string
+  requester_category: string
+  endorsement_no: string
+}

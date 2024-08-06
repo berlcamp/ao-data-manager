@@ -432,6 +432,74 @@ export async function fetchMedicineClients(
   }
 }
 
+export async function fetchDswdEndorsements(
+  filters: {
+    filterKeyword?: string
+    filterType?: string
+    filterDateFrom?: Date | undefined
+    filterDateTo?: Date | undefined
+  },
+  perPageCount: number,
+  rangeFrom: number
+) {
+  try {
+    let query = supabase
+      .from('adm_dswd_endorsements')
+      .select('*', { count: 'exact' })
+
+    // Full text search
+    if (filters.filterKeyword && filters.filterKeyword.trim() !== '') {
+      query = query.or(
+        `patient_fullname.ilike.%${filters.filterKeyword}%, requester_fullname.ilike.%${filters.filterKeyword}%`
+      )
+    }
+
+    // Filter type
+    if (filters.filterType && filters.filterType !== 'All') {
+      query = query.eq('type', filters.filterType)
+    }
+
+    // Filter date from
+    if (filters.filterDateFrom) {
+      query = query.gte(
+        'date',
+        format(new Date(filters.filterDateFrom), 'yyyy-MM-dd')
+      )
+    }
+
+    // Filter date to
+    if (filters.filterDateTo) {
+      query = query.lte(
+        'date',
+        format(new Date(filters.filterDateTo), 'yyyy-MM-dd')
+      )
+    }
+
+    // Perform count before paginations
+    // const { count } = await query
+
+    // Per Page from context
+    const from = rangeFrom
+    const to = from + (perPageCount - 1)
+    // Per Page from context
+    query = query.range(from, to)
+
+    // Order By
+    query = query.order('id', { ascending: false })
+
+    const { data, count, error } = await query
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return { data, count }
+  } catch (error) {
+    console.error('fetch error xx', error)
+    return { data: [], count: 0 }
+  }
+}
+
 export async function fetchAccounts(
   filters: { filterStatus?: string },
   perPageCount: number,

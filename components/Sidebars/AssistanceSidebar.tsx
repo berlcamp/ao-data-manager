@@ -46,6 +46,21 @@ export default function AssistanceSidebar() {
             </Link>
           </li>
         )}
+        {hasAccess('medicine') && (
+          <li>
+            <Link
+              href="/dswdendorsement"
+              className={`app__menu_link ${
+                currentRoute === '/dswdendorsement'
+                  ? 'app_menu_link_active'
+                  : ''
+              }`}>
+              <span className="flex-1 ml-3 whitespace-nowrap">
+                DSWD Endorsements
+              </span>
+            </Link>
+          </li>
+        )}
       </ul>
     </div>
   )
