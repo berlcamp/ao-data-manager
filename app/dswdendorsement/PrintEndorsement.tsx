@@ -74,9 +74,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   if (selectedItem.requester_fullname === '') {
     inline = `In line with this, we hereby endorse unto your good office the case of the above-mentioned name`
   } else {
-    inline = `In line with this, we hereby endorse unto your good office the case of the ${
-      selectedItem.type === 'Funeral Bill' ? 'deceased' : 'patient'
-    }`
+    inline = `In line with this, we hereby endorse unto your good office the case of the client`
   }
   if (amount !== '') {
     inline = inline + ` in the amount of `
