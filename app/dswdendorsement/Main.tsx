@@ -343,7 +343,7 @@ const Page: React.FC = () => {
       {/* Confirm Delete Modal */}
       {showDeleteModal && (
         <DeleteModal
-          table="adm_medicine_clients"
+          table="adm_dswd_endorsements"
           selectedId={selectedId}
           showingCount={showingCount}
           setShowingCount={setShowingCount}

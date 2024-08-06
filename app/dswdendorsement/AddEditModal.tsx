@@ -51,6 +51,10 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   }
 
   const handleCreate = async (formdata: DswdEndorsementTypes) => {
+    const eno = await generateSeriesNo()
+
+    console.log('eno', eno)
+
     const params = {
       type: formdata.type,
       date: formdata.date,
@@ -68,6 +72,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       requester_gender: formdata.requester_gender,
       requester_address: formdata.requester_address,
       requester_category: formdata.requester_category,
+      endorsement_no: eno,
     }
 
     try {
@@ -145,6 +150,28 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       hideModal()
     } catch (error) {
       console.error('error', error)
+    }
+  }
+
+  const generateSeriesNo = async () => {
+    const { data, error } = await supabase
+      .from('adm_dswd_endorsements')
+      .select('endorsement_no')
+      .not('endorsement_no', 'is', null)
+      .order('endorsement_no', { ascending: false })
+      .limit(1)
+
+    if (!error) {
+      if (data.length > 0) {
+        const rn = !isNaN(data[0].endorsement_no)
+          ? Number(data[0].endorsement_no) + 1
+          : 1
+        return rn
+      } else {
+        return 1
+      }
+    } else {
+      return 1
     }
   }
 
@@ -407,6 +434,21 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                           {...register('requester_category')}
                           type="text"
                           placeholder="Requester Category"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Relationship to Patient/Deceased
+                      </div>
+                      <div>
+                        <input
+                          {...register('relationship')}
+                          type="text"
+                          placeholder="Relationship to Patient/Deceased"
                           className="app__input_standard"
                         />
                       </div>
