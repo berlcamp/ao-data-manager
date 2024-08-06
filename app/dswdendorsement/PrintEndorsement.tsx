@@ -125,7 +125,16 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                     sought assistance from the City Mayor for{' '}
                     <span>{gender_address === '' && 'the '}</span>
                     <span>{gender_address} </span>
-                    <span className="font-bold lowercase">{request}</span>
+                    <span
+                      className="font-bold"
+                      style={{
+                        textTransform:
+                          request === 'EEG' || request === 'MRI'
+                            ? 'uppercase'
+                            : 'lowercase',
+                      }}>
+                      {request}
+                    </span>
                     <span>{patient !== '' && ' of '}</span>
                     <span className="font-bold uppercase">{patient}.</span>
                   </span>{' '}
