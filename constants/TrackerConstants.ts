@@ -32,7 +32,7 @@ export const pharmacyList = [
   //   address: 'Maningcol, Ozamiz City',
   // },
   {
-    pharmacy: 'Generika Drugstore',
+    pharmacy: 'J.C. Marave Healthcare Products Trading',
     director: 'Mr. Jason Chiong Marave',
     code: 'GEN',
     dear: 'Mr. Marave',
