@@ -57,7 +57,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
     }
   } else {
     requester = selectedItem.requester_fullname
-    request = `${selectedItem.type} of `
+    request = `${selectedItem.type}`
     patient = `${selectedItem.patient_fullname}`
   }
 
@@ -124,7 +124,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                     {' '}
                     sought assistance from the City Mayor for the{' '}
                     <span>{gender_address} </span>
-                    <span className="font-bold lowercase">{request}</span>
+                    <span className="font-bold lowercase">{request} of </span>
                     <span className="font-bold uppercase">{patient}.</span>
                   </span>{' '}
                   <span>{inline}</span>
