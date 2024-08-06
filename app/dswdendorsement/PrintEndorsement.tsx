@@ -42,15 +42,18 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   let requester = ''
   let patient = ''
   let request = ''
+  let gender_address = ''
   let amount = ''
   let inline = ''
 
   if (selectedItem.requester_fullname === '') {
-    requester = `.${selectedItem.patient_fullname}`
+    requester = `${selectedItem.patient_fullname}`
     if (selectedItem.patient_gender === 'Male') {
-      request = `his ${selectedItem.type}`
+      gender_address = 'his'
+      request = `${selectedItem.type}`
     } else {
-      request = `her ${selectedItem.type}`
+      gender_address = 'her'
+      request = `${selectedItem.type}`
     }
   } else {
     requester = selectedItem.requester_fullname
@@ -69,7 +72,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   }
 
   if (selectedItem.requester_fullname === '') {
-    inline = `In line with this, we hereby endorse unto your good office the case of above mentioned name`
+    inline = `In line with this, we hereby endorse unto your good office the case of the above-mentioned name`
   } else {
     inline = `In line with this, we hereby endorse unto your good office the case of the ${
       selectedItem.type === 'Funeral Bill' ? 'deceased' : 'patient'
@@ -84,7 +87,9 @@ const PrintEndorsement: React.FC<ChildProps> = ({
       ref={forwardedRef}
       className="w-full mx-auto px-10 mt-8 text-xs">
       <table className="w-full">
-        <LogoHeader />
+        <thead>
+          <LogoHeader />
+        </thead>
         <tbody className="text-sm">
           <tr>
             <td
@@ -118,7 +123,8 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                   <span>
                     {' '}
                     sought assistance from the City Mayor for the{' '}
-                    <span>{request}</span>
+                    <span>{gender_address} </span>
+                    <span className="font-bold lowercase">{request}</span>
                     <span className="font-bold uppercase">{patient}.</span>
                   </span>{' '}
                   <span>{inline}</span>
