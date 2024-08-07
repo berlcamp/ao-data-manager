@@ -75,7 +75,7 @@
   }
   @media print {
     @page {
-      margin: 5mm 5mm 10mm 5mm; /* Adjust margins as needed */
+      margin: 5mm 10mm 10mm 10mm; /* Adjust margins as needed */
     }
     thead {
       display: table-header-group; /* Ensures headers are repeated on each page */

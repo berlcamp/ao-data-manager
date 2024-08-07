@@ -72,7 +72,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   }
 
   if (selectedItem.requester_fullname === '') {
-    inline = `In line with this, we hereby endorse unto your good office the case of the above-mentioned name`
+    inline = `In line with this, we hereby endorse unto your good office the case of the client`
   } else {
     inline = `In line with this, we hereby endorse unto your good office the case of the client`
   }
@@ -83,7 +83,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   return (
     <div
       ref={forwardedRef}
-      className="w-full mx-auto px-10 mt-8 text-xs">
+      className="w-full mx-auto px-10 mt-8 text-sm">
       <table className="w-full">
         <thead>
           <LogoHeader />
