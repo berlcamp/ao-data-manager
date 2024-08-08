@@ -23,7 +23,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   const { setToast } = useFilter()
   const { supabase } = useSupabase()
   const [saving, setSaving] = useState(false)
-  const [type, setType] = useState(editData ? editData.other : '')
+  const [type, setType] = useState(editData ? editData.type : '')
 
   // Redux staff
   const globallist = useSelector((state: any) => state.list.value)
