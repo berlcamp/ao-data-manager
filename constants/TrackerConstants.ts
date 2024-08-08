@@ -95,6 +95,7 @@ export const endorsementTypes = [
   'Hospital Bill',
   'Funeral Bill',
   'Chemotherapy',
+  'Other',
 ]
 
 export const docTypes = [

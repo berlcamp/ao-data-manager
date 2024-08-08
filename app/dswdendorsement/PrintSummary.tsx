@@ -73,7 +73,9 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border_black p-1">
                 {med.date && format(new Date(med.date), 'MM/dd/yyyy')}
               </td>
-              <td className="border_black p-1">{med.type}</td>
+              <td className="border_black p-1">
+                {med.type !== 'Other' ? med.type : med.other}
+              </td>
               <td className="border_black p-1">{med.amount}</td>
             </tr>
           ))}

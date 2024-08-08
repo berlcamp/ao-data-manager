@@ -348,5 +348,6 @@ export interface DswdEndorsementTypes {
   requester_gender: string
   requester_address: string
   requester_category: string
+  other: string
   endorsement_no: number
 }

@@ -308,7 +308,9 @@ const Page: React.FC = () => {
                           <span>-</span>
                         )}
                       </td>
-                      <td className="app__td">{item.type}</td>
+                      <td className="app__td">
+                        {item.type !== 'Other' ? item.type : item.other}
+                      </td>
                       <td className="app__td">{item.patient_address}</td>
                     </tr>
                   ))}

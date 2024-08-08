@@ -23,6 +23,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   const { setToast } = useFilter()
   const { supabase } = useSupabase()
   const [saving, setSaving] = useState(false)
+  const [type, setType] = useState(editData ? editData.other : '')
 
   // Redux staff
   const globallist = useSelector((state: any) => state.list.value)
@@ -57,6 +58,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       type: formdata.type,
+      other: formdata.other,
       date: formdata.date,
       client_himself: formdata.client_himself,
       docdor: formdata.docdor,
@@ -110,6 +112,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       type: formdata.type,
+      other: formdata.other,
       date: formdata.date,
       client_himself: formdata.client_himself,
       docdor: formdata.docdor,
@@ -187,6 +190,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       // request details
       date: editData ? editData.date : dateString,
       type: editData ? editData.type : '',
+      other: editData ? editData.other : '',
       client_himself: editData ? editData.client_himself : false,
       docdor: editData ? editData.docdor : '',
       relationship: editData ? editData.relationship : '',
@@ -251,6 +255,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       <div>
                         <select
                           {...register('type', { required: true })}
+                          onChange={(e) => setType(e.target.value)}
                           className="app__input_standard">
                           <option value="">Select</option>
                           {endorsementTypes.map((item, index) => (
@@ -269,6 +274,28 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       </div>
                     </div>
                   </div>
+                  {type && (
+                    <div className="app__form_field_inline_half">
+                      <div className="w-full">
+                        <div className="app__label_standard">
+                          Specify type of request
+                        </div>
+                        <div>
+                          <input
+                            {...register('other', { required: true })}
+                            type="text"
+                            placeholder="Specify type of request"
+                            className="app__input_standard"
+                          />
+                          {errors.other && (
+                            <div className="app__error_message">
+                              Request type is required
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className="app__form_field_inline_half">
                     <div className="w-full">
                       <div className="app__label_standard">Amount</div>
@@ -306,11 +333,16 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       <div className="app__label_standard">Fullname</div>
                       <div>
                         <input
-                          {...register('patient_fullname')}
+                          {...register('patient_fullname', { required: true })}
                           type="text"
                           placeholder="Patient Fullname"
                           className="app__input_standard"
                         />
+                        {errors.patient_fullname && (
+                          <div className="app__error_message">
+                            Patient fullname is required
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -319,12 +351,17 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       <div className="app__label_standard">Gender</div>
                       <div>
                         <select
-                          {...register('patient_gender')}
+                          {...register('patient_gender', { required: true })}
                           className="app__input_standard">
                           <option value="">Select</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
                         </select>
+                        {errors.patient_gender && (
+                          <div className="app__error_message">
+                            Patient gender is required
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
