@@ -124,8 +124,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                     {' '}
                     sought assistance from the City Mayor for{' '}
                     <span>
-                      {gender_address === '' &&
-                      selectedItem.type !== 'Financial Assistance'
+                      {gender_address === '' && selectedItem.type !== 'Other'
                         ? 'the '
                         : ''}
                     </span>
