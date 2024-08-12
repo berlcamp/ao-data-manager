@@ -310,7 +310,9 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                             <option value="">Select</option>
                             <option value="MHARS-MC">MHARS-MC</option>
                             <option value="MUMC">MUMC</option>
-                            <option value="Faith">Faith</option>
+                            <option value="Faith Hospital">
+                              Faith Hospital
+                            </option>
                             <option value="SPPMC">SPPMC</option>
                             <option value="St.Joseph">St.Joseph</option>
                             <option value="St.Padre Pio Dialysis Center">

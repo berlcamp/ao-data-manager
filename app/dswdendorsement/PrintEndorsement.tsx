@@ -140,6 +140,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                       {request}
                     </span>
                     <span>{patient !== '' && ' of '}</span>
+                    <span className="font-bold uppercase">{patient}</span>
                     <span>
                       {selectedItem.type === 'Hospital Bill' && (
                         <span>
@@ -150,8 +151,8 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                         </span>
                       )}
                     </span>
-                    <span className="font-bold uppercase">{patient}.</span>
-                  </span>{' '}
+                  </span>
+                  {'. '}
                   <span>{inline}</span>
                   <span className="font-bold uppercase">{amount}.</span>
                 </div>
