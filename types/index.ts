@@ -349,5 +349,6 @@ export interface DswdEndorsementTypes {
   requester_address: string
   requester_category: string
   other: string
+  hospital: string
   endorsement_no: number
 }

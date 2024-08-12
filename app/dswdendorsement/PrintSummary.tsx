@@ -75,6 +75,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               </td>
               <td className="border_black p-1">
                 {med.type !== 'Other' ? med.type : med.other}
+                {med.type === 'Hospital Bill' && <span> ({med.hospital})</span>}
               </td>
               <td className="border_black p-1">{med.amount}</td>
             </tr>

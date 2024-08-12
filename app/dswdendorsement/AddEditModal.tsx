@@ -59,6 +59,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     const params = {
       type: formdata.type,
       other: formdata.other,
+      hospital: formdata.hospital,
       date: formdata.date,
       client_himself: formdata.client_himself,
       docdor: formdata.docdor,
@@ -113,6 +114,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     const params = {
       type: formdata.type,
       other: formdata.other,
+      hospital: formdata.hospital,
       date: formdata.date,
       client_himself: formdata.client_himself,
       docdor: formdata.docdor,
@@ -191,6 +193,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       date: editData ? editData.date : dateString,
       type: editData ? editData.type : '',
       other: editData ? editData.other : '',
+      hospital: editData ? editData.hospital : '',
       client_himself: editData ? editData.client_himself : false,
       docdor: editData ? editData.docdor : '',
       relationship: editData ? editData.relationship : '',
@@ -290,6 +293,45 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                           {errors.other && (
                             <div className="app__error_message">
                               Request type is required
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {type === 'Hospital Bill' && (
+                    <div className="app__form_field_inline_half">
+                      <div className="w-full">
+                        <div className="app__label_standard">Hospital</div>
+                        <div>
+                          <select
+                            {...register('hospital', { required: true })}
+                            className="app__input_standard">
+                            <option value="">Select</option>
+                            <option value="MHARS-MC">MHARS-MC</option>
+                            <option value="MUMC">MUMC</option>
+                            <option value="Faith">Faith</option>
+                            <option value="SPPMC">SPPMC</option>
+                            <option value="St.Joseph">St.Joseph</option>
+                            <option value="St.Padre Pio Dialysis Center">
+                              St.Padre Pio Dialysis Center
+                            </option>
+                            <option value="Medina">Medina</option>
+                            <option value="S.M.Lao">S.M.Lao</option>
+                            <option value="Dr. Ditching Eye Center">
+                              Dr. Ditching Eye Center
+                            </option>
+                            <option value="Tagaloguin-Adona">
+                              Tagaloguin-Adona
+                            </option>
+                            <option value="It Works">It Works</option>
+                            <option value="JD Rehabilitation Center">
+                              JD Rehabilitation Center
+                            </option>
+                          </select>
+                          {errors.hospital && (
+                            <div className="app__error_message">
+                              Hospital is required
                             </div>
                           )}
                         </div>
