@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  ConfirmModal,
   CustomButton,
   DeleteModal,
   PerPage,
@@ -155,6 +156,49 @@ const Page: React.FC = () => {
     }
   }
 
+  // Cancel confirmation
+  const cancel = (id: string) => {
+    setShowConfirmation(true)
+    setSelectedId(id)
+  }
+  const handleCancel = () => {
+    setShowConfirmation(false)
+    setSelectedId('')
+  }
+  const handleConfirm = async () => {
+    await handleCancelGL()
+    setShowConfirmation(false)
+  }
+  const handleCancelGL = async () => {
+    try {
+      const newData = {
+        status: 'Cancelled',
+      }
+
+      const { error } = await supabase
+        .from('adm_dswd_endorsements')
+        .update(newData)
+        .eq('id', selectedId)
+
+      if (error) throw new Error(error.message)
+
+      // Append new data in redux
+      const items = [...globallist]
+      const updatedData = {
+        ...newData,
+        id: selectedId,
+      }
+      const foundIndex = items.findIndex((x) => x.id === updatedData.id)
+      items[foundIndex] = { ...items[foundIndex], ...updatedData }
+      dispatch(updateList(items))
+
+      // pop up the success message
+      setToast('success', 'Successfully cancelled.')
+    } catch (error) {
+      console.error('error', error)
+    }
+  }
+
   // Update list whenever list in redux updates
   useEffect(() => {
     setList(globallist)
@@ -270,15 +314,24 @@ const Page: React.FC = () => {
                                         <span>Edit</span>
                                       </div>
                                     </Menu.Item>
-
-                                    <Menu.Item>
+                                    {item.status !== 'Cancelled' && (
+                                      <Menu.Item>
+                                        <div
+                                          onClick={() => cancel(item.id)}
+                                          className="app__dropdown_item">
+                                          <TrashIcon className="w-4 h-4" />
+                                          <span>Mark as Cancelled</span>
+                                        </div>
+                                      </Menu.Item>
+                                    )}
+                                    {/* <Menu.Item>
                                       <div
                                         onClick={() => handleDelete(item.id)}
                                         className="app__dropdown_item">
                                         <TrashIcon className="w-4 h-4" />
                                         <span>Delete</span>
                                       </div>
-                                    </Menu.Item>
+                                    </Menu.Item> */}
                                   </>
                                 )}
                                 <Menu.Item>
@@ -294,7 +347,14 @@ const Page: React.FC = () => {
                         </Menu>
                       </td>
                       <th className="app__th_firstcol">
-                        <div>{item.patient_fullname}</div>
+                        <div>
+                          {item.patient_fullname}
+                          {item.status === 'Cancelled' && (
+                            <span className="ml-1 rounded-sm p-px bg-red-500 text-white">
+                              Cancelled
+                            </span>
+                          )}
+                        </div>
                       </th>
                       <th className="app__th_firstcol">
                         <div>{item.requester_fullname}</div>
@@ -339,6 +399,17 @@ const Page: React.FC = () => {
         <AddEditModal
           editData={editData}
           hideModal={() => setShowAddModal(false)}
+        />
+      )}
+
+      {/* Confirm Cancel Modal */}
+      {showConfirmation && (
+        <ConfirmModal
+          message="Are you sure you want to cancel this Endorsement?"
+          header="Confirm cancel"
+          btnText="Confirm"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
         />
       )}
 
