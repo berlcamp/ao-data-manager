@@ -9,7 +9,7 @@ import type { DswdEndorsementTypes } from '@/types'
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
-import { endorsementTypes } from '@/constants/TrackerConstants'
+import { dswdHospitals, endorsementTypes } from '@/constants/TrackerConstants'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { useDispatch, useSelector } from 'react-redux'
 // import { useSupabase } from '@/context/SupabaseProvider'
@@ -308,28 +308,13 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                             {...register('hospital', { required: true })}
                             className="app__input_standard">
                             <option value="">Select</option>
-                            <option value="MHARS-MC">MHARS-MC</option>
-                            <option value="MUMC">MUMC</option>
-                            <option value="Faith Hospital">
-                              Faith Hospital
-                            </option>
-                            <option value="SPPMC">SPPMC</option>
-                            <option value="St.Joseph">St.Joseph</option>
-                            <option value="St.Padre Pio Dialysis Center">
-                              St.Padre Pio Dialysis Center
-                            </option>
-                            <option value="Medina">Medina</option>
-                            <option value="S.M.Lao">S.M.Lao</option>
-                            <option value="Dr. Ditching Eye Center">
-                              Dr. Ditching Eye Center
-                            </option>
-                            <option value="Tagaloguin-Adona">
-                              Tagaloguin-Adona
-                            </option>
-                            <option value="It Works">It Works</option>
-                            <option value="JD Rehabilitation Center">
-                              JD Rehabilitation Center
-                            </option>
+                            {dswdHospitals.map((h, i) => (
+                              <option
+                                key={i}
+                                value={h}>
+                                {h}
+                              </option>
+                            ))}
                           </select>
                           {errors.hospital && (
                             <div className="app__error_message">
