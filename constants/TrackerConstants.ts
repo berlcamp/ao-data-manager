@@ -87,6 +87,14 @@ export const hospitalsList = [
   'JD Rehabilitation Center',
 ]
 
+export const dswdHospitals = [
+  'Mayor Hilarion A. Ramiro Sr. Medical Center',
+  'Misamis University Medical Center',
+  'Tobias Feliciano Faith General Hospital',
+  'St. Joseph General Hospital',
+  'Medina General Hospital',
+]
+
 export const endorsementTypes = [
   'MRI',
   'EEG',
