@@ -356,7 +356,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                   </div>
                   <div className="app__form_field_inline_half">
                     <div className="w-full">
-                      <div className="app__label_standard">Docdor</div>
+                      <div className="app__label_standard">Doctor</div>
                       <div>
                         <input
                           {...register('docdor')}
