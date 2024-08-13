@@ -308,23 +308,33 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                             {...register('hospital', { required: true })}
                             className="app__input_standard">
                             <option value="">Select</option>
-                            <option value="MHARS-MC">MHARS-MC</option>
-                            <option value="MUMC">MUMC</option>
+                            <option value="MHARS-MC Hospital">
+                              MHARS-MC Hospital
+                            </option>
+                            <option value="MUMC Hospital">MUMC Hospital</option>
                             <option value="Faith Hospital">
                               Faith Hospital
                             </option>
-                            <option value="SPPMC">SPPMC</option>
-                            <option value="St.Joseph">St.Joseph</option>
+                            <option value="SPPMC Hospital">
+                              SPPMC Hospital
+                            </option>
+                            <option value="St.Joseph Hospital">
+                              St.Joseph Hospital
+                            </option>
                             <option value="St.Padre Pio Dialysis Center">
                               St.Padre Pio Dialysis Center
                             </option>
-                            <option value="Medina">Medina</option>
-                            <option value="S.M.Lao">S.M.Lao</option>
+                            <option value="Medina Hospital">
+                              Medina Hospital
+                            </option>
+                            <option value="S.M.Lao Hospital">
+                              S.M.Lao Hospital
+                            </option>
                             <option value="Dr. Ditching Eye Center">
                               Dr. Ditching Eye Center
                             </option>
                             <option value="Tagaloguin-Adona">
-                              Tagaloguin-Adona
+                              Tagaloguin-Adona Hospital
                             </option>
                             <option value="It Works">It Works</option>
                             <option value="JD Rehabilitation Center">
