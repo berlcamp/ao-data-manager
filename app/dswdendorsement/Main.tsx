@@ -324,14 +324,14 @@ const Page: React.FC = () => {
                                         </div>
                                       </Menu.Item>
                                     )}
-                                    {/* <Menu.Item>
+                                    <Menu.Item>
                                       <div
                                         onClick={() => handleDelete(item.id)}
                                         className="app__dropdown_item">
                                         <TrashIcon className="w-4 h-4" />
                                         <span>Delete</span>
                                       </div>
-                                    </Menu.Item> */}
+                                    </Menu.Item>
                                   </>
                                 )}
                                 <Menu.Item>
