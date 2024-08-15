@@ -24,7 +24,7 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
   const handleDownload = async () => {
     setLoading(true)
     try {
-      const result = await fetchDocuments(filters, 500, 0)
+      const result = await fetchDocuments(filters, 999, 0)
 
       const results: DocumentTypes[] | [] = result.data
 
