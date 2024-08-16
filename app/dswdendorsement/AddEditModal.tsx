@@ -362,16 +362,11 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       <div className="app__label_standard">Fullname</div>
                       <div>
                         <input
-                          {...register('patient_fullname', { required: true })}
+                          {...register('patient_fullname')}
                           type="text"
                           placeholder="Patient Fullname"
                           className="app__input_standard"
                         />
-                        {errors.patient_fullname && (
-                          <div className="app__error_message">
-                            Patient fullname is required
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -380,17 +375,12 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       <div className="app__label_standard">Gender</div>
                       <div>
                         <select
-                          {...register('patient_gender', { required: true })}
+                          {...register('patient_gender')}
                           className="app__input_standard">
                           <option value="">Select</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
                         </select>
-                        {errors.patient_gender && (
-                          <div className="app__error_message">
-                            Patient gender is required
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>

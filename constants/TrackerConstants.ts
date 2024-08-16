@@ -103,6 +103,7 @@ export const endorsementTypes = [
   'Hospital Bill',
   'Funeral Bill',
   'Financial Assistance',
+  'Financial Assistance (Requester only)',
   'Chemotherapy',
   'Other',
 ]

@@ -45,6 +45,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   let gender_address = ''
   let amount = ''
   let inline = ''
+  let help = 'assistance'
   let type =
     selectedItem.type === 'Other' ? selectedItem.other : selectedItem.type
 
@@ -61,6 +62,17 @@ const PrintEndorsement: React.FC<ChildProps> = ({
     requester = selectedItem.requester_fullname
     request = `${type}`
     patient = `${selectedItem.patient_fullname}`
+  }
+
+  if (selectedItem.type === 'Financial Assistance (Requester only)') {
+    requester = selectedItem.requester_fullname
+    request = `financial assistance`
+    patient = ''
+    help = 'help'
+  }
+
+  if (selectedItem.type === 'Financial Assistance') {
+    help = 'help'
   }
 
   if (selectedItem.amount !== '') {
@@ -122,7 +134,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                   <span className="font-bold uppercase">{requester}</span>
                   <span>
                     {' '}
-                    sought assistance from the City Mayor for{' '}
+                    sought {help} from the City Mayor for{' '}
                     <span>
                       {gender_address === '' && selectedItem.type !== 'Other'
                         ? 'the '
