@@ -64,7 +64,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
     patient = `${selectedItem.patient_fullname}`
   }
 
-  if (selectedItem.type === 'Financial Assistance (Requester only)') {
+  if (selectedItem.type === 'Financial Assistance (Medicine)') {
     requester = selectedItem.requester_fullname
     request = `financial assistance`
     patient = ''
