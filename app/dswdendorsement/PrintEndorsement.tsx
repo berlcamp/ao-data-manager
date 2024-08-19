@@ -18,6 +18,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
 }) => {
   const convertToWord = (amount: number) => {
     const toWords = new ToWords({
+      localeCode: 'en-US',
       converterOptions: {
         currency: true,
         ignoreDecimal: false,
