@@ -77,7 +77,14 @@ const PrintSummary: React.FC<ChildProps> = ({
                 {med.type !== 'Other' ? med.type : med.other}
                 {med.type === 'Hospital Bill' && <span> ({med.hospital})</span>}
               </td>
-              <td className="border_black p-1">{med.amount}</td>
+              <td className="border_black p-1">
+                {med.amount &&
+                  med.amount !== '' &&
+                  Number(med.amount).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+              </td>
             </tr>
           ))}
           <tr>
