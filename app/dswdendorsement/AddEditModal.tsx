@@ -9,7 +9,7 @@ import type { DswdEndorsementTypes } from '@/types'
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
-import { dswdHospitals, endorsementTypes } from '@/constants/TrackerConstants'
+import { dswdHospitals, requestTypes } from '@/constants/TrackerConstants'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { useDispatch, useSelector } from 'react-redux'
 // import { useSupabase } from '@/context/SupabaseProvider'
@@ -52,12 +52,11 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
   }
 
   const handleCreate = async (formdata: DswdEndorsementTypes) => {
-    const eno = await generateSeriesNo()
-
-    console.log('eno', eno)
+    const eno = await generateSeriesNo(formdata.endorsement_type)
 
     const params = {
       type: formdata.type,
+      endorsement_type: formdata.endorsement_type,
       other: formdata.other,
       hospital: formdata.hospital,
       date: formdata.date,
@@ -113,6 +112,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       type: formdata.type,
+      endorsement_type: formdata.endorsement_type,
       other: formdata.other,
       hospital: formdata.hospital,
       date: formdata.date,
@@ -158,10 +158,11 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     }
   }
 
-  const generateSeriesNo = async () => {
+  const generateSeriesNo = async (type: string) => {
     const { data, error } = await supabase
       .from('adm_dswd_endorsements')
       .select('endorsement_no')
+      .eq('endorsement_type', type)
       .not('endorsement_no', 'is', null)
       .order('endorsement_no', { ascending: false })
       .limit(1)
@@ -192,6 +193,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       // request details
       date: editData ? editData.date : dateString,
       type: editData ? editData.type : '',
+      endorsement_type: editData ? editData.endorsement_type : '',
       other: editData ? editData.other : '',
       hospital: editData ? editData.hospital : '',
       client_himself: editData ? editData.client_himself : false,
@@ -254,6 +256,27 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                   </div>
                   <div className="app__form_field_inline_half">
                     <div className="w-full">
+                      <div className="app__label_standard">
+                        Endorsement Type
+                      </div>
+                      <div>
+                        <select
+                          {...register('endorsement_type', { required: true })}
+                          className="app__input_standard">
+                          <option value="">Select</option>
+                          <option value="DSWD">DSWD</option>
+                          <option value="PCSO">PCSO</option>
+                        </select>
+                        {errors.type && (
+                          <div className="app__error_message">
+                            Endorsement type is required
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
                       <div className="app__label_standard">Request Type</div>
                       <div>
                         <select
@@ -261,7 +284,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                           onChange={(e) => setType(e.target.value)}
                           className="app__input_standard">
                           <option value="">Select</option>
-                          {endorsementTypes.map((item, index) => (
+                          {requestTypes.map((item, index) => (
                             <option
                               key={index}
                               value={item}>

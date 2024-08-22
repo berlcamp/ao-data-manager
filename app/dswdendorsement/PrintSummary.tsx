@@ -41,7 +41,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               <div className="border border-red-500 border-dashed"></div>
               <div className="border border-red-500 border-dashed mt-px"></div>
               <div className="text-xl underline underline-offset-2 mt-4 mb-6">
-                DSWD Endorsements Summary
+                Endorsements Summary
               </div>
             </td>
           </tr>
@@ -50,7 +50,8 @@ const PrintSummary: React.FC<ChildProps> = ({
             <td className="text-center border_black p-1">Patient</td>
             <td className="text-center border_black p-1">Requester</td>
             <td className="text-center border_black p-1">Date</td>
-            <td className="text-center border_black p-1">Type</td>
+            <td className="text-center border_black p-1">Request</td>
+            <td className="text-center border_black p-1">Endorsement Type</td>
             <td className="text-center border_black p-1">Amount</td>
           </tr>
           {selectedItems.map((med, i) => (
@@ -77,6 +78,7 @@ const PrintSummary: React.FC<ChildProps> = ({
                 {med.type !== 'Other' ? med.type : med.other}
                 {med.type === 'Hospital Bill' && <span> ({med.hospital})</span>}
               </td>
+              <td className="border_black p-1">{med.endorsement_type}</td>
               <td className="border_black p-1">
                 {med.amount &&
                   med.amount !== '' &&

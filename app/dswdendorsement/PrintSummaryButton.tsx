@@ -11,6 +11,7 @@ import PrintSummary from './PrintSummary'
 interface ModalProps {
   filterDateFrom: Date | undefined
   filterDateTo: Date | undefined
+  filterType: string
 }
 
 interface ChildProps {
@@ -21,6 +22,7 @@ interface ChildProps {
 export default function PrintSummaryButton({
   filterDateFrom,
   filterDateTo,
+  filterType,
 }: ModalProps) {
   //
   const [selectedItems, setSelectedItems] = useState<
@@ -48,6 +50,7 @@ export default function PrintSummaryButton({
           {
             filterDateFrom,
             filterDateTo,
+            filterType,
           },
           999,
           0

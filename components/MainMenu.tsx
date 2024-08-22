@@ -93,10 +93,10 @@ const MainMenu: React.FC = () => {
                   </div>
                   <div>
                     <div className="app__menu_item_label">
-                      DSWD Endorsements
+                      DSWD/PCSO Endorsements
                     </div>
                     <div className="app__menu_item_label_description">
-                      DSWD Endorsements
+                      DSWD/PCSO Endorsements
                     </div>
                   </div>
                 </div>

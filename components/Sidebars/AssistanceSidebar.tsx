@@ -56,7 +56,7 @@ export default function AssistanceSidebar() {
                   : ''
               }`}>
               <span className="flex-1 ml-3 whitespace-nowrap">
-                DSWD Endorsements
+                DSWD/PCSO Endorsements
               </span>
             </Link>
           </li>

@@ -121,15 +121,29 @@ const PrintEndorsement: React.FC<ChildProps> = ({
               <div className="mt-6">
                 {format(new Date(selectedItem.date), 'dd MMMM yyyy')}
               </div>
-              <div className="uppercase mt-6 font-bold">
-                RAMIEL A. GUINANDAM
-              </div>
-              <div className="">SWAD Officer</div>
-              <div className="">
-                Department of Social Welfare and Development (DSWD)
-              </div>
-              <div className="">Ozamiz City Field Office</div>
-              <div className="mt-6 font-bold">Dear Mr. Guinandam:</div>
+              {selectedItem.endorsement_type === 'DSWD' && (
+                <>
+                  <div className="uppercase mt-6 font-bold">
+                    RAMIEL A. GUINANDAM
+                  </div>
+                  <div className="">SWAD Officer</div>
+                  <div className="">
+                    Department of Social Welfare and Development (DSWD)
+                  </div>
+                  <div className="">Ozamiz City Field Office</div>
+                  <div className="mt-6 font-bold">Dear Mr. Guinandam:</div>
+                </>
+              )}
+              {selectedItem.endorsement_type === 'PCSO' && (
+                <>
+                  <div className="uppercase mt-6 font-bold">
+                    KRISTINE B. BERNALDEZ
+                  </div>
+                  <div className="">Concurrent FMO I</div>
+                  <div className="mt-6 font-bold">Dear Ms. Bernaldez:</div>
+                </>
+              )}
+
               <div className="mt-6">
                 <div>
                   <span className="font-bold uppercase">{requester}</span>

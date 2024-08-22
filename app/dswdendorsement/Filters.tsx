@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { endorsementTypes } from '@/constants/TrackerConstants'
+import { requestTypes } from '@/constants/TrackerConstants'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
@@ -30,6 +30,7 @@ import { z } from 'zod'
 
 interface FilterTypes {
   setFilterType: (po: string) => void
+  setFilterRequest: (po: string) => void
   setFilterDateFrom: (date: Date | undefined) => void
   setFilterDateTo: (date: Date | undefined) => void
   setFilterKeyword: (keyword: string) => void
@@ -40,10 +41,12 @@ const FormSchema = z.object({
   dateFrom: z.date().optional(),
   dateTo: z.date().optional(),
   type: z.string().optional(),
+  request: z.string().optional(),
 })
 
 const Filters = ({
   setFilterType,
+  setFilterRequest,
   setFilterDateFrom,
   setFilterDateTo,
   setFilterKeyword,
@@ -53,12 +56,14 @@ const Filters = ({
       dateFrom: undefined,
       dateTo: undefined,
       type: '',
+      request: '',
       keyword: '',
     },
   })
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setFilterType(data.type || 'All')
+    setFilterRequest(data.request || 'All')
     setFilterDateFrom(data.dateFrom)
     setFilterDateTo(data.dateTo)
     setFilterKeyword(data.keyword || '')
@@ -68,6 +73,7 @@ const Filters = ({
   const handleClear = () => {
     form.reset()
     setFilterType('All')
+    setFilterRequest('All')
     setFilterDateFrom(undefined)
     setFilterDateTo(undefined)
     setFilterKeyword('')
@@ -183,6 +189,37 @@ const Filters = ({
             <div className="items-center inline-flex app__filter_field_container">
               <FormField
                 control={form.control}
+                name="request"
+                render={({ field }) => (
+                  <FormItem className="w-[240px]">
+                    <FormLabel className="app__form_label">Request</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="All">All</SelectItem>
+                        {requestTypes.map((item, index) => (
+                          <SelectItem
+                            key={index}
+                            value={item}>
+                            {item}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="items-center inline-flex app__filter_field_container">
+              <FormField
+                control={form.control}
                 name="type"
                 render={({ field }) => (
                   <FormItem className="w-[240px]">
@@ -198,13 +235,8 @@ const Filters = ({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="All">All</SelectItem>
-                        {endorsementTypes.map((item, index) => (
-                          <SelectItem
-                            key={index}
-                            value={item}>
-                            {item}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="DSWD">DSWD</SelectItem>
+                        <SelectItem value="PCSO">PCSO</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>

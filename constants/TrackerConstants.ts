@@ -95,7 +95,7 @@ export const dswdHospitals = [
   'Medina General Hospital',
 ]
 
-export const endorsementTypes = [
+export const requestTypes = [
   'MRI',
   'EEG',
   'Medicines',
