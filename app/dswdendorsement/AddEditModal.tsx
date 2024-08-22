@@ -163,6 +163,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       .from('adm_dswd_endorsements')
       .select('endorsement_no')
       .eq('endorsement_type', type)
+      .eq('status', '')
       .not('endorsement_no', 'is', null)
       .order('endorsement_no', { ascending: false })
       .limit(1)

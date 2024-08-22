@@ -140,25 +140,6 @@ const Page: React.FC = () => {
     setShowDeleteModal(true)
   }
 
-  const generateGLNo = async (pcode: string) => {
-    const { data, error } = await supabase
-      .from('adm_dswd_endorsements')
-      .select('endorsement_no')
-      .order('endorsement_no', { ascending: false })
-      .limit(1)
-
-    if (!error) {
-      if (data.length > 0) {
-        const rn = !isNaN(data[0].gl_no) ? Number(data[0].gl_no) + 1 : 1
-        return rn
-      } else {
-        return 1
-      }
-    } else {
-      return 1
-    }
-  }
-
   // Cancel confirmation
   const cancel = (id: string) => {
     setShowConfirmation(true)
