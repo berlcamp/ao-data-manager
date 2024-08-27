@@ -93,6 +93,7 @@ export const dswdHospitals = [
   'Tobias Feliciano Faith General Hospital',
   'St. Joseph General Hospital',
   'Medina General Hospital',
+  'S.M. Lao Memorial City General Hospital',
 ]
 
 export const requestTypes = [
