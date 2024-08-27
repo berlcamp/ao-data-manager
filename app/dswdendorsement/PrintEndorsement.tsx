@@ -140,6 +140,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                     KRISTINE B. BERNALDEZ
                   </div>
                   <div className="">Concurrent FMO I</div>
+                  <div className="">PCSO Misamis Occidental Branch</div>
                   <div className="mt-6 font-bold">Dear Ms. Bernaldez:</div>
                 </>
               )}
