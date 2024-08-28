@@ -17,6 +17,7 @@ interface ModalProps {
 interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
   items: DswdEndorsementTypes[]
+  filterType: string
 }
 
 export default function PrintSummaryButton({
@@ -37,6 +38,7 @@ export default function PrintSummaryButton({
         <PrintSummary
           {...props}
           forwardedRef={ref}
+          filterType={props.filterType}
           selectedItems={props.items}
         />
       </div>
@@ -78,6 +80,7 @@ export default function PrintSummaryButton({
           <ChildWithRef
             items={selectedItems}
             ref={componentRef}
+            filterType={filterType}
             forwardedRef={null}
           />
         </div>

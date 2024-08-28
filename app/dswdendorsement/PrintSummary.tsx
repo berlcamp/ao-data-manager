@@ -9,10 +9,12 @@ import React, { useEffect, useState } from 'react'
 interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
   selectedItems: DswdEndorsementTypes[]
+  filterType: string
 }
 
 const PrintSummary: React.FC<ChildProps> = ({
   forwardedRef,
+  filterType,
   selectedItems,
 }) => {
   //
@@ -44,7 +46,8 @@ const PrintSummary: React.FC<ChildProps> = ({
               <div className="border border-red-500 border-dashed"></div>
               <div className="border border-red-500 border-dashed mt-px"></div>
               <div className="text-xl underline underline-offset-2 mt-4 mb-6">
-                Endorsements Summary
+                Summary of Endorsements{' '}
+                {filterType !== 'All' ? `for ${filterType}` : ''}
               </div>
             </td>
           </tr>
