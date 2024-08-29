@@ -53,10 +53,10 @@ const PrintEndorsement: React.FC<ChildProps> = ({
   if (selectedItem.requester_fullname === '') {
     requester = `${selectedItem.patient_fullname}`
     if (selectedItem.patient_gender === 'Male') {
-      gender_address = 'his'
+      gender_address = selectedItem.type !== 'Financial Assistance' ? 'his' : ''
       request = `${type}`
     } else {
-      gender_address = 'her'
+      gender_address = selectedItem.type !== 'Financial Assistance' ? 'her' : ''
       request = `${type}`
     }
   } else {
