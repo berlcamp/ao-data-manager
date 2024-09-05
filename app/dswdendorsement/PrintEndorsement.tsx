@@ -124,7 +124,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
               {selectedItem.endorsement_type === 'DSWD' && (
                 <>
                   <div className="uppercase mt-6 font-bold">
-                    REP. SANCHO FERNANDO "ANDO" F. OAMINAL
+                    REP. SANCHO FERNANDO &quot;ANDO&quot; F. OAMINAL
                   </div>
                   <div className="">2nd District, Misamis Occidental</div>
                   <div className="mt-6 font-bold">Dear Hon. Oaminal:</div>
