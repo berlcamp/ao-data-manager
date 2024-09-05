@@ -56,6 +56,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       type: formdata.type,
+      remarks: formdata.remarks,
       endorsement_type: formdata.endorsement_type,
       other: formdata.other,
       hospital: formdata.hospital,
@@ -112,6 +113,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       type: formdata.type,
+      remarks: formdata.remarks,
       endorsement_type: formdata.endorsement_type,
       other: formdata.other,
       hospital: formdata.hospital,
@@ -194,6 +196,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       // request details
       date: editData ? editData.date : dateString,
       type: editData ? editData.type : '',
+      remarks: editData ? editData.remarks : '',
       endorsement_type: editData ? editData.endorsement_type : '',
       other: editData ? editData.other : '',
       hospital: editData ? editData.hospital : '',
@@ -371,6 +374,18 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                           {...register('docdor')}
                           type="text"
                           placeholder="Doctor"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Remarks</div>
+                      <div>
+                        <textarea
+                          {...register('remarks')}
+                          placeholder="Remarks"
                           className="app__input_standard"
                         />
                       </div>
