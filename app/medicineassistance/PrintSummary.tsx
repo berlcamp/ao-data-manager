@@ -71,7 +71,7 @@ const PrintSummary: React.FC<ChildProps> = ({
             <td className="text-center border_black p-1">Date Approved</td>
             {/* <td className="text-center border_black p-1">Pharmacy</td> */}
             <td className="text-center border_black p-1">Medicines</td>
-            {/* <td className="text-center border_black p-1">Total Amount</td> */}
+            <td className="text-center border_black p-1">Total Amount</td>
           </tr>
           {selectedItems.map((med, i) => (
             <tr key={i}>
@@ -101,17 +101,15 @@ const PrintSummary: React.FC<ChildProps> = ({
                   <div key={i}>
                     <span>{m.description}</span>
                     <span>({m.unit})</span>
-                    <span> - Qty: {m.quantity}</span>
-                    <span>{m.price}</span>
                   </div>
                 ))}
               </td>
-              {/* <td className="border_black p-1">
+              <td className="border_black p-1">
                 {countTotal(med).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </td> */}
+              </td>
             </tr>
           ))}
           <tr>
