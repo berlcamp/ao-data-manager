@@ -2,7 +2,7 @@
 'use client'
 
 import LogoHeader from '@/components/LogoHeader'
-import { MedicalAssistanceTypes } from '@/types'
+import { MedicalAssistanceTypes, MedicineItemTypes } from '@/types'
 import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 
@@ -69,8 +69,9 @@ const PrintSummary: React.FC<ChildProps> = ({
             <td className="text-center border_black p-1">Patient</td>
             <td className="text-center border_black p-1">Requester</td>
             <td className="text-center border_black p-1">Date Approved</td>
-            <td className="text-center border_black p-1">Pharmacy</td>
-            <td className="text-center border_black p-1">Total Amount</td>
+            {/* <td className="text-center border_black p-1">Pharmacy</td> */}
+            <td className="text-center border_black p-1">Medicines</td>
+            {/* <td className="text-center border_black p-1">Total Amount</td> */}
           </tr>
           {selectedItems.map((med, i) => (
             <tr key={i}>
@@ -94,13 +95,23 @@ const PrintSummary: React.FC<ChildProps> = ({
                 {med.date_approved &&
                   format(new Date(med.date_approved), 'MM/dd/yyyy')}
               </td>
-              <td className="border_black p-1">{med.pharmacy}</td>
+              {/* <td className="border_black p-1">{med.pharmacy}</td> */}
               <td className="border_black p-1">
+                {med.medicines.map((m: MedicineItemTypes, i: number) => (
+                  <div key={i}>
+                    <span>{m.description}</span>
+                    <span>({m.unit})</span>
+                    <span> - Qty: {m.quantity}</span>
+                    <span>{m.price}</span>
+                  </div>
+                ))}
+              </td>
+              {/* <td className="border_black p-1">
                 {countTotal(med).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </td>
+              </td> */}
             </tr>
           ))}
           <tr>

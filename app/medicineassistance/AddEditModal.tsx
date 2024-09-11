@@ -236,6 +236,16 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     setMedicines(updatedData)
   }
 
+  // Function to handle price change for each medicine
+  const handlePriceChange = (index: number, newPrice: string) => {
+    // Create a new array with the updated price
+    const updatedMedicines = medicines.map((item, idx) =>
+      idx === index ? { ...item, price: newPrice } : item
+    )
+    setMedicines(updatedMedicines)
+    console.log('updatedMedicines', updatedMedicines)
+  }
+
   // manually set the defaultValues of use-form-hook whenever the component receives new props.
   useEffect(() => {
     const now = new Date()
@@ -667,7 +677,16 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                                 <td className="app__td">{item.description}</td>
                                 <td className="app__td">{item.unit}</td>
                                 <td className="app__td">{item.quantity}</td>
-                                <td className="app__td">{item.price}</td>
+                                <td className="app__td">
+                                  <input
+                                    type="number"
+                                    value={item.price}
+                                    onChange={(e) =>
+                                      handlePriceChange(index, e.target.value)
+                                    }
+                                    className="app__input"
+                                  />
+                                </td>
                                 <td className="app__td">
                                   <CustomButton
                                     btnType="button"
