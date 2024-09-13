@@ -10,12 +10,16 @@ interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
   selectedItems: DswdEndorsementTypes[]
   filterType: string
+  filterDateFrom: Date | undefined
+  filterDateTo: Date | undefined
 }
 
 const PrintSummary: React.FC<ChildProps> = ({
   forwardedRef,
   filterType,
   selectedItems,
+  filterDateFrom,
+  filterDateTo,
 }) => {
   //
   const [totalAmount, setTotalAmount] = useState(0)
@@ -48,6 +52,10 @@ const PrintSummary: React.FC<ChildProps> = ({
               <div className="text-xl underline underline-offset-2 mt-4 mb-6">
                 Summary of Endorsements{' '}
                 {filterType !== 'All' ? `for ${filterType}` : ''}
+              </div>
+              <div className="text-xl mb-6">
+                {filterDateFrom &&
+                  format(new Date(filterDateFrom), 'MMM dd, yyyy')}
               </div>
             </td>
           </tr>

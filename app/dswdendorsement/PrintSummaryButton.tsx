@@ -18,6 +18,8 @@ interface ChildProps {
   forwardedRef: React.ForwardedRef<HTMLDivElement>
   items: DswdEndorsementTypes[]
   filterType: string
+  filterDateFrom: Date | undefined
+  filterDateTo: Date | undefined
 }
 
 export default function PrintSummaryButton({
@@ -40,6 +42,8 @@ export default function PrintSummaryButton({
           forwardedRef={ref}
           filterType={props.filterType}
           selectedItems={props.items}
+          filterDateFrom={props.filterDateFrom}
+          filterDateTo={props.filterDateTo}
         />
       </div>
     )
@@ -82,6 +86,8 @@ export default function PrintSummaryButton({
             ref={componentRef}
             filterType={filterType}
             forwardedRef={null}
+            filterDateFrom={filterDateFrom}
+            filterDateTo={filterDateTo}
           />
         </div>
       </div>
