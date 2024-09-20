@@ -160,9 +160,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                       className="font-bold"
                       style={{
                         textTransform:
-                          request === 'EEG' || request === 'MRI'
-                            ? 'uppercase'
-                            : 'lowercase',
+                          request.length <= 5 ? 'uppercase' : 'lowercase',
                       }}>
                       {request}
                     </span>
