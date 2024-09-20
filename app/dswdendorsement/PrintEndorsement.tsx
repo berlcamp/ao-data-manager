@@ -158,10 +158,11 @@ const PrintEndorsement: React.FC<ChildProps> = ({
                     <span>{gender_address} </span>
                     <span
                       className="font-bold"
-                      style={{
-                        textTransform:
-                          request.length <= 5 ? 'uppercase' : 'lowercase',
-                      }}>
+                      // style={{
+                      //   textTransform:
+                      //     request.length <= 5 ? 'uppercase' : 'lowercase',
+                      // }}
+                    >
                       {request}
                     </span>
                     <span>{patient !== '' && ' of '}</span>
