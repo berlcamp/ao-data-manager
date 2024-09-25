@@ -55,7 +55,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               </div>
               <div className="text-xl mb-6">
                 {filterDateFrom &&
-                  format(new Date(filterDateFrom), 'MMM dd, yyyy')}
+                  format(new Date(filterDateFrom), 'MMMM dd, yyyy')}
               </div>
             </td>
           </tr>
