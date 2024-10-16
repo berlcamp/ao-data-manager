@@ -135,7 +135,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               className="text-xs font-bold p-px text-center pt-4">
               <div>Noted By:</div>
               <div className="mt-6">CAROLYN N. GO</div>
-              <div>Executive Assistant V</div>
+              <div>City Administrator</div>
             </td>
           </tr>
         </tbody>

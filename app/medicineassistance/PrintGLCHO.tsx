@@ -144,7 +144,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="mt-2">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
               <div className="mt-10 font-bold">CAROLYN N. GO</div>
-              <div className="mt-2">Executive Assistant V</div>
+              <div className="mt-2">City Administrator</div>
             </td>
           </tr>
         </tbody>

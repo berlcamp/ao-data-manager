@@ -204,7 +204,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
               <div className="">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
               <div className="mt-6 font-bold">CAROLYN N. GO</div>
-              <div className="">Executive Assistant V</div>
+              <div className="">City Administrator</div>
             </td>
           </tr>
         </tbody>
