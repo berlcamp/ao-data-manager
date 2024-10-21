@@ -99,6 +99,7 @@ export interface DocumentTypes {
   date_received: string
   user_id: string
   recent_remarks: DocumentRemarksTypes
+  adm_tracker_routes: DocumentFlowchartTypes[]
   asenso_user: AccountTypes
   attachments: { name: string }[]
   amount: string

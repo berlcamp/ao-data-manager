@@ -1,5 +1,5 @@
 'use client'
-import type { DocumentTypes } from '@/types'
+import type { DocumentFlowchartTypes, DocumentTypes } from '@/types'
 import { fetchDocuments } from '@/utils/fetchApi'
 import Excel from 'exceljs'
 import { saveAs } from 'file-saver'
@@ -21,6 +21,28 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
   //
   const [loading, setLoading] = useState(false)
 
+  const getLatestForwarded = (data: DocumentFlowchartTypes[]) => {
+    // Filter the entries where the title contains "forwarded"
+    const forwardedEntries = data.filter((entry) =>
+      entry.title.toLowerCase().includes('forwarded')
+    )
+
+    // Check if any entries were found
+    if (forwardedEntries.length > 0) {
+      // Find the latest date from the filtered entries
+      const latestForwardedDate = forwardedEntries.reduce<any>(
+        (latest, entry) => {
+          return new Date(entry.date) > new Date(latest) ? entry.date : latest
+        },
+        forwardedEntries[0]
+      )
+
+      return `${latestForwardedDate.date} (${latestForwardedDate.title})` // Output the latest date
+    } else {
+      return ''
+    }
+  }
+
   const handleDownload = async () => {
     setLoading(true)
     try {
@@ -35,6 +57,8 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
       // Add data to the worksheet
       worksheet.columns = [
         { header: '#', key: 'no', width: 20 },
+        { header: 'Date Received', key: 'date_received', width: 20 },
+        { header: 'Date Forwarded', key: 'date_forwarded', width: 20 },
         { header: 'Routing No', key: 'routing', width: 20 },
         { header: 'Name/Payee', key: 'requester', width: 20 },
         { header: 'Amount', key: 'amount', width: 20 },
@@ -53,6 +77,8 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
         let remarks = item.recent_remarks?.remarks
         data.push({
           no: index + 1,
+          date_received: item.date_received,
+          date_forwarded: getLatestForwarded(item.adm_tracker_routes),
           routing: item.routing_slip_no,
           requester: item.requester,
           amount: item.amount,

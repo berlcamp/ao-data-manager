@@ -61,7 +61,7 @@ export async function fetchDocuments(
 
     let query = supabase
       .from('adm_trackers')
-      .select('*', { count: 'exact' })
+      .select('*, adm_tracker_routes(title,date)', { count: 'exact' })
       .eq('archived', false)
 
     // Full text search

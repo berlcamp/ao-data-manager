@@ -112,6 +112,7 @@ const Page: React.FC = () => {
         perPageCount,
         0
       )
+
       // update the list in redux
       dispatch(updateList(result.data))
       setResultsCount(result.count ? result.count : 0)
