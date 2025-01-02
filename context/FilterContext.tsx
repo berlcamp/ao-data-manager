@@ -1,5 +1,5 @@
 'use client'
-import { LandingPage, NotWhitelisted, OfflinePage } from '@/components/index'
+import { LandingPage, OfflinePage } from '@/components/index'
 import { useSupabase } from '@/context/SupabaseProvider'
 import type { UserAccessTypes } from '@/types/index'
 import React, { useContext, useEffect, useState } from 'react'
@@ -94,7 +94,7 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
   }
 
   if (!isIpAccepted) {
-    return <NotWhitelisted />
+    // return <NotWhitelisted /> //temporary, uncomment this
   }
 
   if (!session) {
