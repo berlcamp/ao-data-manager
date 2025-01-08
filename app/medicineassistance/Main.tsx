@@ -146,12 +146,15 @@ const Page: React.FC = () => {
   }
 
   const generateGLNo = async (pcode: string) => {
+    const currentYear = new Date().getFullYear()
+
     const { data, error } = await supabase
       .from('adm_medicine_clients')
       .select('gl_no')
       .eq('status', 'Approved')
       .eq('pharmacy_code', pcode)
       .not('gl_no', 'is', null)
+      .gte('date_approved', '2025-01-01')
       .order('gl_no', { ascending: false })
       .limit(1)
 
@@ -496,7 +499,7 @@ const Page: React.FC = () => {
                       </td>
                       <td className="app__td">{item.pharmacy}</td>
                       <td className="app__td">
-                        {item.barangay}, {item.address}
+                        {item.address}, {item.barangay}
                       </td>
                     </tr>
                   ))}

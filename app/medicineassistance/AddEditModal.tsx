@@ -11,7 +11,7 @@ import axios from 'axios'
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
-import { pharmacyList } from '@/constants/TrackerConstants'
+import { addresses, pharmacyList } from '@/constants/TrackerConstants'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { format } from 'date-fns'
 import { useDispatch, useSelector } from 'react-redux'
@@ -58,6 +58,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     register,
     formState: { errors },
     reset,
+    setValue,
     handleSubmit,
   } = useForm<MedicalAssistanceTypes>({
     mode: 'onSubmit',
@@ -80,17 +81,28 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
 
     const params = {
       status: 'For Evaluation',
-      remarks: formdata.remarks,
-      fullname: selectedPatient?.fullname,
-      requester: selectedPatient?.referral,
-      barangay: selectedPatient?.patient_barangay?.barangay,
-      address: selectedPatient?.patient_barangay?.municipality,
-      pharmacy: formdata.pharmacy,
-      pharmacy_code: pharmacy?.code,
-      date_requested: formdata.date_requested,
-      patient_id: selectedPatient?.id,
-      other_details: selectedPatient,
+      pharmacy_code: pharmacy?.code || null,
+      patient_id: selectedPatient?.id || null,
       medicines,
+      date_requested: formdata.date_requested,
+      pharmacy: formdata.pharmacy,
+      remarks: formdata.remarks,
+      fullname: formdata.fullname,
+      sp: formdata.sp,
+      gender: formdata.gender,
+      patient_category: formdata.patient_category,
+      diagnosis: formdata.diagnosis,
+      address: formdata.address,
+      age: formdata.age,
+      patient_remarks: formdata.patient_remarks,
+      referral: formdata.referral,
+      referral_sp: formdata.referral_sp,
+      referral_gender: formdata.referral_gender,
+      requester_category: formdata.requester_category,
+      relationship: formdata.relationship,
+      referral_address: formdata.referral_address,
+      referral_age: formdata.referral_age,
+      referral_remarks: formdata.referral_remarks,
     }
 
     try {
@@ -129,11 +141,27 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     const pharmacy = pharmacyList.find((p) => p.pharmacy === formdata.pharmacy)
 
     const params = {
+      pharmacy_code: pharmacy?.code,
+      medicines,
+      date_requested: formdata.date_requested,
       pharmacy: formdata.pharmacy,
       remarks: formdata.remarks,
-      date_requested: formdata.date_requested,
-      medicines,
-      pharmacy_code: pharmacy?.code,
+      fullname: formdata.fullname,
+      sp: formdata.sp,
+      gender: formdata.gender,
+      patient_category: formdata.patient_category,
+      diagnosis: formdata.diagnosis,
+      address: formdata.address,
+      age: formdata.age,
+      patient_remarks: formdata.patient_remarks,
+      referral: formdata.referral,
+      referral_sp: formdata.referral_sp,
+      referral_gender: formdata.referral_gender,
+      requester_category: formdata.requester_category,
+      relationship: formdata.relationship,
+      referral_address: formdata.referral_address,
+      referral_age: formdata.referral_age,
+      referral_remarks: formdata.referral_remarks,
     }
 
     try {
@@ -203,6 +231,32 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     if (type === 'patient_name') {
       setSelectedPatient(item)
       setSearchPatientName('')
+
+      setValue('fullname', item.fullname)
+      setValue('referral', item.referral)
+      setValue('patient_previous_name', item.patient_previous_name)
+      setValue('sp', item.sp)
+      setValue('gender', item.gender)
+      setValue('patient_category', item.patient_category)
+      setValue('diagnosis', item.diagnosis)
+      setValue('age', item.age)
+      setValue(
+        'address',
+        `${item?.patient_barangay?.municipality}, ${item?.patient_barangay?.barangay}`
+      )
+      setValue('patient_remarks', item.patient_remarks)
+      setValue('referral', item.referral)
+      setValue('referral_previous_name', item.referral_previous_name)
+      setValue('referral_sp', item.referral_sp)
+      setValue('referral_gender', item.referral_gender)
+      setValue('requester_category', item.requester_category)
+      setValue('relationship', item.relationship)
+      setValue('referral_age', item.referral_age)
+      setValue(
+        'referral_address',
+        `${item?.requester_barangay?.municipality}, ${item?.requester_barangay?.barangay}`
+      )
+      setValue('referral_remarks', item.referral_remarks)
     }
     setSearchResults([])
   }
@@ -259,6 +313,22 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       date_requested: editData ? editData.date_requested : dateString,
       pharmacy: editData ? editData.pharmacy : '',
       remarks: editData ? editData.remarks : '',
+      fullname: editData ? editData.fullname : '',
+      sp: editData ? editData.sp : '',
+      gender: editData ? editData.gender : '',
+      patient_category: editData ? editData.patient_category : '',
+      diagnosis: editData ? editData.diagnosis : '',
+      address: editData ? editData.address : '',
+      age: editData ? editData.age : '',
+      patient_remarks: editData ? editData.patient_remarks : '',
+      referral: editData ? editData.referral : '',
+      referral_sp: editData ? editData.referral_sp : '',
+      referral_gender: editData ? editData.referral_gender : '',
+      requester_category: editData ? editData.requester_category : '',
+      relationship: editData ? editData.relationship : '',
+      referral_address: editData ? editData.referral_address : '',
+      referral_age: editData ? editData.referral_age : '',
+      referral_remarks: editData ? editData.referral_remarks : '',
     })
   }, [editData, reset])
 
@@ -346,7 +416,26 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                   </legend>
                   <div className="app__form_field_inline_half">
                     <div className="w-full">
-                      <div className="app__label_standard">Full Name</div>
+                      <div className="app__label_standard">Fullname</div>
+                      <div>
+                        <input
+                          {...register('fullname', { required: true })}
+                          placeholder="Fullname"
+                          className="app__input_standard"
+                        />
+                        {errors.fullname && (
+                          <div className="app__error_message">
+                            Fullname is required
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Full Name (Search from AO System)
+                      </div>
                       {editData && (
                         <div className="app__label_value">
                           {selectedPatient?.fullname}
@@ -417,306 +506,350 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       )}
                     </div>
                   </div>
-                  {selectedPatient && (
-                    <>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Previous Name
-                          </div>
-                          <div className="app__label_value">
-                            {selectedPatient?.patient_previous_name}
-                          </div>
-                        </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Service Provider
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Service Provider
-                          </div>
-                          <div className="app__label_value">
-                            {selectedPatient?.sp}
-                          </div>
-                        </div>
+                      <div>
+                        <input
+                          {...register('sp')}
+                          placeholder="Fullname"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Gender</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.gender}
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Gender</div>
+                      <div>
+                        <select
+                          {...register('gender')}
+                          className="app__select_standard">
+                          <option value="">Select</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Category</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.patient_category}
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Category</div>
+                      <div>
+                        <input
+                          {...register('patient_category')}
+                          placeholder="Category"
+                          className="app__input_standard"
+                        />
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Diagnosis</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.diagnosis}
-                          </div>
-                        </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Diagnosis</div>
+                      <div>
+                        <input
+                          {...register('diagnosis')}
+                          placeholder="Diagnosis"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Address</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.patient_barangay?.barangay},{' '}
-                            {selectedPatient?.patient_barangay?.municipality}
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Address</div>
+                      <div className="flex space-x-2">
+                        <select
+                          {...register('address', { required: true })}
+                          className="app__select_standard">
+                          <option value="">Choose Address</option>
+                          {addresses.map((add, k) => (
+                            <option
+                              key={k}
+                              value={add}>
+                              {add}
+                            </option>
+                          ))}
+                        </select>
+
+                        {errors.address && (
+                          <div className="app__error_message">
+                            Address is required
                           </div>
-                        </div>
+                        )}
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Age</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.age}
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Age</div>
+                      <div>
+                        <input
+                          {...register('age')}
+                          placeholder="Age"
+                          className="app__input_standard"
+                        />
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Remarks</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.patient_remarks}
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Remarks</div>
+                      <div>
+                        <input
+                          {...register('patient_remarks')}
+                          placeholder="Remarks"
+                          className="app__input_standard"
+                        />
                       </div>
-                    </>
-                  )}
+                    </div>
+                  </div>
                 </fieldset>
-                {selectedPatient && (
-                  <>
-                    <fieldset className="border p-4 mt-8 bg-gray-100">
-                      <legend className="text-center text-gray-700 text-lg font-semibold">
-                        Requester Details
-                      </legend>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Requester Full Name
-                          </div>
-                          <div className="app__label_value">
-                            {selectedPatient?.referral}
-                          </div>
+
+                <fieldset className="border p-4 mt-8 bg-gray-100">
+                  <legend className="text-center text-gray-700 text-lg font-semibold">
+                    Requester Details
+                  </legend>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Requester Full Name
+                      </div>
+                      <div>
+                        <input
+                          {...register('referral')}
+                          placeholder="Requester"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Requester Service Provider
+                      </div>
+                      <div>
+                        <input
+                          {...register('referral_sp')}
+                          placeholder="SP"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Gender</div>
+                      <div>
+                        <select
+                          {...register('referral_gender')}
+                          className="app__select_standard">
+                          <option value="">Select</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Category</div>
+                      <div>
+                        <input
+                          {...register('requester_category')}
+                          placeholder="Category"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">
+                        Relationship To Patient
+                      </div>
+                      <div>
+                        <input
+                          {...register('relationship')}
+                          placeholder="Relationship To Patient"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Address</div>
+                      <div className="flex space-x-2">
+                        <select
+                          {...register('referral_address')}
+                          className="app__select_standard">
+                          <option value="">Choose Address</option>
+                          {addresses.map((add, k) => (
+                            <option
+                              key={k}
+                              value={add}>
+                              {add}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Age</div>
+                      <div>
+                        <input
+                          {...register('referral_age')}
+                          placeholder="Age"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">Remarks</div>
+                      <div>
+                        <input
+                          {...register('referral_remarks')}
+                          placeholder="Remarks"
+                          className="app__input_standard"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+                <fieldset className="border p-4 mt-8 bg-gray-100">
+                  <legend className="text-center text-gray-700 text-lg font-semibold">
+                    Medicines
+                  </legend>
+                  <div className="app__form_field_container">
+                    <div className="flex items-start justify-start space-x-2">
+                      <div>
+                        <div className="app__label_standard">Description</div>
+                        <div>
+                          <input
+                            type="text"
+                            value={medicineDescription}
+                            className="app__input_standard"
+                            onChange={(e) =>
+                              setMedicineDescription(e.target.value)
+                            }
+                          />
                         </div>
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Requester Previous Name
-                          </div>
-                          <div className="app__label_value">
-                            {selectedPatient?.referral_previous_name}
-                          </div>
+                      <div>
+                        <div className="app__label_standard">Unit</div>
+                        <div>
+                          <input
+                            type="text"
+                            className="app__input_standard"
+                            value={medicineUnit}
+                            onChange={(e) => setMedicineUnit(e.target.value)}
+                          />
                         </div>
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Requester Service Provider
-                          </div>
-                          <div className="app__label_value">
-                            {selectedPatient?.referral_sp}
-                          </div>
+                      <div>
+                        <div className="app__label_standard">Quantity</div>
+                        <div>
+                          <input
+                            type="number"
+                            step="any"
+                            className="app__input_standard"
+                            value={medicineQuantity}
+                            onChange={(e) =>
+                              setMedicineQuantity(e.target.value)
+                            }
+                          />
                         </div>
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Gender</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.referral_gender}
-                          </div>
+                      <div>
+                        <div className="app__label_standard">Price</div>
+                        <div>
+                          <input
+                            type="number"
+                            step="any"
+                            className="app__input_standard"
+                            value={medicinePrice}
+                            onChange={(e) => setMedicinePrice(e.target.value)}
+                          />
                         </div>
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Category</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.requester_category}
-                          </div>
+                      <div>
+                        <div>&nbsp;</div>
+                        <div>
+                          <CustomButton
+                            btnType="button"
+                            // isDisabled={saving}
+                            title="Add"
+                            handleClick={handleAddMedicine}
+                            containerStyles="app__btn_blue"
+                          />
                         </div>
                       </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">
-                            Relationship To Patient
-                          </div>
-                          <div className="app__label_value">
-                            {selectedPatient?.relationship}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Address</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.requester_barangay?.barangay},{' '}
-                            {selectedPatient?.requester_barangay?.municipality}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Age</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.referral_age}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_inline_half">
-                        <div className="w-full">
-                          <div className="app__label_standard">Remarks</div>
-                          <div className="app__label_value">
-                            {selectedPatient?.referral_remarks}
-                          </div>
-                        </div>
-                      </div>
-                    </fieldset>
-                    <fieldset className="border p-4 mt-8 bg-gray-100">
-                      <legend className="text-center text-gray-700 text-lg font-semibold">
-                        Medicines
-                      </legend>
-                      <div className="app__form_field_container">
-                        <div className="flex items-start justify-start space-x-2">
-                          <div>
-                            <div className="app__label_standard">
-                              Description
-                            </div>
-                            <div>
-                              <input
-                                type="text"
-                                value={medicineDescription}
-                                className="app__input_standard"
-                                onChange={(e) =>
-                                  setMedicineDescription(e.target.value)
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <div className="app__label_standard">Unit</div>
-                            <div>
-                              <input
-                                type="text"
-                                className="app__input_standard"
-                                value={medicineUnit}
-                                onChange={(e) =>
-                                  setMedicineUnit(e.target.value)
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <div className="app__label_standard">Quantity</div>
-                            <div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_container">
+                    <table className="w-full text-sm text-left text-gray-600">
+                      {medicines.length > 0 && (
+                        <thead className="app__thead">
+                          <tr>
+                            <th className="app__th">Description</th>
+                            <th className="app__th">Unit</th>
+                            <th className="app__th">Quantity</th>
+                            <th className="app__th">Price</th>
+                            <th className="app__th"></th>
+                          </tr>
+                        </thead>
+                      )}
+                      <tbody className="app__thead">
+                        {medicines.map((item: MedicineItemTypes, index) => (
+                          <tr
+                            key={index}
+                            className="app__tr">
+                            <td className="app__td">{item.description}</td>
+                            <td className="app__td">{item.unit}</td>
+                            <td className="app__td">{item.quantity}</td>
+                            <td className="app__td">
                               <input
                                 type="number"
-                                step="any"
-                                className="app__input_standard"
-                                value={medicineQuantity}
+                                value={item.price}
                                 onChange={(e) =>
-                                  setMedicineQuantity(e.target.value)
+                                  handlePriceChange(index, e.target.value)
                                 }
+                                className="app__input"
                               />
-                            </div>
-                          </div>
-                          <div>
-                            <div className="app__label_standard">Price</div>
-                            <div>
-                              <input
-                                type="number"
-                                step="any"
-                                className="app__input_standard"
-                                value={medicinePrice}
-                                onChange={(e) =>
-                                  setMedicinePrice(e.target.value)
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <div>&nbsp;</div>
-                            <div>
+                            </td>
+                            <td className="app__td">
                               <CustomButton
                                 btnType="button"
-                                // isDisabled={saving}
-                                title="Add"
-                                handleClick={handleAddMedicine}
-                                containerStyles="app__btn_blue"
+                                isDisabled={saving}
+                                title="Remove"
+                                handleClick={() => handleRemoveMedicine(item)}
+                                containerStyles="app__btn_red_xs"
                               />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="app__form_field_container">
-                        <table className="w-full text-sm text-left text-gray-600">
-                          {medicines.length > 0 && (
-                            <thead className="app__thead">
-                              <tr>
-                                <th className="app__th">Description</th>
-                                <th className="app__th">Unit</th>
-                                <th className="app__th">Quantity</th>
-                                <th className="app__th">Price</th>
-                                <th className="app__th"></th>
-                              </tr>
-                            </thead>
-                          )}
-                          <tbody className="app__thead">
-                            {medicines.map((item: MedicineItemTypes, index) => (
-                              <tr
-                                key={index}
-                                className="app__tr">
-                                <td className="app__td">{item.description}</td>
-                                <td className="app__td">{item.unit}</td>
-                                <td className="app__td">{item.quantity}</td>
-                                <td className="app__td">
-                                  <input
-                                    type="number"
-                                    value={item.price}
-                                    onChange={(e) =>
-                                      handlePriceChange(index, e.target.value)
-                                    }
-                                    className="app__input"
-                                  />
-                                </td>
-                                <td className="app__td">
-                                  <CustomButton
-                                    btnType="button"
-                                    isDisabled={saving}
-                                    title="Remove"
-                                    handleClick={() =>
-                                      handleRemoveMedicine(item)
-                                    }
-                                    containerStyles="app__btn_red_xs"
-                                  />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </fieldset>
-                  </>
-                )}
-                {!selectedPatient && <div className="h-32">&nbsp;</div>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </fieldset>
               </div>
               <div className="app__modal_footer">
-                {selectedPatient && (
-                  <CustomButton
-                    btnType="submit"
-                    isDisabled={saving}
-                    title={saving ? 'Saving...' : 'Submit'}
-                    containerStyles="app__btn_green"
-                  />
-                )}
+                <CustomButton
+                  btnType="submit"
+                  isDisabled={saving}
+                  title={saving ? 'Saving...' : 'Submit'}
+                  containerStyles="app__btn_green"
+                />
               </div>
             </form>
           </div>
