@@ -90,10 +90,15 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                     {selectedItem.fullname}
                   </span>{' '}
                   sought help from the Office of the City Mayor for financial
-                  assistance for his/her medication needs through{' '}
-                  <span className="font-bold uppercase">
-                    {selectedItem.referral}.
-                  </span>
+                  assistance for his/her medication needs
+                  {selectedItem.referral && selectedItem.referral !== '' && (
+                    <span>
+                      . through{' '}
+                      <span className="font-bold uppercase">
+                        {selectedItem.referral}.
+                      </span>
+                    </span>
+                  )}
                 </div>
                 <div className="mt-2">
                   In an effort to strengthen the social assistance program of
