@@ -143,8 +143,8 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               </div>
               <div className="mt-2">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
-              <div className="mt-10 font-bold">CAROLYN N. GO</div>
-              <div className="mt-2">City Administrator</div>
+              <div className="mt-10 font-bold">RINO KARLO G. LIM</div>
+              <div className="">Executive Assistant IV</div>
             </td>
           </tr>
         </tbody>
@@ -152,7 +152,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
           <tr>
             <td colSpan={6}>
               <div className="absolute bottom-3 left-0 px-10">
-                <div className="text-center text-xs">
+                <div className="text-center text-[10px]">
                   This document is not valid unless it bears the official seal
                   of the City Mayor. Any erasure, alteration, insertion or the
                   like herein, renders the same invalid.
