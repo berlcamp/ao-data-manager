@@ -95,14 +95,11 @@ const PrintBill: React.FC<ChildProps> = ({
               <td className="border_black p-1">
                 <div>{med.fullname}</div>
                 <div className="capitalize">
-                  {med.other_details.gender} / {med.other_details.age}
+                  {med.gender} / {med.age}
                 </div>
               </td>
               <td className="border_black p-1">
-                <div className="capitalize">
-                  {med.other_details.requester_barangay.barangay},{' '}
-                  {med.other_details.requester_barangay.municipality}
-                </div>
+                <div className="capitalize">{med.address}</div>
               </td>
               <td className="border_black p-1">
                 {countTotal(med).toLocaleString('en-US', {
