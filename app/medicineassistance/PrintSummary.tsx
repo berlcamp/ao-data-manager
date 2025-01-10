@@ -62,7 +62,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               <div className="text-xl underline underline-offset-2 mt-4">
                 AO Medication Assistance Summary
               </div>
-              <div className="text-xl underline underline-offset-2 mt-2 mb-6">
+              <div className="text-xl mt-1 mb-6">
                 {selectedItems[0]?.date_approved &&
                   format(
                     new Date(selectedItems[0].date_approved),
