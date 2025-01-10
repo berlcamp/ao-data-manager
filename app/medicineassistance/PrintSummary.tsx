@@ -63,10 +63,10 @@ const PrintSummary: React.FC<ChildProps> = ({
                 AO Medication Assistance Summary
               </div>
               <div className="text-xl underline underline-offset-2 mt-2 mb-6">
-                {selectedItems[0].date_approved &&
+                {selectedItems[0]?.date_approved &&
                   format(
                     new Date(selectedItems[0].date_approved),
-                    'MM/dd/yyyy'
+                    'MMMM dd, yyyy'
                   )}
               </div>
             </td>
