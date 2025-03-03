@@ -141,7 +141,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               colSpan={2}
               className="text-xs font-bold p-px text-center pt-4">
               <div>Prepared By:</div>
-              <div className="mt-6">ANALYN D. RADORES</div>
+              <div className="mt-6">LOREFIE C. APAO</div>
               <div>Admin Aide IV</div>
             </td>
             <td

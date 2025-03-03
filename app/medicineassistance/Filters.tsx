@@ -291,8 +291,8 @@ const Filters = ({
                         <SelectItem value="All">All</SelectItem>
                         <SelectItem value="WOMEN">WOMEN</SelectItem>
                         <SelectItem value="CHILDREN">CHILDREN</SelectItem>
-                        <SelectItem value="SENIOR">SENIOR</SelectItem>
-                        <SelectItem value="PWD">PWD</SelectItem>
+                        {/* <SelectItem value="SENIOR">SENIOR</SelectItem> */}
+                        {/* <SelectItem value="PWD">PWD</SelectItem> */}
                         <SelectItem value="DONATION">DONATION</SelectItem>
                       </SelectContent>
                     </Select>

@@ -133,12 +133,12 @@ const PrintBill: React.FC<ChildProps> = ({
               colSpan={2}
               className="text-xs font-bold p-px text-center pt-4">
               <div>Prepared By:</div>
-              <div className="mt-6">RINO KARLO G. LIM</div>
-              <div>Executive Assistant - IV</div>
+              <div className="mt-6">LOREFIE C. APAO</div>
+              <div>Admin Aide IV</div>
 
               <div className="mt-5">Noted By:</div>
-              <div className="mt-6">CAROLYN N. GO</div>
-              <div>Executive Assistant - V</div>
+              <div className="mt-6">RINO KARLO G. LIM</div>
+              <div>Executive Assistant - IV</div>
             </td>
             <td
               colSpan={3}

@@ -83,54 +83,26 @@ export default function PrintBillButton({
           // WOMEN
           if (filterBillType === 'WOMEN') {
             const female =
-              d.other_details.gender === 'female' ||
-              d.other_details.referral_gender === 'female'
-            const age = Number(d.other_details.age) > 17
-            const patient_type =
-              d.other_details.patient_type === null ||
-              d.other_details.patient_type === ''
-            if (female && age && patient_type && d.status === 'Approved') {
+              d.gender === 'female' || d.referral_gender === 'female'
+            const age = Number(d.age) > 17
+            if (female && age && d.status === 'Approved') {
               return d
             }
           }
 
           // CHILDREN
           if (filterBillType === 'CHILDREN') {
-            const age = Number(d.other_details.age) < 18
-            const patient_type =
-              d.other_details.patient_type === null ||
-              d.other_details.patient_type === ''
-            if (age && patient_type && d.status === 'Approved') {
+            const age = Number(d.age) < 18
+            if (age && d.status === 'Approved') {
               return d
             }
           }
 
           // DONATION
           if (filterBillType === 'DONATION') {
-            const male =
-              d.other_details.gender === 'male' &&
-              d.other_details.referral_gender === 'male'
-            const age = Number(d.other_details.age) >= 18
-            const patient_type =
-              d.other_details.patient_type === null ||
-              d.other_details.patient_type === ''
-            if (male && age && patient_type && d.status === 'Approved') {
-              return d
-            }
-          }
-
-          // PWD
-          if (filterBillType === 'PWD') {
-            const patient_type = d.other_details.patient_type === 'PWD'
-            if (patient_type && d.status === 'Approved') {
-              return d
-            }
-          }
-
-          // SENIOR
-          if (filterBillType === 'SENIOR') {
-            const patient_type = d.other_details.patient_type === 'Senior'
-            if (patient_type && d.status === 'Approved') {
+            const male = d.gender === 'male' && d.referral_gender === 'male'
+            const age = Number(d.age) >= 18
+            if (male && age && d.status === 'Approved') {
               return d
             }
           }

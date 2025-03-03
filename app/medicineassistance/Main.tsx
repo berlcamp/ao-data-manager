@@ -92,8 +92,8 @@ const Page: React.FC = () => {
       // update the list in redux
       dispatch(updateList(result.data))
 
-      setResultsCount(result.count ? result.count : 0)
       setShowingCount(result.data.length)
+      setResultsCount(result.count ? result.count : 0)
     } catch (error) {
       console.error('error', error)
     }
@@ -256,7 +256,47 @@ const Page: React.FC = () => {
 
   // Update list whenever list in redux updates
   useEffect(() => {
-    setList(globallist)
+    const unfilteredList: MedicalAssistanceTypes[] = globallist
+
+    if (Array.isArray(unfilteredList) && unfilteredList.length > 0) {
+      const filteredData = unfilteredList.filter((d) => {
+        // all
+        if (filterBillType !== 'All') {
+          // WOMEN
+          if (filterBillType === 'WOMEN') {
+            const female =
+              d.gender === 'female' || d.referral_gender === 'female'
+            const age = Number(d.age) > 17
+            if (female && age && d.status === 'Approved') {
+              return d
+            }
+          }
+
+          // CHILDREN
+          if (filterBillType === 'CHILDREN') {
+            const age = Number(d.age) < 18
+            if (age && d.status === 'Approved') {
+              return d
+            }
+          }
+
+          // DONATION
+          if (filterBillType === 'DONATION') {
+            const male = d.gender === 'male' && d.referral_gender === 'male'
+            const age = Number(d.age) >= 18
+            if (male && age && d.status === 'Approved') {
+              return d
+            }
+          }
+        } else {
+          return true
+        }
+      })
+
+      setList(filteredData)
+    } else {
+      setList(globallist)
+    }
   }, [globallist])
 
   // Fetch data
@@ -266,7 +306,7 @@ const Page: React.FC = () => {
   }, [
     filterKeyword,
     perPageCount,
-    // filterBillType,
+    filterBillType,
     filterPharmacy,
     filterDateRequested,
     filterDateFrom,
