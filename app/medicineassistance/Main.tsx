@@ -282,7 +282,9 @@ const Page: React.FC = () => {
 
           // DONATION
           if (filterBillType === 'DONATION') {
-            const male = d.gender === 'male' && d.referral_gender === 'male'
+            const male =
+              d.gender === 'male' &&
+              (d.referral_gender === '' || d.referral_gender === 'male')
             const age = Number(d.age) >= 18
             if (male && age && d.status === 'Approved') {
               return d
