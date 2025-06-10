@@ -344,11 +344,13 @@ export interface DswdEndorsementTypes {
   patient_gender: string
   patient_address: string
   patient_category: string
+  patient_ap: string
   requester_fullname: string
   requester_age: string
   requester_gender: string
   requester_address: string
   requester_category: string
+  requester_ap: string
   other: string
   hospital: string
   endorsement_no: number

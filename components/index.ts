@@ -5,12 +5,11 @@ import CustomButton from './CustomButton'
 import DeleteModal from './DeleteModal'
 import FilterDateRange from './FilterDateRange'
 import Jobs from './Jobs'
-import LandingPage from "./LandingPage"
+import LandingPage from './LandingPage'
 import OneColLayoutLoading from './Loading/OneColLayoutLoading'
 import TableRowLoading from './Loading/TableRowLoading'
 import ThreeColTableLoading from './Loading/ThreeColTableLoading'
 import TwoColTableLoading from './Loading/TwoColTableLoading'
-import Login from './Login'
 import LoginBox from './LoginBox'
 import MainMenu from './MainMenu'
 import NotWhitelisted from './NotWhitelisted'
@@ -28,8 +27,31 @@ import Unauthorized from './Unauthorized'
 import UserBlock from './UserBlock'
 
 export {
-    AccountDetails, ArchiveModal, ConfirmModal, CustomButton, DeleteModal, FilterDateRange, Jobs, LandingPage, Login,
-    LoginBox, MainMenu, NotWhitelisted, OfflinePage, OneColLayoutLoading, PerPage, RisSidebar, SettingsSideBar, ShowMore, Sidebar, TableRowLoading, ThreeColTableLoading, Title,
-    TopBar, TopBarDark, TrackerSideBar, TwoColTableLoading, Unauthorized, UserBlock
+  AccountDetails,
+  ArchiveModal,
+  ConfirmModal,
+  CustomButton,
+  DeleteModal,
+  FilterDateRange,
+  Jobs,
+  LandingPage,
+  LoginBox,
+  MainMenu,
+  NotWhitelisted,
+  OfflinePage,
+  OneColLayoutLoading,
+  PerPage,
+  RisSidebar,
+  SettingsSideBar,
+  ShowMore,
+  Sidebar,
+  TableRowLoading,
+  ThreeColTableLoading,
+  Title,
+  TopBar,
+  TopBarDark,
+  TrackerSideBar,
+  TwoColTableLoading,
+  Unauthorized,
+  UserBlock,
 }
-

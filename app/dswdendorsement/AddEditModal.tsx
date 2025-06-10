@@ -70,11 +70,13 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       patient_gender: formdata.patient_gender,
       patient_address: formdata.patient_address,
       patient_category: formdata.patient_category,
+      patient_ap: formdata.patient_ap,
       requester_fullname: formdata.requester_fullname,
       requester_age: formdata.requester_age,
       requester_gender: formdata.requester_gender,
       requester_address: formdata.requester_address,
       requester_category: formdata.requester_category,
+      requester_ap: formdata.requester_ap,
       endorsement_no: eno,
     }
 
@@ -127,11 +129,13 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       patient_gender: formdata.patient_gender,
       patient_address: formdata.patient_address,
       patient_category: formdata.patient_category,
+      patient_ap: formdata.patient_ap,
       requester_fullname: formdata.requester_fullname,
       requester_age: formdata.requester_age,
       requester_gender: formdata.requester_gender,
       requester_address: formdata.requester_address,
       requester_category: formdata.requester_category,
+      requester_ap: formdata.requester_ap,
     }
 
     try {
@@ -209,11 +213,13 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
       patient_gender: editData ? editData.patient_gender : '',
       patient_address: editData ? editData.patient_address : '',
       patient_category: editData ? editData.patient_category : '',
+      patient_ap: editData ? editData.patient_ap : '',
       requester_fullname: editData ? editData.requester_fullname : '',
       requester_age: editData ? editData.requester_age : '',
       requester_gender: editData ? editData.requester_gender : '',
       requester_address: editData ? editData.requester_address : '',
       requester_category: editData ? editData.requester_category : '',
+      requester_ap: editData ? editData.requester_ap : '',
     })
   }, [editData, reset])
 
@@ -462,6 +468,21 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                       </div>
                     </div>
                   </div>
+
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">AP</div>
+                      <div>
+                        <select
+                          {...register('patient_ap')}
+                          className="app__input_standard">
+                          <option value="">Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </fieldset>
 
                 <fieldset className="border p-4 mt-8 bg-gray-100">
@@ -531,6 +552,20 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
                           placeholder="Requester Category"
                           className="app__input_standard"
                         />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="app__form_field_inline_half">
+                    <div className="w-full">
+                      <div className="app__label_standard">AP</div>
+                      <div>
+                        <select
+                          {...register('requester_ap')}
+                          className="app__input_standard">
+                          <option value="">Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
                       </div>
                     </div>
                   </div>

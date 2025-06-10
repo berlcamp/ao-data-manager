@@ -73,17 +73,21 @@ const PrintSummary: React.FC<ChildProps> = ({
               <td className="border_black p-1">{i + 1}</td>
               <td className="border_black p-1">
                 <div>{med.patient_fullname}</div>
-                <div className="capitalize">
-                  {med.patient_gender} / {med.patient_age} /{' '}
-                  {med.patient_address}
-                </div>
+                {med.patient_fullname && (
+                  <div className="capitalize">
+                    AP-{med.patient_ap} / {med.patient_gender} /{' '}
+                    {med.patient_age} / {med.patient_address}
+                  </div>
+                )}
               </td>
               <td className="border_black p-1">
                 <div>{med.requester_fullname}</div>
-                <div className="capitalize">
-                  {med.requester_gender} / {med.requester_age} /{' '}
-                  {med.requester_address}
-                </div>
+                {med.requester_fullname && (
+                  <div className="capitalize">
+                    AP-{med.requester_ap} / {med.requester_gender} /{' '}
+                    {med.requester_age} / {med.requester_address}
+                  </div>
+                )}
               </td>
               <td className="border_black p-1">
                 {med.date && format(new Date(med.date), 'MM/dd/yyyy')}
