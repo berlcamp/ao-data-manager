@@ -369,7 +369,7 @@ const Page: React.FC = () => {
       {showDeleteModal && selectedId && (
         <DeleteModal
           table="adm_dswd_endorsements"
-          selectedId={selectedId}
+          selectedId={selectedId.toString()}
           showingCount={showingCount}
           setShowingCount={setShowingCount}
           resultsCount={resultsCount}
