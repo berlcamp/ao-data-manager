@@ -263,7 +263,7 @@ const Page: React.FC = () => {
                             leaveTo="transform opacity-0 scale-95">
                             <Menu.Items className="app__dropdown_items">
                               <div className="py-1">
-                                {hasAccess('medicine_admin') && (
+                                {session.email !== 'jeff2@sortbrite.com ' && (
                                   <>
                                     <Menu.Item>
                                       <div
@@ -273,16 +273,6 @@ const Page: React.FC = () => {
                                         <span>Edit</span>
                                       </div>
                                     </Menu.Item>
-                                    {item.status !== 'Archived' && (
-                                      <Menu.Item>
-                                        <div
-                                          onClick={() => cancel(item.id)}
-                                          className="app__dropdown_item">
-                                          <TrashIcon className="w-4 h-4" />
-                                          <span>Move to archived</span>
-                                        </div>
-                                      </Menu.Item>
-                                    )}
                                     <Menu.Item>
                                       <div
                                         onClick={() => handleDelete(item.id)}
