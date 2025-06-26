@@ -330,6 +330,17 @@ export interface PatientTypes {
   fullname: string
 }
 
+export interface SupplyTypes {
+  id: number
+  name: string
+  category: string
+  status: string
+  stock: number
+  government_price: number
+  srp: number
+  current_price_as_of: string
+}
+
 export interface DswdEndorsementTypes {
   id: string
   type: string

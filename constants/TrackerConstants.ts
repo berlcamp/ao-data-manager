@@ -87,6 +87,18 @@ export const hospitalsList = [
   'JD Rehabilitation Center',
 ]
 
+export const supplyCategories = [
+  'Office Supplies',
+  'Construction Supplies',
+  'Janitorial Supplies',
+  'Maintenance & Repair Supplies',
+  'ICT/Computer Supplies',
+  'Vehicle/Transport Supplies',
+  'Medical & First Aid Supplies',
+  'Printing & Reproduction',
+  'Others',
+]
+
 export const dswdHospitals = [
   'Mayor Hilarion A. Ramiro Sr. Medical Center',
   'Misamis University Medical Center',

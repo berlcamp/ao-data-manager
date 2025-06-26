@@ -95,6 +95,12 @@ const Page: React.FC = () => {
                 />
                 <ChooseUsers
                   multiple={true}
+                  type="supply"
+                  users={users}
+                  title="Who can access Supply Price Monitor"
+                />
+                <ChooseUsers
+                  multiple={true}
                   type="medicine_admin"
                   users={users}
                   title="Who can Approve/Delete on Medicine Assistance"

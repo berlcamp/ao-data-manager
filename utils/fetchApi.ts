@@ -506,6 +506,55 @@ export async function fetchDswdEndorsements(
   }
 }
 
+export async function fetchSupplies(
+  filters: {
+    filterKeyword?: string
+    filterType?: string
+    filterRequest?: string
+    filterDateFrom?: Date | undefined
+    filterDateTo?: Date | undefined
+  },
+  perPageCount: number,
+  rangeFrom: number
+) {
+  try {
+    let query = supabase.from('adm_supply').select('*', { count: 'exact' })
+
+    // Full text search
+    if (filters.filterKeyword && filters.filterKeyword.trim() !== '') {
+      query = query.or(`name.ilike.%${filters.filterKeyword}%`)
+    }
+
+    // Filter type
+    if (filters.filterType && filters.filterType !== 'All') {
+      query = query.eq('category', filters.filterType)
+    }
+
+    // Perform count before paginations
+    // const { count } = await query
+
+    // Per Page from context
+    const from = rangeFrom
+    const to = from + (perPageCount - 1)
+    // Per Page from context
+    query = query.range(from, to)
+
+    // Order By
+    query = query.order('id', { ascending: false })
+
+    const { data, count, error } = await query
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return { data, count }
+  } catch (error) {
+    console.error('fetch error xx', error)
+    return { data: [], count: 0 }
+  }
+}
+
 export async function fetchAccounts(
   filters: { filterStatus?: string },
   perPageCount: number,

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 interface ModalProps {
   hideModal: () => void
-  selectedId: string
+  selectedId: number
   table: string
   title?: string
   resultsCount: number
