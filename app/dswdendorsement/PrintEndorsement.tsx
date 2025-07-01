@@ -198,9 +198,7 @@ const PrintEndorsement: React.FC<ChildProps> = ({
           <tr>
             <td colSpan={6}>
               <div className="mt-8">By the authority of: </div>
-              <div className="mt-6 font-bold">
-                ATTY. HENRY &quot;INDY&quot; F. OAMINAL, JR.
-              </div>
+              <div className="mt-6 font-bold">ATTY. SAM NORMAN G. FUENTES</div>
               <div className="">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
               <div className="mt-6 font-bold">RINO KARLO G. LIM</div>
