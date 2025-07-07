@@ -176,7 +176,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                 payable in Philippine peso.
               </div>
               <div className="mt-8">By the authority of: </div>
-              <div className="mt-6 font-bold">ATTY. SAM NORMAN G. FUENTES</div>
+              <div className="mt-6 font-bold">SAM NORMAN G. FUENTES</div>
               <div className="">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
               <div className="mt-6 font-bold">RINO KARLO G. LIM</div>

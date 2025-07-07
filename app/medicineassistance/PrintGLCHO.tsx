@@ -138,7 +138,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
                 guarantee note.
               </div>
               <div className="mt-10">By the authority of: </div>
-              <div className="mt-6 font-bold">ATTY. SAM NORMAN G. FUENTES</div>
+              <div className="mt-6 font-bold">SAM NORMAN G. FUENTES</div>
               <div className="mt-2">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
               <div className="mt-10 font-bold">RINO KARLO G. LIM</div>

@@ -144,7 +144,7 @@ const PrintBill: React.FC<ChildProps> = ({
               colSpan={3}
               className="text-xs font-bold p-px text-center align-top pt-4">
               <div>Approved By:</div>
-              <div className="mt-6">ATTY. SAM NORMAN G. FUENTES</div>
+              <div className="mt-6">SAM NORMAN G. FUENTES</div>
               <div>City Mayor</div>
             </td>
           </tr>
