@@ -88,6 +88,8 @@ export const hospitalsList = [
 ]
 
 export const supplyCategories = [
+  'Foods',
+  'Supplies',
   'Office Supplies',
   'Construction Supplies',
   'Janitorial Supplies',
