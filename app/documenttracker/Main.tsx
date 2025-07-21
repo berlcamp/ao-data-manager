@@ -315,6 +315,7 @@ const Page: React.FC = () => {
               <div className="hidden md:flex items-center">
                 <DownloadExcelButton
                   filters={{
+                    userId: session.user.id,
                     filterKeyword,
                     filterStatus,
                     filterTypes,
