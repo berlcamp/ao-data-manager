@@ -36,48 +36,44 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
   return (
     <div
       ref={forwardedRef}
-      className="w-[340px] mx-auto mt-0 text-xs">
-      <table className="w-full">
+      className="w-[2.50in] mx-auto mt-0 text-[10px] leading-tight print:w-[2.83in] print:text-[10px]">
+      <table className="w-full text-[10px]">
         <thead>
           <tr>
             <td colSpan={4}>
-              <div className="flex items-start justify-evenly">
-                <div>
-                  <Image
-                    src="/images/ozamiz.png"
-                    width={60}
-                    height={60}
-                    alt="alt"
-                    className="mx-auto"
-                  />
-                </div>
-                <div className="text-center">
-                  <div className="text-xs font-bold">
+              <div className="flex justify-between items-start gap-1">
+                <Image
+                  src="/images/ozamiz.png"
+                  width={50}
+                  height={50}
+                  alt="Ozamiz Logo"
+                />
+                <div className="text-center leading-snug flex-1">
+                  <div className="text-[9px] font-bold">
                     REPUBLIC OF THE PHILIPPINES
                   </div>
-                  <div className="text-sm text-blue-600 font-bold -mt-1">
+                  <div className="text-[10px] font-bold text-blue-600 -mt-1">
                     OFFICE OF THE CITY MAYOR
                   </div>
-                  <div className="text-lg font-bold -mt-1">CITY OF OZAMIZ</div>
-                  <div className="text-[8px] font-bold -mt-1">
-                    TELEFAX NO: (088) 521-1390
+                  <div className="text-[11px] font-bold -mt-1">
+                    CITY OF OZAMIZ
                   </div>
-                  <div className="text-[8px] font-bold -mt-2">
-                    MOBILE NO: (+63) 910-734-2013
+                  <div className="text-[7px] font-bold -mt-1">
+                    TELEFAX: (088) 521-1390
                   </div>
-                  <div className="text-[8px] font-bold -mt-2">
+                  <div className="text-[7px] font-bold -mt-1">
+                    MOBILE: (+63) 910-734-2013
+                  </div>
+                  <div className="text-[7px] font-bold -mt-1">
                     EMAIL: ASENSOOZAMIZMAYOR@GMAIL.COM
                   </div>
                 </div>
-                <div>
-                  <Image
-                    src="/images/ao.png"
-                    width={70}
-                    height={70}
-                    alt="alt"
-                    className="mx-auto"
-                  />
-                </div>
+                <Image
+                  src="/images/ao.png"
+                  width={50}
+                  height={50}
+                  alt="AO Logo"
+                />
               </div>
             </td>
           </tr>
@@ -86,128 +82,102 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
           <tr>
             <td
               colSpan={4}
-              className="py-2 text-center">
-              <span className="text-red-600 font-bold">
+              className="py-1 text-center">
+              <span className="text-red-600 font-bold text-[10px]">
                 ======================================
               </span>
             </td>
           </tr>
           <tr>
             <td colSpan={2}>
-              <span>Routing No: </span>{' '}
-              <span className="font-bold">{document.routing_slip_no}</span>
+              <span className="font-semibold">Routing No:</span>{' '}
+              {document.routing_slip_no}
             </td>
             <td colSpan={2}>
-              <span>DATE: </span>{' '}
-              <span className="font-bold">
-                {document.date_received &&
-                  format(new Date(document.date_received), 'MM/dd/yyyy')}
-              </span>
+              <span className="font-semibold">Date:</span>{' '}
+              {document.date_received &&
+                format(new Date(document.date_received), 'MM/dd/yyyy')}
             </td>
           </tr>
           <tr>
             <td colSpan={4}>
-              <div className="flex space-x-1">
-                <span>Type: </span>
-                <span className="font-bold">{document.particulars}</span>
-              </div>
+              <span className="font-semibold">Type:</span>{' '}
+              {document.particulars}
             </td>
           </tr>
-          {document.amount && document.amount.trim() !== '' && (
+          {document.amount?.trim() && (
             <tr>
-              <td
-                colSpan={4}
-                className="flex items-center space-x-1">
-                <span>Amount: </span>
-                <span className="font-bold">{document.amount}</span>
+              <td colSpan={4}>
+                <span className="font-semibold">Amount:</span> {document.amount}
               </td>
             </tr>
           )}
           <tr>
-            <td
-              colSpan={4}
-              className="flex items-center space-x-1">
-              <span>From: </span>
-              <span className="font-bold">{document.agency}</span>
+            <td colSpan={4}>
+              <span className="font-semibold">From:</span> {document.agency}
             </td>
           </tr>
           <tr>
-            <td
-              colSpan={4}
-              className="flex items-center space-x-1">
-              <span>Received By: </span>
-              <span className="font-bold">{document.received_by}</span>
+            <td colSpan={4}>
+              <span className="font-semibold">Received By:</span>{' '}
+              {document.received_by}
             </td>
           </tr>
+
+          {/* <tr>
+            <td
+              colSpan={4}
+              className="py-1">
+              <div className="border border-black"></div>
+            </td>
+          </tr> */}
+
+          {/* <tr>
+        <td colSpan={2}>
+          <CheckItem label="Approved" />
+          <CheckItem label="For File" />
+          <CheckItem label="For Further Instruction" />
+        </td>
+        <td colSpan={2}>
+          <CheckItem label="Disapproved" />
+          <CheckItem label="Confidential" />
+          <CheckItem label="Others: _________" />
+        </td>
+      </tr> */}
+
           <tr>
             <td
               colSpan={4}
-              className="py-2">
+              className="py-1">
               <div className="border border-black"></div>
             </td>
           </tr>
-          <tr>
-            <td
-              colSpan={2}
-              className="space-y-1">
-              <div className="flex items-center space-x-1">
-                <div className="border w-4 h-4 border-black">&nbsp;</div>
-                <div>Approved</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="border w-4 h-4 border-black">&nbsp;</div>
-                <div>For File </div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="border w-4 h-4 border-black">&nbsp;</div>
-                <div>For Further Instruction</div>
-              </div>
-            </td>
-            <td
-              colSpan={2}
-              className="space-y-1">
-              <div className="flex items-center space-x-1">
-                <div className="border w-4 h-4 border-black">&nbsp;</div>
-                <div>Disapproved</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="border w-4 h-4 border-black">&nbsp;</div>
-                <div>Confidential</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="border w-4 h-4 border-black">&nbsp;</div>
-                <div>Others: _________</div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td
-              colSpan={4}
-              className="py-2">
-              <div className="border border-black"></div>
-            </td>
-          </tr>
+
           <tr>
             <td
               colSpan={3}
-              className="align-top pb-24">
-              Remarks:
+              className="align-top pb-12">
+              <span className="font-semibold">Remarks:</span>
             </td>
-            <td
-              colSpan={1}
-              className="px-1 w-[50px] align-top border-l border-black">
-              Signature
+            <td className="border-l border-black align-top px-1 w-[50px]">
+              <span className="font-semibold">Signature</span>
             </td>
           </tr>
+
           <tr>
             <td
               colSpan={4}
-              className="py-2">
+              className="py-1">
               <div className="border border-black"></div>
             </td>
           </tr>
+
           <tr>
-            <td colSpan={4}>Tracker</td>
+            <td
+              colSpan={4}
+              className="font-semibold">
+              Tracker
+            </td>
           </tr>
           <tr>
             <td
@@ -218,6 +188,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
             <td className="text-center border border-black">Date</td>
             <td className="text-center border border-black">Sign</td>
           </tr>
+
           {routes?.map((route, index) => (
             <tr key={index}>
               <td
@@ -226,27 +197,22 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
                 {route.title}
               </td>
               <td className="px-1 border border-black">{route.date}</td>
-              <td className="px-1 border border-black"></td>
+              <td className="px-1 border border-black">&nbsp;</td>
             </tr>
           ))}
-          <tr>
-            <td
-              colSpan={2}
-              className="border border-black">
-              &nbsp;
-            </td>
-            <td className="border border-black">&nbsp;</td>
-            <td className="border border-black">&nbsp;</td>
-          </tr>
-          <tr>
-            <td
-              colSpan={2}
-              className="border border-black">
-              &nbsp;
-            </td>
-            <td className="border border-black">&nbsp;</td>
-            <td className="border border-black">&nbsp;</td>
-          </tr>
+
+          {/* Add padding rows for signature area */}
+          {[...Array(2)].map((_, i) => (
+            <tr key={`blank-${i}`}>
+              <td
+                colSpan={2}
+                className="border border-black">
+                &nbsp;
+              </td>
+              <td className="border border-black">&nbsp;</td>
+              <td className="border border-black">&nbsp;</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
