@@ -100,6 +100,7 @@ const Page: React.FC = () => {
     try {
       const result = await fetchDocuments(
         {
+          userId: session.user.id,
           filterTypes,
           filterKeyword,
           filterAgency,
@@ -134,6 +135,7 @@ const Page: React.FC = () => {
     try {
       const result = await fetchDocuments(
         {
+          userId: session.user.id,
           filterTypes,
           filterKeyword,
           filterAgency,

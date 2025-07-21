@@ -8,6 +8,7 @@ const supabase = createBrowserClient(
 )
 
 export interface DocumentFilterTypes {
+  userId: string
   filterTypes?: any[]
   filterKeyword?: string
   filterAgency?: string
@@ -23,6 +24,7 @@ export async function fetchDocuments(
   perPageCount: number,
   rangeFrom: number
 ) {
+  console.log('id', filters)
   try {
     // Advance filters
     const trackerIds: string[] = []
@@ -35,6 +37,13 @@ export async function fetchDocuments(
       if (filters.filterRoute && filters.filterRoute !== '') {
         query1 = query1.eq('title', filters.filterRoute)
       }
+      if (filters.filterDateForwardedFrom) {
+        query1 = query1.gte(
+          'date',
+          format(new Date(filters.filterDateForwardedFrom), 'yyyy-MM-dd')
+        )
+      }
+
       if (filters.filterDateForwardedFrom) {
         query1 = query1.gte(
           'date',
@@ -63,6 +72,14 @@ export async function fetchDocuments(
       .from('adm_trackers')
       .select('*, adm_tracker_routes(title,date)', { count: 'exact' })
       .eq('archived', false)
+
+    if (filters.userId === '12d7eba6-adbb-4dfc-8d81-c66c823d1869') {
+      console.log('xx')
+      query = query.gte(
+        'date_received',
+        format(new Date('2025-07-01'), 'yyyy-MM-dd')
+      )
+    }
 
     // Full text search
     if (
