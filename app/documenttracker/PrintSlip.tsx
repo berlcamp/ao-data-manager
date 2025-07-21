@@ -190,7 +190,7 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
           <tr>
             <td
               colSpan={4}
-              className="align-top pb-2 ">
+              className="align-top pb-24 ">
               Remarks:
             </td>
           </tr>
