@@ -19,126 +19,243 @@ export interface DocumentFilterTypes {
   filterDateForwardedTo?: Date | undefined
 }
 
+// export async function fetchDocuments(
+//   filters: DocumentFilterTypes,
+//   perPageCount: number,
+//   rangeFrom: number
+// ) {
+//   console.log('id', filters)
+//   try {
+//     // Advance filters
+//     const trackerIds: string[] = []
+//     if (filters.filterDateForwardedFrom || filters.filterDateForwardedTo) {
+//       let query1 = supabase.from('adm_tracker_routes').select('tracker_id')
+
+//       // if (filters.filterRoute && filters.filterRoute !== '') {
+//       //   query1 = query1.eq('location', filters.filterRoute)
+//       // }
+
+//       if (filters.filterDateForwardedFrom) {
+//         query1 = query1.gte(
+//           'date',
+//           format(new Date(filters.filterDateForwardedFrom), 'yyyy-MM-dd')
+//         )
+//       }
+//       if (filters.filterDateForwardedTo) {
+//         query1 = query1.lte(
+//           'date',
+//           format(new Date(filters.filterDateForwardedTo), 'yyyy-MM-dd')
+//         )
+//       }
+
+//       const { data: data1 } = await query1
+
+//       if (data1) {
+//         if (data1.length > 0) {
+//           data1.forEach((d) => trackerIds.push(d.tracker_id))
+//         } else {
+//           trackerIds.push('99999999')
+//         }
+//       }
+//     }
+
+//     console.log('trackerIds', trackerIds)
+
+//     let query = supabase
+//       .from('adm_trackers')
+//       .select('*, adm_tracker_routes(title,date)', { count: 'exact' })
+//       .eq('archived', false)
+
+//     if (filters.userId === '12d7eba6-adbb-4dfc-8d81-c66c823d1869') {
+//       console.log('xx')
+//       query = query.gte(
+//         'date_received',
+//         format(new Date('2025-07-01'), 'yyyy-MM-dd')
+//       )
+//     }
+
+//     // Full text search
+//     if (
+//       typeof filters.filterKeyword !== 'undefined' &&
+//       filters.filterKeyword.trim() !== ''
+//     ) {
+//       query = query.or(
+//         `routing_slip_no.ilike.%${filters.filterKeyword}%,particulars.ilike.%${filters.filterKeyword}%,agency.ilike.%${filters.filterKeyword}%,requester.ilike.%${filters.filterKeyword}%,amount.ilike.%${filters.filterKeyword}%,cheque_no.ilike.%${filters.filterKeyword}%`
+//       )
+//     }
+
+//     // Filter Current Location
+//     if (
+//       filters.filterCurrentRoute &&
+//       filters.filterCurrentRoute.trim() !== ''
+//     ) {
+//       query = query.eq('location', filters.filterCurrentRoute)
+//     }
+
+//     // Filter Agency
+//     if (filters.filterAgency && filters.filterAgency.trim() !== '') {
+//       query = query.or(`agency.ilike.%${filters.filterAgency}%`)
+//     }
+
+//     // Filter status
+//     if (filters.filterStatus && filters.filterStatus.trim() !== '') {
+//       query = query.eq('status', filters.filterStatus)
+//     }
+
+//     // Advance Filters
+//     if (trackerIds.length > 0) {
+//       query = query.in('id', trackerIds)
+//     }
+
+//     // Filter type
+//     if (
+//       typeof filters.filterTypes !== 'undefined' &&
+//       filters.filterTypes.length > 0
+//     ) {
+//       const statement: string[] = []
+//       filters.filterTypes?.forEach((type: string) => {
+//         const str = `type.eq.${type}`
+//         statement.push(str)
+//       })
+//       query = query.or(statement.join(', '))
+//     }
+
+//     // Perform count before paginations
+//     // const { count } = await query
+
+//     // Per Page from context
+//     const from = rangeFrom
+//     const to = from + (perPageCount - 1)
+//     // Per Page from context
+//     query = query.range(from, to)
+
+//     // Order By
+//     query = query.order('created_at', { ascending: false })
+
+//     const { data, count, error } = await query
+
+//     if (error) {
+//       throw new Error(error.message)
+//     }
+
+//     return { data, count }
+//   } catch (error) {
+//     console.error('fetch tracker error', error)
+//     return { data: [], count: 0 }
+//   }
+// }
+
 export async function fetchDocuments(
   filters: DocumentFilterTypes,
   perPageCount: number,
   rangeFrom: number
 ) {
-  console.log('id', filters)
   try {
-    // Advance filters
-    const trackerIds: string[] = []
+    // 🔎 Subquery filter for tracker IDs based on date forwarded
+    let subqueryFilter = ''
     if (filters.filterDateForwardedFrom || filters.filterDateForwardedTo) {
-      let query1 = supabase
-        .from('adm_tracker_routes')
-        .select('tracker_id')
-        .limit(900)
+      const conditions: string[] = []
 
-      if (filters.filterRoute && filters.filterRoute !== '') {
-        query1 = query1.eq('title', filters.filterRoute)
-      }
       if (filters.filterDateForwardedFrom) {
-        query1 = query1.gte(
-          'date',
-          format(new Date(filters.filterDateForwardedFrom), 'yyyy-MM-dd')
+        conditions.push(
+          `date >= '${format(
+            new Date(filters.filterDateForwardedFrom),
+            'yyyy-MM-dd'
+          )}'`
         )
       }
 
-      if (filters.filterDateForwardedFrom) {
-        query1 = query1.gte(
-          'date',
-          format(new Date(filters.filterDateForwardedFrom), 'yyyy-MM-dd')
-        )
-      }
       if (filters.filterDateForwardedTo) {
-        query1 = query1.lte(
-          'date',
-          format(new Date(filters.filterDateForwardedTo), 'yyyy-MM-dd')
+        conditions.push(
+          `date <= '${format(
+            new Date(filters.filterDateForwardedTo),
+            'yyyy-MM-dd'
+          )}'`
         )
       }
 
-      const { data: data1 } = await query1
+      if (filters.filterRoute?.trim()) {
+        conditions.push(`location = '${filters.filterRoute}'`)
+      }
 
-      if (data1) {
-        if (data1.length > 0) {
-          data1.forEach((d) => trackerIds.push(d.tracker_id))
-        } else {
-          trackerIds.push('99999999')
-        }
+      if (conditions.length > 0) {
+        subqueryFilter = `(select tracker_id from adm_tracker_routes where ${conditions.join(
+          ' and '
+        )})`
       }
     }
 
+    console.log('subqueryFilter', subqueryFilter, filters)
+    // 🧵 Main query
     let query = supabase
       .from('adm_trackers')
-      .select('*, adm_tracker_routes(title,date)', { count: 'exact' })
+      .select(
+        `
+        *,
+        adm_tracker_routes(title, date)
+      `,
+        { count: 'exact' }
+      )
       .eq('archived', false)
 
+    // 📌 Apply subquery filter if any
+    if (subqueryFilter) {
+      query = query.filter('id', 'in', subqueryFilter)
+    }
+
+    // 🛡️ Date cutoff for specific user
     if (filters.userId === '12d7eba6-adbb-4dfc-8d81-c66c823d1869') {
-      console.log('xx')
       query = query.gte(
         'date_received',
         format(new Date('2025-07-01'), 'yyyy-MM-dd')
       )
     }
 
-    // Full text search
-    if (
-      typeof filters.filterKeyword !== 'undefined' &&
-      filters.filterKeyword.trim() !== ''
-    ) {
+    // 🔍 Full text search
+    const keyword = filters.filterKeyword?.trim()
+    if (keyword) {
       query = query.or(
-        `routing_slip_no.ilike.%${filters.filterKeyword}%,particulars.ilike.%${filters.filterKeyword}%,agency.ilike.%${filters.filterKeyword}%,requester.ilike.%${filters.filterKeyword}%,amount.ilike.%${filters.filterKeyword}%,cheque_no.ilike.%${filters.filterKeyword}%`
+        [
+          `routing_slip_no.ilike.%${keyword}%`,
+          `particulars.ilike.%${keyword}%`,
+          `agency.ilike.%${keyword}%`,
+          `requester.ilike.%${keyword}%`,
+          `amount.ilike.%${keyword}%`,
+          `cheque_no.ilike.%${keyword}%`,
+        ].join(',')
       )
     }
 
-    // Filter Current Location
-    if (
-      filters.filterCurrentRoute &&
-      filters.filterCurrentRoute.trim() !== ''
-    ) {
+    // 📍 Location filter
+    if (filters.filterCurrentRoute?.trim()) {
       query = query.eq('location', filters.filterCurrentRoute)
     }
 
-    // Filter Agency
-    if (filters.filterAgency && filters.filterAgency.trim() !== '') {
-      query = query.or(`agency.ilike.%${filters.filterAgency}%`)
+    // 🏢 Agency filter
+    if (filters.filterAgency?.trim()) {
+      query = query.ilike('agency', `%${filters.filterAgency}%`)
     }
 
-    // Filter status
-    if (filters.filterStatus && filters.filterStatus.trim() !== '') {
+    // 📊 Status filter
+    if (filters.filterStatus?.trim()) {
       query = query.eq('status', filters.filterStatus)
     }
 
-    // Advance Filters
-    if (trackerIds.length > 0) {
-      query = query.in('id', trackerIds)
+    // 📂 Types filter
+    if (filters.filterTypes?.length) {
+      const typeFilters = filters.filterTypes.map((t) => `type.eq.${t}`)
+      query = query.or(typeFilters.join(','))
     }
 
-    // Filter type
-    if (
-      typeof filters.filterTypes !== 'undefined' &&
-      filters.filterTypes.length > 0
-    ) {
-      const statement: string[] = []
-      filters.filterTypes?.forEach((type: string) => {
-        const str = `type.eq.${type}`
-        statement.push(str)
-      })
-      query = query.or(statement.join(', '))
-    }
-
-    // Perform count before paginations
-    // const { count } = await query
-
-    // Per Page from context
+    // 📄 Pagination
     const from = rangeFrom
-    const to = from + (perPageCount - 1)
-    // Per Page from context
+    const to = from + perPageCount - 1
     query = query.range(from, to)
 
-    // Order By
+    // 🕑 Order newest first
     query = query.order('created_at', { ascending: false })
 
+    // 📦 Execute
     const { data, count, error } = await query
 
     if (error) {

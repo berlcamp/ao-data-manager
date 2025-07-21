@@ -12,7 +12,7 @@ import {
   TrackerSideBar,
   Unauthorized,
 } from '@/components/index'
-import { fetchActivities, fetchDocuments } from '@/utils/fetchApi'
+import { fetchActivities } from '@/utils/fetchApi'
 import { Menu, Transition } from '@headlessui/react'
 import {
   CalendarDaysIcon,
@@ -98,65 +98,66 @@ const Page: React.FC = () => {
     setLoading(true)
 
     try {
-      const result = await fetchDocuments(
-        {
-          userId: session.user.id,
-          filterTypes,
-          filterKeyword,
-          filterAgency,
-          filterStatus,
-          filterCurrentRoute,
-          filterRoute,
-          filterDateForwardedFrom,
-          filterDateForwardedTo,
-        },
-        perPageCount,
-        0
-      )
+      const { data, error } = await supabase.rpc('fetch_filtered_trackers', {
+        from_date: filterDateForwardedFrom || null,
+        to_date: filterDateForwardedTo || null,
+        route_filter: filterRoute || null,
+        location_filter: filterCurrentRoute || null,
+        search_keyword: filterKeyword || null,
+        agency_filter: filterAgency || null,
+        status_filter: filterStatus || null,
+        filter_types: filterTypes.length > 0 ? filterTypes : null,
+        user_filter: null,
+        enforce_cutoff:
+          session.user.id === '12d7eba6-adbb-4dfc-8d81-c66c823d1869',
+        offset_limit: perPageCount,
+        offset_start: 0,
+      })
 
-      // update the list in redux
-      dispatch(updateList(result.data))
-      setResultsCount(result.count ? result.count : 0)
-      setShowingCount(result.data.length)
-      // dispatch(updateList([]))
-      // setResultsCount(0)
-      // setShowingCount(0)
+      if (error) throw error
+
+      const total = data.length > 0 ? data[0].total_count : 0
+
+      dispatch(updateList(data))
+      setResultsCount(total)
+      setShowingCount(data.length)
     } catch (e) {
-      console.error(e)
+      console.error('fetch error', e)
     } finally {
       setLoading(false)
     }
   }
 
-  // Append data to existing list whenever 'show more' button is clicked
   const handleShowMore = async () => {
     setLoading(true)
 
     try {
-      const result = await fetchDocuments(
-        {
-          userId: session.user.id,
-          filterTypes,
-          filterKeyword,
-          filterAgency,
-          filterStatus,
-          filterCurrentRoute,
-          filterRoute,
-          filterDateForwardedFrom,
-          filterDateForwardedTo,
-        },
-        perPageCount,
-        list.length
-      )
+      const { data, error } = await supabase.rpc('fetch_filtered_trackers', {
+        from_date: filterDateForwardedFrom || null,
+        to_date: filterDateForwardedTo || null,
+        route_filter: filterRoute || null,
+        location_filter: filterCurrentRoute || null,
+        search_keyword: filterKeyword || null,
+        agency_filter: filterAgency || null,
+        status_filter: filterStatus || null,
+        filter_types: filterTypes.length > 0 ? filterTypes : null,
+        user_filter: null,
+        enforce_cutoff:
+          session.user.id === '12d7eba6-adbb-4dfc-8d81-c66c823d1869',
+        offset_limit: perPageCount,
+        offset_start: list.length,
+      })
 
-      // update the list in redux
-      const newList = [...list, ...result.data]
+      if (error) throw error
+
+      const total = data.length > 0 ? data[0].total_count : 0
+
+      const newList = [...list, ...data]
       dispatch(updateList(newList))
-
-      setResultsCount(result.count ? result.count : 0)
+      setResultsCount(total)
       setShowingCount(newList.length)
     } catch (e) {
-      console.error(e)
+      console.error('show more error', e)
     } finally {
       setLoading(false)
     }
@@ -315,14 +316,18 @@ const Page: React.FC = () => {
               <div className="hidden md:flex items-center">
                 <DownloadExcelButton
                   filters={{
-                    userId: session.user.id,
-                    filterKeyword,
-                    filterStatus,
-                    filterTypes,
-                    filterCurrentRoute,
-                    filterRoute,
-                    filterDateForwardedFrom,
-                    filterDateForwardedTo,
+                    from_date: filterDateForwardedFrom || null,
+                    to_date: filterDateForwardedTo || null,
+                    route_filter: filterRoute || null,
+                    location_filter: filterCurrentRoute || null,
+                    search_keyword: filterKeyword || null,
+                    agency_filter: filterAgency || null,
+                    status_filter: filterStatus || null,
+                    filter_types: filterTypes.length > 0 ? filterTypes : null,
+                    user_filter: null,
+                    enforce_cutoff:
+                      session.user.id ===
+                      '12d7eba6-adbb-4dfc-8d81-c66c823d1869',
                   }}
                 />
               </div>

@@ -107,6 +107,20 @@ export interface DocumentTypes {
   routing_no: number
   routing_slip_no: string
   received_by: string
+  route_date: string
+}
+
+export interface TrackerFilters {
+  from_date: Date | null // ISO date string (e.g., "2025-07-01")
+  to_date: Date | null
+  route_filter: string | null
+  location_filter: string | null
+  search_keyword: string | null
+  agency_filter: string | null
+  status_filter: string | null
+  filter_types: string[] | null
+  user_filter: string | null
+  enforce_cutoff: boolean
 }
 
 export interface AccountTypes {

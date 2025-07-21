@@ -1,55 +1,40 @@
 'use client'
-import type { DocumentFlowchartTypes, DocumentTypes } from '@/types'
-import { fetchDocuments } from '@/utils/fetchApi'
+import { useFilter } from '@/context/FilterContext'
+import { useSupabase } from '@/context/SupabaseProvider'
+import type { DocumentTypes, TrackerFilters } from '@/types'
 import Excel from 'exceljs'
 import { saveAs } from 'file-saver'
 import { useState } from 'react'
 import { FaFileDownload } from 'react-icons/fa'
 import { Tooltip } from 'react-tooltip'
 
-interface DocumentFilterTypes {
-  userId: string
-  filterTypes?: any[]
-  filterKeyword?: string
-  filterStatus?: string
-  filterCurrentRoute?: string
-  filterRoute?: string
-  filterDateForwardedFrom?: Date | undefined
-  filterDateForwardedTo?: Date | undefined
+interface DownloadExcelButtonProps {
+  filters: TrackerFilters
 }
 
-const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
+const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
+  filters,
+}) => {
   //
   const [loading, setLoading] = useState(false)
-
-  const getLatestForwarded = (data: DocumentFlowchartTypes[]) => {
-    // Filter the entries where the title contains "forwarded"
-    const forwardedEntries = data.filter((entry) =>
-      entry.title.toLowerCase().includes('forwarded')
-    )
-
-    // Check if any entries were found
-    if (forwardedEntries.length > 0) {
-      // Find the latest date from the filtered entries
-      const latestForwardedDate = forwardedEntries.reduce<any>(
-        (latest, entry) => {
-          return new Date(entry.date) > new Date(latest) ? entry.date : latest
-        },
-        forwardedEntries[0]
-      )
-
-      return `${latestForwardedDate.date} (${latestForwardedDate.title})` // Output the latest date
-    } else {
-      return ''
-    }
-  }
+  const { setToast } = useFilter()
+  const { supabase } = useSupabase()
 
   const handleDownload = async () => {
+    if (!filters.from_date || !filters.to_date) {
+      setToast('error', 'Please select from/to date on advance filter.')
+      return
+    }
     setLoading(true)
     try {
-      const result = await fetchDocuments(filters, 999, 0)
+      const { data: results, error } = await supabase.rpc(
+        'fetch_filtered_trackers_all',
+        filters
+      )
 
-      const results: DocumentTypes[] | [] = result.data
+      if (error) {
+        console.error('download error', error)
+      }
 
       // Create a new workbook and add a worksheet
       const workbook = new Excel.Workbook()
@@ -74,12 +59,12 @@ const DownloadExcelButton = ({ filters }: { filters: DocumentFilterTypes }) => {
 
       // Data for the Excel file
       const data: any[] = []
-      results?.forEach((item: DocumentTypes, index) => {
+      results?.forEach((item: DocumentTypes, index: number) => {
         let remarks = item.recent_remarks?.remarks
         data.push({
           no: index + 1,
           date_received: item.date_received,
-          date_forwarded: getLatestForwarded(item.adm_tracker_routes),
+          date_forwarded: item.route_date,
           routing: item.routing_slip_no,
           requester: item.requester,
           amount: item.amount,
