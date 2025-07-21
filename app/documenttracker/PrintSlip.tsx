@@ -189,14 +189,9 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
           </tr>
           <tr>
             <td
-              colSpan={3}
-              className="align-top pb-24">
+              colSpan={4}
+              className="align-top pb-2 ">
               Remarks:
-            </td>
-            <td
-              colSpan={1}
-              className="px-1 w-[50px] align-top border-l border-black">
-              Signature
             </td>
           </tr>
           <tr>
