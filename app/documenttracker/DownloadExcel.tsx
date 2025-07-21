@@ -8,6 +8,7 @@ import { FaFileDownload } from 'react-icons/fa'
 import { Tooltip } from 'react-tooltip'
 
 interface DocumentFilterTypes {
+  userId: string
   filterTypes?: any[]
   filterKeyword?: string
   filterStatus?: string
