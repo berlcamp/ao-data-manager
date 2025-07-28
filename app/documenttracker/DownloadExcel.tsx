@@ -26,6 +26,7 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
       return
     }
     setLoading(true)
+
     try {
       const { data: results, error } = await supabase.rpc(
         'fetch_filtered_trackers_all',
