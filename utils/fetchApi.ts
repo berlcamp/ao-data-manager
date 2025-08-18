@@ -469,12 +469,12 @@ export async function fetchRisDepartments(
   }
 }
 
-export async function fetchActivities(today: string, endDate: Date) {
+export async function fetchActivities(today: Date, endDate: Date) {
   try {
     const { data, count, error } = await supabase
       .from('adm_trackers')
       .select('*', { count: 'exact' })
-      .gte('activity_date', today)
+      .gte('activity_date', today.toISOString())
       .lt('activity_date', endDate.toISOString())
       .order('activity_date', { ascending: true })
       .limit(100)

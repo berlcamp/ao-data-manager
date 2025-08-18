@@ -269,10 +269,13 @@ const Page: React.FC = () => {
   const fetchActivitiesData = async () => {
     const today = format(new Date(), 'yyyy-MM-dd')
     const today2 = new Date()
-    const endDate = new Date()
-    endDate.setDate(today2.getDate() + 60)
+    const startDate = new Date()
+    startDate.setDate(today2.getDate() - 7)
 
-    const result = await fetchActivities(today, endDate)
+    const endDate = new Date()
+    endDate.setDate(today2.getDate() + 90)
+
+    const result = await fetchActivities(startDate, endDate)
 
     setActivitiesData(result.data)
   }
