@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createBrowserClient as browserClient } from '@supabase/ssr'
 
 export const createBrowserClient = () =>
