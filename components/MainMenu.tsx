@@ -5,6 +5,7 @@ import { FaGasPump } from 'react-icons/fa6'
 import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { Cog6ToothIcon, DocumentDuplicateIcon } from '@heroicons/react/20/solid'
+import { Calendar } from 'lucide-react'
 import Link from 'next/link'
 
 const MainMenu: React.FC = () => {
@@ -131,6 +132,23 @@ const MainMenu: React.FC = () => {
                     </div>
                     <div className="app__menu_item_label_description">
                       Supply Price Monitor
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
+            {hasAccess('activities') && (
+              <Link href="/activities">
+                <div className="app__menu_item">
+                  <div className="pt-1">
+                    <Calendar className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <div className="app__menu_item_label">
+                      Activities Calendar
+                    </div>
+                    <div className="app__menu_item_label_description">
+                      Activities Calendar
                     </div>
                   </div>
                 </div>

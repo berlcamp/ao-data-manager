@@ -101,6 +101,12 @@ const Page: React.FC = () => {
                 />
                 <ChooseUsers
                   multiple={true}
+                  type="activities"
+                  users={users}
+                  title="Who can access Activities Calendar"
+                />
+                <ChooseUsers
+                  multiple={true}
                   type="medicine_admin"
                   users={users}
                   title="Who can Approve/Delete on Medicine Assistance"
