@@ -164,6 +164,7 @@ export const docRouting = [
   'Forwarded to OCM 4th Floor',
   'Forwarded to OCIT',
   'Forwarded to Permit Div',
+  'Forwarded to PNP',
   'Forwarded to SK Fed',
   'Forwarded to SM Lao',
   'Forwarded to Tourism',
