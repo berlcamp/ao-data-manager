@@ -167,6 +167,7 @@ export const docRouting = [
   'Forwarded to PNP',
   'Forwarded to SK Fed',
   'Forwarded to SM Lao',
+  'Forwarded to SWEMO',
   'Forwarded to Tourism',
   'Forwarded to Vet',
   'Forwarded to Vice Mayor',
