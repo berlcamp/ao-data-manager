@@ -157,6 +157,7 @@ export const docRouting = [
   'Forwarded to DILG',
   'Forwarded to GSO',
   'Forwarded to iBPLS',
+  'Forwarded to Legal Office',
   'Forwarded to Liga ng mga Barangay',
 
   'Forwarded to Nutrition',
