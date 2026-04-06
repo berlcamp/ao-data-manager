@@ -87,7 +87,7 @@ const Page: React.FC = () => {
   const { hasAccess, setToast } = useFilter()
 
   const user: AccountTypes = systemUsers.find(
-    (user: AccountTypes) => user.id === session.user.id
+    (user: AccountTypes) => user.id === session.user.id,
   )
 
   // Redux staff
@@ -200,7 +200,7 @@ const Page: React.FC = () => {
   }
   const handleChangeLocation = async (
     item: DocumentTypes,
-    location: string
+    location: string,
   ) => {
     if (item.location === location) {
       return
@@ -662,9 +662,9 @@ const Page: React.FC = () => {
                                         {item.recent_remarks.timestamp &&
                                           format(
                                             new Date(
-                                              item.recent_remarks.timestamp
+                                              item.recent_remarks.timestamp,
                                             ),
-                                            'MMM dd h:mm'
+                                            'MMM dd h:mm',
                                           )}
                                       </div>
                                     </div>
