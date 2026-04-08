@@ -22,7 +22,7 @@ const PrintSummary: React.FC<ChildProps> = ({
   const countTotal = (item: MedicalAssistanceTypes) => {
     const t = item.medicines.reduce(
       (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
-      0
+      0,
     )
     return t
   }
@@ -35,7 +35,7 @@ const PrintSummary: React.FC<ChildProps> = ({
     selectedItems.forEach((s) => {
       const t = s.medicines.reduce(
         (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
-        0
+        0,
       )
       total += t
 
@@ -66,7 +66,7 @@ const PrintSummary: React.FC<ChildProps> = ({
                 {selectedItems[0]?.date_approved &&
                   format(
                     new Date(selectedItems[0].date_approved),
-                    'MMMM dd, yyyy'
+                    'MMMM dd, yyyy',
                   )}
               </div>
             </td>
@@ -148,7 +148,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               colSpan={4}
               className="text-xs font-bold p-px text-center pt-4">
               <div>Noted By:</div>
-              <div className="mt-6">RINO KARLO G. LIM</div>
+              <div className="mt-6">CAROLYN N. GO</div>
               <div>Executive Assistant IV</div>
             </td>
           </tr>

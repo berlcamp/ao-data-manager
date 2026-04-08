@@ -18,7 +18,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
   const [totalAmount, setTotalAmount] = useState(0)
 
   const pharmacy = pharmacyList.find(
-    (p) => p.pharmacy === selectedItem.pharmacy
+    (p) => p.pharmacy === selectedItem.pharmacy,
   )
 
   const convertToWord = (amount: number) => {
@@ -47,7 +47,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
   useEffect(() => {
     const t = selectedItem.medicines.reduce(
       (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
-      0
+      0,
     )
     setTotalAmount(t)
   }, [])
@@ -141,7 +141,7 @@ const PrintGLCHO: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="mt-6 font-bold">SAM NORMAN G. FUENTES</div>
               <div className="mt-2">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
-              <div className="mt-10 font-bold">RINO KARLO G. LIM</div>
+              <div className="mt-10 font-bold">CAROLYN N. GO</div>
               <div className="">Executive Assistant IV</div>
             </td>
           </tr>

@@ -18,7 +18,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
   const [totalAmount, setTotalAmount] = useState(0)
 
   const pharmacy = pharmacyList.find(
-    (p) => p.pharmacy === selectedItem.pharmacy
+    (p) => p.pharmacy === selectedItem.pharmacy,
   )
 
   const convertToWord = (amount: number) => {
@@ -47,7 +47,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
   useEffect(() => {
     const t = selectedItem.medicines.reduce(
       (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
-      0
+      0,
     )
     setTotalAmount(t)
   }, [])
@@ -145,7 +145,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <td className="text-xs border p-px">
                 {(Number(med.price) * Number(med.quantity)).toLocaleString(
                   'en-US',
-                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 },
                 )}
               </td>
             </tr>
@@ -179,7 +179,7 @@ const PrintGL: React.FC<ChildProps> = ({ forwardedRef, selectedItem }) => {
               <div className="mt-6 font-bold">SAM NORMAN G. FUENTES</div>
               <div className="">City Mayor</div>
               <div className="mt-10">Respectfully yours,</div>
-              <div className="mt-6 font-bold">RINO KARLO G. LIM</div>
+              <div className="mt-6 font-bold">CAROLYN N. GO</div>
               <div className="">Executive Assistant IV</div>
             </td>
           </tr>

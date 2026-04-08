@@ -30,7 +30,7 @@ const PrintBill: React.FC<ChildProps> = ({
   const countTotal = (item: MedicalAssistanceTypes) => {
     const t = item.medicines.reduce(
       (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
-      0
+      0,
     )
     return t
   }
@@ -43,7 +43,7 @@ const PrintBill: React.FC<ChildProps> = ({
     selectedItems.forEach((s) => {
       const t = s.medicines.reduce(
         (accumulator, i) => accumulator + Number(i.quantity) * Number(i.price),
-        0
+        0,
       )
       total += t
 
@@ -137,7 +137,7 @@ const PrintBill: React.FC<ChildProps> = ({
               <div>Admin Aide IV</div>
 
               <div className="mt-5">Noted By:</div>
-              <div className="mt-6">RINO KARLO G. LIM</div>
+              <div className="mt-6">CAROLYN N. GO</div>
               <div>Executive Assistant - IV</div>
             </td>
             <td

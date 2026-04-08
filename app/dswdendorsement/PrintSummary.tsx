@@ -24,13 +24,13 @@ const PrintSummary: React.FC<ChildProps> = ({
   //
   const [totalAmount, setTotalAmount] = useState(0)
   const list: DswdEndorsementTypes[] = selectedItems.filter(
-    (obj) => obj.status !== 'Cancelled'
+    (obj) => obj.status !== 'Cancelled',
   )
 
   useEffect(() => {
     const t = selectedItems.reduce(
       (accumulator, i) => accumulator + Number(i.amount),
-      0
+      0,
     )
 
     setTotalAmount(t)
@@ -138,7 +138,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               colSpan={4}
               className="text-xs font-bold p-px text-center pt-4">
               <div>Noted By:</div>
-              <div className="mt-6 font-bold">RINO KARLO G. LIM</div>
+              <div className="mt-6 font-bold">CAROLYN N. GO</div>
               <div className="">Executive Assistant IV</div>
             </td>
           </tr>
