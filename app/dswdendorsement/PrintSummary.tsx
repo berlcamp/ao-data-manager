@@ -50,7 +50,7 @@ const PrintSummary: React.FC<ChildProps> = ({
               <div className="border border-red-500 border-dashed"></div>
               <div className="border border-red-500 border-dashed mt-px"></div>
               <div className="text-xl underline underline-offset-2 mt-4 mb-6">
-                Summary of Endorsements{' '}
+                Endorsements to DSWD{' '}
                 {filterType !== 'All' ? `for ${filterType}` : ''}
               </div>
               <div className="text-xl mb-6">
