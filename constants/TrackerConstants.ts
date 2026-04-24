@@ -195,6 +195,7 @@ export const documentTypes = [
   { type: 'MOA', shortcut: 'MOA' },
   { type: 'Memorandum Order', shortcut: 'MEMO' },
   { type: 'Notice', shortcut: 'NOTICE' },
+  { type: 'NOA', shortcut: 'NOA' },
   { type: 'Notice of Violation', shortcut: 'NOTI-VIOL' },
   { type: 'Office Order', shortcut: 'OFC-ORD' },
   { type: 'Other Documents', shortcut: 'OTR-DOC' },
