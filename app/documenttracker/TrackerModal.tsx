@@ -3,6 +3,7 @@
 import { CustomButton } from '@/components/index'
 import { statusList } from '@/constants/TrackerConstants'
 import type { DocumentTypes } from '@/types'
+import { formatAmountWithCommas } from '@/utils/text-helper'
 import { format } from 'date-fns'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -182,7 +183,7 @@ export default function TrackerModal({
                             Amount:
                           </td>
                           <td className="text-sm font-medium">
-                            {documentData.amount}
+                            {formatAmountWithCommas(documentData.amount)}
                           </td>
                         </tr>
                         <tr>

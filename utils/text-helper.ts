@@ -1,3 +1,20 @@
+/** Thousand separators for numeric amounts; non-numeric text is returned unchanged. */
+export function formatAmountWithCommas (
+  value: string | number | undefined | null
+): string {
+  if (value === undefined || value === null) return ''
+  const raw = String(value).trim()
+  if (raw === '') return ''
+
+  const withoutCommas = raw.replace(/,/g, '')
+  const n = Number(withoutCommas)
+  if (Number.isNaN(n)) return raw
+
+  return n.toLocaleString('en-US', {
+    maximumFractionDigits: 20,
+  })
+}
+
 export function fullTextQuery (string: string): string {
   // const isStringAllNumbers = (str: string) => {
   //   return /^\d+$/.test(str)
