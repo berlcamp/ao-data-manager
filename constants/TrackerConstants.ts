@@ -135,6 +135,7 @@ export const docTypes = [
 
 export const docRouting = [
   'Forwarded to OCM',
+  'Forwarded to CADM',
   'Forwarded to OCM 4th Floor',
   'Forwarded',
   'Forwarded to Accounting',
@@ -144,7 +145,6 @@ export const docRouting = [
   'Forwarded to Atty Rhea',
   'Forwarded to BAC',
   'Forwarded to Budget',
-  'Forwarded to CADM',
   'Forwarded to CCRO',
   'Forwarded to CDRRMO',
   'Forwarded to CEEDO',
