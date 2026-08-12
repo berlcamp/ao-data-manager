@@ -13,6 +13,7 @@ import {
   Unauthorized,
 } from '@/components/index'
 import { fetchActivities } from '@/utils/fetchApi'
+import { formatAmountWithCommas } from '@/utils/text-helper'
 import { Menu, Transition } from '@headlessui/react'
 import {
   CalendarDaysIcon,
@@ -613,7 +614,9 @@ const Page: React.FC = () => {
                             <span className="font-medium">{item.agency}</span>
                           </div>
                           <div>
-                            <span className="font-bold">{item.amount}</span>
+                            <span className="font-bold">
+                              {formatAmountWithCommas(item.amount)}
+                            </span>
                           </div>
                         </div>
                       </td>
