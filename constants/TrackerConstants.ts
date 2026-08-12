@@ -179,6 +179,7 @@ export const docRouting = [
 ]
 
 export const documentTypes = [
+  { type: 'Authority To Debit', shortcut: 'ATD' },
   { type: 'Business Permit', shortcut: 'BUSS-PER' },
   { type: 'Case', shortcut: 'CASE' },
   { type: 'Certification', shortcut: 'CERT' },
