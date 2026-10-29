@@ -46,6 +46,8 @@ interface FilterTypes {
   setFilterDateForwardedTo: (date: Date | undefined) => void
 }
 
+const uniqueRoutes = Array.from(new Set(docRouting))
+
 const FormSchema = z.object({
   dateForwardedFrom: z.date().optional(),
   dateForwardedTo: z.date().optional(),
@@ -165,7 +167,7 @@ const Filters = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {docRouting.map((route, index) => (
+                        {uniqueRoutes.map((route, index) => (
                           <SelectItem
                             key={index}
                             value={route}>
@@ -389,7 +391,7 @@ const Filters = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {docRouting.map((route, index) => (
+                        {uniqueRoutes.map((route, index) => (
                           <SelectItem
                             key={index}
                             value={route}>

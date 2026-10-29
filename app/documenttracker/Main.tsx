@@ -28,22 +28,30 @@ import AddEditModal from './AddEditModal'
 import Filters from './Filters'
 
 // Types
-import type { AccountTypes, DocumentTypes } from '@/types'
+import type { AccountTypes, DocumentTypes, TrackerFilters } from '@/types'
 
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import {
+  cutoffUserIds,
   docRouting,
   statusList,
   superAdmins,
 } from '@/constants/TrackerConstants'
 import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
-import { CheckIcon, ChevronDown, PrinterIcon, Trash2 } from 'lucide-react'
+import {
+  CheckIcon,
+  ChevronDown,
+  ClipboardList,
+  PrinterIcon,
+  Trash2,
+} from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Tooltip } from 'react-tooltip'
 import AddStickyModal from './AddStickyModal'
 import DownloadExcelButton from './DownloadExcel'
+import OfficeReportModal from './OfficeReportModal'
 import PrintButton from './PrintButton'
 import StickiesModal from './StickiesModal'
 import TrackerModal from './TrackerModal'
@@ -59,6 +67,7 @@ const Page: React.FC = () => {
   const [showAddStickyModal, setShowAddStickyModal] = useState(false)
   const [viewActivity, setViewActivity] = useState(false)
   const [viewTrackerModal, setViewTrackerModal] = useState(false)
+  const [showOfficeReport, setShowOfficeReport] = useState(false)
 
   const [selectedId, setSelectedId] = useState<string>('')
   const [selectedItem, setSelectedItem] = useState<DocumentTypes | null>(null)
@@ -95,25 +104,31 @@ const Page: React.FC = () => {
   const globallist = useSelector((state: any) => state.list.value)
   const dispatch = useDispatch()
 
+  // Dates are sent as yyyy-MM-dd so the local calendar date is used.
+  // Sending a Date object serializes to UTC and shifts it to the previous day.
+  const buildFilters = (): TrackerFilters => ({
+    from_date: filterDateForwardedFrom
+      ? format(filterDateForwardedFrom, 'yyyy-MM-dd')
+      : null,
+    to_date: filterDateForwardedTo
+      ? format(filterDateForwardedTo, 'yyyy-MM-dd')
+      : null,
+    route_filter: filterRoute || null,
+    location_filter: filterCurrentRoute || null,
+    search_keyword: filterKeyword || null,
+    agency_filter: filterAgency || null,
+    status_filter: filterStatus || null,
+    filter_types: filterTypes.length > 0 ? filterTypes : null,
+    user_filter: null,
+    enforce_cutoff: cutoffUserIds.includes(session.user.id),
+  })
+
   const fetchData = async () => {
     setLoading(true)
 
     try {
       const { data, error } = await supabase.rpc('fetch_filtered_trackers', {
-        from_date: filterDateForwardedFrom || null,
-        to_date: filterDateForwardedTo || null,
-        route_filter: filterRoute || null,
-        location_filter: filterCurrentRoute || null,
-        search_keyword: filterKeyword || null,
-        agency_filter: filterAgency || null,
-        status_filter: filterStatus || null,
-        filter_types: filterTypes.length > 0 ? filterTypes : null,
-        user_filter: null,
-        enforce_cutoff:
-          session.user.id === '12d7eba6-adbb-4dfc-8d81-c66c823d1869' ||
-          session.user.id === '7e0913a7-34a0-4e9e-a355-f4b289059732' ||
-          session.user.id === '2b5a7402-f94f-434f-aac6-0ada5d674950' ||
-          session.user.id === '3ac93948-bcf3-42c3-82a5-359a477e8534',
+        ...buildFilters(),
         offset_limit: perPageCount,
         offset_start: 0,
       })
@@ -137,20 +152,7 @@ const Page: React.FC = () => {
 
     try {
       const { data, error } = await supabase.rpc('fetch_filtered_trackers', {
-        from_date: filterDateForwardedFrom || null,
-        to_date: filterDateForwardedTo || null,
-        route_filter: filterRoute || null,
-        location_filter: filterCurrentRoute || null,
-        search_keyword: filterKeyword || null,
-        agency_filter: filterAgency || null,
-        status_filter: filterStatus || null,
-        filter_types: filterTypes.length > 0 ? filterTypes : null,
-        user_filter: null,
-        enforce_cutoff:
-          session.user.id === '12d7eba6-adbb-4dfc-8d81-c66c823d1869' ||
-          session.user.id === '7e0913a7-34a0-4e9e-a355-f4b289059732' ||
-          session.user.id === '2b5a7402-f94f-434f-aac6-0ada5d674950' ||
-          session.user.id === '3ac93948-bcf3-42c3-82a5-359a477e8534',
+        ...buildFilters(),
         offset_limit: perPageCount,
         offset_start: list.length,
       })
@@ -325,20 +327,7 @@ const Page: React.FC = () => {
             {!isDataEmpty && (
               <div className="hidden md:flex items-center">
                 <DownloadExcelButton
-                  filters={{
-                    from_date: filterDateForwardedFrom || null,
-                    to_date: filterDateForwardedTo || null,
-                    route_filter: filterRoute || null,
-                    location_filter: filterCurrentRoute || null,
-                    search_keyword: filterKeyword || null,
-                    agency_filter: filterAgency || null,
-                    status_filter: filterStatus || null,
-                    filter_types: filterTypes.length > 0 ? filterTypes : null,
-                    user_filter: null,
-                    enforce_cutoff:
-                      session.user.id ===
-                      '12d7eba6-adbb-4dfc-8d81-c66c823d1869',
-                  }}
+                  filters={buildFilters()}
                 />
               </div>
             )}
@@ -361,6 +350,13 @@ const Page: React.FC = () => {
             <Tooltip
               id="calendar-tooltip"
               place="bottom-end"
+            />
+            <CustomButton
+              containerStyles="app__btn_blue"
+              title="Office Report"
+              btnType="button"
+              leftIcon={<ClipboardList className="w-4 h-4" />}
+              handleClick={() => setShowOfficeReport(true)}
             />
             <CustomButton
               containerStyles="app__btn_green"
@@ -532,7 +528,7 @@ const Page: React.FC = () => {
                               leaveTo="transform opacity-0 scale-95">
                               <Menu.Items className="absolute right-0 z-30 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div className="py-1">
-                                  {docRouting.map((route, idx) => (
+                                  {Array.from(new Set(docRouting)).map((route, idx) => (
                                     <Menu.Item key={idx}>
                                       <div
                                         onClick={() =>
@@ -733,6 +729,22 @@ const Page: React.FC = () => {
               handleEdit={handleEdit}
               documentDataProp={selectedItem}
               hideModal={() => setViewTrackerModal(false)}
+            />
+          )}
+
+          {/* Office Report Modal */}
+          {showOfficeReport && (
+            <OfficeReportModal
+              preparedBy={
+                user
+                  ? `${user.firstname} ${user.middlename || ''} ${
+                      user.lastname || ''
+                    }`
+                      .replace(/\s+/g, ' ')
+                      .trim()
+                  : session.user.email
+              }
+              hideModal={() => setShowOfficeReport(false)}
             />
           )}
 

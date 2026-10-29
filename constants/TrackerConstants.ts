@@ -178,6 +178,29 @@ export const docRouting = [
   'Received at OCM',
 ]
 
+// Route titles grouped by office, e.g. OCM => ['Forwarded to OCM', 'Received at OCM']
+// The generic 'Forwarded' title has no office so it is left out
+export const trackerOffices: { office: string; titles: string[] }[] = (() => {
+  const map = new Map<string, string[]>()
+  Array.from(new Set(docRouting)).forEach((title) => {
+    const match = title.match(/^(?:Forwarded to|Received at)\s+(.+)$/)
+    if (!match) return
+    const office = match[1]
+    map.set(office, [...(map.get(office) ?? []), title].sort())
+  })
+  return Array.from(map.entries())
+    .map(([office, titles]) => ({ office, titles }))
+    .sort((a, b) => a.office.localeCompare(b.office))
+})()
+
+// Users whose list views only show documents received from 2025-07-01 onwards
+export const cutoffUserIds = [
+  '12d7eba6-adbb-4dfc-8d81-c66c823d1869',
+  '7e0913a7-34a0-4e9e-a355-f4b289059732',
+  '2b5a7402-f94f-434f-aac6-0ada5d674950',
+  '3ac93948-bcf3-42c3-82a5-359a477e8534',
+]
+
 export const documentTypes = [
   { type: 'Authority To Debit', shortcut: 'ATD' },
   { type: 'Business Permit', shortcut: 'BUSS-PER' },

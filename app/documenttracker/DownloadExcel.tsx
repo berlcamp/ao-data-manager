@@ -28,13 +28,18 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
     setLoading(true)
 
     try {
-      const { data: results, error } = await supabase.rpc(
-        'fetch_filtered_trackers_all',
-        filters
-      )
+      // PostgREST caps each response at 1000 rows, so page through all results
+      const pageSize = 1000
+      const results: DocumentTypes[] = []
+      for (let start = 0; ; start += pageSize) {
+        const { data, error } = await supabase
+          .rpc('fetch_filtered_trackers_all', filters)
+          .range(start, start + pageSize - 1)
 
-      if (error) {
-        console.error('download error', error)
+        if (error) throw new Error(error.message)
+
+        results.push(...(data as DocumentTypes[]))
+        if (!data || data.length < pageSize) break
       }
 
       // Create a new workbook and add a worksheet
@@ -88,7 +93,8 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
         saveAs(blob, 'Document Tracker Data.xlsx')
       })
     } catch (e) {
-      console.error(e)
+      console.error('download error', e)
+      setToast('error', 'Download failed. Please try again.')
     } finally {
       setLoading(false)
     }

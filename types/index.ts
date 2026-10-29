@@ -111,8 +111,8 @@ export interface DocumentTypes {
 }
 
 export interface TrackerFilters {
-  from_date: Date | null // ISO date string (e.g., "2025-07-01")
-  to_date: Date | null
+  from_date: string | null // yyyy-MM-dd (e.g., "2025-07-01")
+  to_date: string | null
   route_filter: string | null
   location_filter: string | null
   search_keyword: string | null
