@@ -12,6 +12,13 @@ interface ChildProps {
   document: DocumentTypes
 }
 
+// Adds thousands separators to numeric amounts; non-numeric text is left as is
+const formatAmount = (amount: string) => {
+  const value = Number(amount.replace(/,/g, '').trim())
+  if (isNaN(value)) return amount
+  return value.toLocaleString('en-US', { maximumFractionDigits: 2 })
+}
+
 const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
   const [loading, setLoading] = useState(false)
   const [routes, setRoutes] = useState<DocumentFlowchartTypes[] | []>([])
@@ -119,7 +126,9 @@ const PrintSlip: React.FC<ChildProps> = ({ forwardedRef, document }) => {
                 colSpan={4}
                 className="flex items-center space-x-1">
                 <span>Amount: </span>
-                <span className="font-bold">{document.amount}</span>
+                <span className="font-bold">
+                  {formatAmount(document.amount)}
+                </span>
               </td>
             </tr>
           )}
