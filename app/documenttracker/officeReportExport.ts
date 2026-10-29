@@ -64,6 +64,13 @@ const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
   doc.text(`Office: ${meta.office}`, margin, 21)
   doc.text(`Activity: ${meta.activity}`, margin, 26)
   doc.text(`Date: ${formatReportPeriod(meta)}`, margin, 31)
+  // A long type selection wraps, pushing the table down
+  const typeLines: string[] = doc.splitTextToSize(
+    `Document Type: ${meta.types}`,
+    pageWidth * 0.65,
+  )
+  doc.text(typeLines, margin, 36)
+  const tableStartY = 36 + typeLines.length * 5
   doc.text(`Total Documents: ${rows.length}`, pageWidth - margin, 21, {
     align: 'right',
   })
@@ -75,7 +82,7 @@ const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
   )
 
   autoTable(doc, {
-    startY: 36,
+    startY: tableStartY,
     margin: { left: margin, right: margin, bottom: 14 },
     head: [
       [
@@ -151,7 +158,7 @@ const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
 
   // Signature block
   const pageHeight = doc.internal.pageSize.getHeight()
-  let y = ((doc as any).lastAutoTable?.finalY ?? 36) + 14
+  let y = ((doc as any).lastAutoTable?.finalY ?? tableStartY) + 14
   if (y > pageHeight - 30) {
     doc.addPage()
     y = 20
@@ -200,6 +207,7 @@ export const downloadOfficeReportExcel = async (
   worksheet.addRow([`Office: ${meta.office}`])
   worksheet.addRow([`Activity: ${meta.activity}`])
   worksheet.addRow([`Date: ${formatReportPeriod(meta)}`])
+  worksheet.addRow([`Document Type: ${meta.types}`])
   worksheet.addRow([`Total Documents: ${rows.length}`])
   worksheet.addRow([
     `Generated: ${format(new Date(), 'MMM d, yyyy h:mm a')} by ${meta.preparedBy}`,

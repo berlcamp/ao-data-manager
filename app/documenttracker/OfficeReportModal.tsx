@@ -1,13 +1,15 @@
 'use client'
 import TwoColTableLoading from '@/components/Loading/TwoColTableLoading'
 import { CustomButton } from '@/components/index'
-import { trackerOffices } from '@/constants/TrackerConstants'
+import { documentTypes, trackerOffices } from '@/constants/TrackerConstants'
+import { Listbox, Transition } from '@headlessui/react'
+import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useFilter } from '@/context/FilterContext'
 import { useSupabase } from '@/context/SupabaseProvider'
 import { formatAmountWithCommas } from '@/utils/text-helper'
 import { differenceInCalendarDays, format, parseISO, subDays } from 'date-fns'
 import { FileSpreadsheet, FileText, PrinterIcon } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
   formatReportPeriod,
   type OfficeReportMeta,
@@ -23,6 +25,8 @@ const PAGE_SIZE = 1000
 const MAX_RANGE_DAYS = 366
 const STORAGE_KEY = 'tracker_office_report_office'
 const ALL_ACTIVITY = '__all__'
+
+const allTypes = documentTypes.map((d) => d.type)
 
 const ymd = (date: Date) => format(date, 'yyyy-MM-dd')
 
@@ -43,6 +47,7 @@ export default function OfficeReportModal({
 
   const [office, setOffice] = useState('')
   const [activity, setActivity] = useState(ALL_ACTIVITY)
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(allTypes)
   const [isRange, setIsRange] = useState(false)
   const [fromDate, setFromDate] = useState(today)
   const [toDate, setToDate] = useState(today)
@@ -60,9 +65,16 @@ export default function OfficeReportModal({
 
   const selectedOffice = trackerOffices.find((o) => o.office === office)
   const effectiveTo = isRange ? toDate : fromDate
+  const isAllTypes = selectedTypes.length === allTypes.length
+  const typesLabel = isAllTypes
+    ? 'All Types'
+    : selectedTypes.length <= 2
+      ? selectedTypes.join(', ')
+      : `${selectedTypes.length} types selected`
 
   const validationError = useMemo(() => {
     if (!office) return 'Select an office to generate the report.'
+    if (selectedTypes.length === 0) return 'Select at least one document type.'
     if (!fromDate || !effectiveTo) return 'Select a date.'
     if (fromDate > effectiveTo)
       return '"From" date must be on or before "To" date.'
@@ -72,7 +84,7 @@ export default function OfficeReportModal({
     )
       return `Date range cannot exceed ${MAX_RANGE_DAYS} days.`
     return ''
-  }, [office, fromDate, effectiveTo])
+  }, [office, selectedTypes, fromDate, effectiveTo])
 
   const titles = useMemo(() => {
     if (!selectedOffice) return []
@@ -87,6 +99,7 @@ export default function OfficeReportModal({
         : activity,
     fromDate,
     toDate: effectiveTo,
+    types: isAllTypes ? 'All' : selectedTypes.join(', '),
     preparedBy,
   }
 
@@ -105,7 +118,7 @@ export default function OfficeReportModal({
       const all: OfficeReportRow[] = []
       // PostgREST caps each response, so page through until a short page
       for (let start = 0; ; start += PAGE_SIZE) {
-        const { data, error } = await supabase
+        let query = supabase
           .from('adm_tracker_routes')
           .select(
             'id, title, date, time, user, adm_trackers!inner(id, routing_slip_no, type, requester, agency, amount, particulars, location, status)',
@@ -114,6 +127,12 @@ export default function OfficeReportModal({
           .gte('date', fromDate)
           .lte('date', effectiveTo)
           .eq('adm_trackers.archived', false)
+
+        // Only filter when some types are unchecked, so documents whose
+        // type isn't in the list still show under "All Types"
+        if (!isAllTypes) query = query.in('adm_trackers.type', selectedTypes)
+
+        const { data, error } = await query
           .order('date', { ascending: true })
           .order('id', { ascending: true })
           .range(start, start + PAGE_SIZE - 1)
@@ -182,7 +201,7 @@ export default function OfficeReportModal({
     }
     void fetchRows()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [titles, fromDate, effectiveTo, validationError])
+  }, [titles, selectedTypes, fromDate, effectiveTo, validationError])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -235,6 +254,85 @@ export default function OfficeReportModal({
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="flex flex-col w-60">
+                <div className="flex items-center justify-between">
+                  <span className="app__form_label">Document Type</span>
+                  <span className="text-xs space-x-2">
+                    <button
+                      type="button"
+                      className="text-blue-600 hover:underline"
+                      onClick={() => setSelectedTypes(allTypes)}>
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      className="text-blue-600 hover:underline"
+                      onClick={() => setSelectedTypes([])}>
+                      None
+                    </button>
+                  </span>
+                </div>
+                <Listbox
+                  value={selectedTypes}
+                  onChange={setSelectedTypes}
+                  multiple>
+                  <div className="relative">
+                    <Listbox.Button className="relative w-full text-left text-sm py-1 pl-2 pr-8 text-gray-600 bg-white border border-gray-300 rounded-sm focus:outline-none">
+                      <span className="block truncate">
+                        {selectedTypes.length === 0
+                          ? 'None selected'
+                          : typesLabel}
+                      </span>
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <ChevronDownIcon
+                          className="h-4 w-4"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Listbox.Button>
+                    <Transition
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0">
+                      <Listbox.Options className="absolute z-40 mt-1 max-h-72 w-72 overflow-auto rounded-sm bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {allTypes.map((type) => (
+                          <Listbox.Option
+                            key={type}
+                            value={type}
+                            className={({ active }) =>
+                              `relative cursor-default select-none py-1 pl-9 pr-4 text-sm ${
+                                active
+                                  ? 'bg-amber-50 text-amber-900'
+                                  : 'text-gray-900'
+                              }`
+                            }>
+                            {({ selected }) => (
+                              <>
+                                <span
+                                  className={`block truncate ${
+                                    selected ? 'font-medium' : 'font-normal'
+                                  }`}>
+                                  {type}
+                                </span>
+                                {selected && (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-amber-600">
+                                    <CheckIcon
+                                      className="h-4 w-4"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </Listbox>
               </div>
 
               {selectedOffice && selectedOffice.titles.length > 1 && (

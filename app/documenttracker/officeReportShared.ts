@@ -26,6 +26,7 @@ export interface OfficeReportMeta {
   activity: string // e.g. 'Received & Forwarded' or 'Received at OCM'
   fromDate: string // yyyy-MM-dd
   toDate: string // yyyy-MM-dd
+  types: string // 'All' or comma-separated document types
   preparedBy: string
 }
 
