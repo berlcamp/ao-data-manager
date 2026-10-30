@@ -177,6 +177,7 @@ export const docRouting = [
   'Received at CADM',
   'Received at OCM',
   'Received at OCM 4th Floor',
+  'Received for Vice Mayor',
 ]
 
 // Route titles grouped by office, e.g. OCM => ['Forwarded to OCM', 'Received at OCM']
@@ -184,7 +185,7 @@ export const docRouting = [
 export const trackerOffices: { office: string; titles: string[] }[] = (() => {
   const map = new Map<string, string[]>()
   Array.from(new Set(docRouting)).forEach((title) => {
-    const match = title.match(/^(?:Forwarded to|Received at)\s+(.+)$/)
+    const match = title.match(/^(?:Forwarded to|Received at|Received for)\s+(.+)$/)
     if (!match) return
     const office = match[1]
     map.set(office, [...(map.get(office) ?? []), title].sort())
