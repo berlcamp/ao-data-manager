@@ -1,9 +1,18 @@
+import { superAdmins } from '@/constants/TrackerConstants'
+import { createServerClient } from '@/utils/supabase-server'
 import { createClient } from '@supabase/supabase-js'
 import { type NextRequest, NextResponse } from 'next/server'
 
 import { type AccountTypes } from '@/types'
 
 export async function POST (req: NextRequest) {
+  // Only super admins can create accounts
+  const { data: { user } } = await createServerClient().auth.getUser()
+
+  if (!user?.email || !superAdmins.includes(user.email)) {
+    return NextResponse.json({ error_message: 'Unauthorized' }, { status: 401 })
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
 

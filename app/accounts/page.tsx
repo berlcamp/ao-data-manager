@@ -26,7 +26,12 @@ import type { AccountTypes } from '@/types'
 // Redux imports
 import { updateList } from '@/GlobalRedux/Features/listSlice'
 import { updateResultCounter } from '@/GlobalRedux/Features/resultsCounterSlice'
-import { ChevronDownIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
+import {
+  ChevronDownIcon,
+  KeyIcon,
+  PencilSquareIcon,
+} from '@heroicons/react/20/solid'
+import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import AddEditModal from './AddEditModal'
 
@@ -38,6 +43,7 @@ const Page: React.FC = () => {
   const [showConfirmInactiveModal, setShowConfirmInactiveModal] =
     useState(false)
   const [showConfirmActiveModal, setShowConfirmActiveModal] = useState(false)
+  const [showConfirmResetModal, setShowConfirmResetModal] = useState(false)
   const [selectedId, setSelectedId] = useState<string>('')
   const [editData, setEditData] = useState<AccountTypes | null>(null)
 
@@ -126,10 +132,44 @@ const Page: React.FC = () => {
     setShowConfirmActiveModal(true)
   }
 
+  const handleResetPassword = (id: string) => {
+    setSelectedId(id)
+    setShowConfirmResetModal(true)
+  }
+
+  const handleResetPasswordConfirmed = async () => {
+    try {
+      const response = await axios.post('/api/reset-password', {
+        id: selectedId,
+      })
+
+      if (response.data.error_message !== '') {
+        throw new Error(response.data.error_message)
+      }
+
+      // Update data in redux
+      const items = [...globallist]
+      const foundIndex = items.findIndex((x) => x.id === selectedId)
+      items[foundIndex] = {
+        ...items[foundIndex],
+        temp_password: response.data.temp_password,
+      }
+      dispatch(updateList(items))
+
+      // pop up the success message
+      setToast('success', 'Password has been reset.')
+      setShowConfirmResetModal(false)
+    } catch (e) {
+      console.error(e)
+      setToast('error', 'Failed to reset password.')
+      setShowConfirmResetModal(false)
+    }
+  }
+
   const handleInactiveConfirmed = async () => {
     try {
       const { error } = await supabase
-        .from('dum_users')
+        .from('asenso_users')
         .update({ status: 'Inactive' })
         .eq('id', selectedId)
 
@@ -152,7 +192,7 @@ const Page: React.FC = () => {
   const handleActiveConfirmed = async () => {
     try {
       const { error } = await supabase
-        .from('dum_users')
+        .from('asenso_users')
         .update({ status: 'Active' })
         .eq('id', selectedId)
 
@@ -273,6 +313,14 @@ const Page: React.FC = () => {
                                   </div>
                                 </Menu.Item>
                                 <Menu.Item>
+                                  <div
+                                    onClick={() => handleResetPassword(item.id)}
+                                    className="app__dropdown_item">
+                                    <KeyIcon className="w-4 h-4" />
+                                    <span>Reset Password</span>
+                                  </div>
+                                </Menu.Item>
+                                <Menu.Item>
                                   <div className="app__dropdown_item2">
                                     {item.status === 'Active' && (
                                       <CustomButton
@@ -387,6 +435,16 @@ const Page: React.FC = () => {
           message="Please confirm this action"
           onConfirm={handleInactiveConfirmed}
           onCancel={() => setShowConfirmInactiveModal(false)}
+        />
+      )}
+      {/* Confirm (Reset Password) Modal */}
+      {showConfirmResetModal && (
+        <ConfirmModal
+          header="Reset Password"
+          btnText="Reset"
+          message="A new temporary password will be generated. This also changes the password on other systems that share this login. Continue?"
+          onConfirm={handleResetPasswordConfirmed}
+          onCancel={() => setShowConfirmResetModal(false)}
         />
       )}
       {/* Confirm (Active) Modal */}
