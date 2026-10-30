@@ -67,21 +67,40 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
         })
         .then(async function (response) {
           if (response.data.error_message === '') {
+            // Email already registered by another system on this Supabase project,
+            // the user logs in with their existing password
+            const userData = response.data.existing
+              ? { ...newData, temp_password: 'Use existing password' }
+              : newData
+
             const { error: error2 } = await supabase
               .from('asenso_users')
-              .insert({ ...newData, id: response.data.insert_id })
+              .insert({ ...userData, id: response.data.insert_id })
 
-            if (error2) throw new Error(error2.message)
+            if (error2) {
+              setErrorMessage(
+                error2.code === '23505'
+                  ? 'This user is already added to this system.'
+                  : error2.message
+              )
+              setSaving(false)
+              return
+            }
 
             // Append new data in redux
             const updatedData = {
-              ...newData,
+              ...userData,
               id: response.data.insert_id,
             }
             dispatch(updateList([updatedData, ...globallist]))
 
             // pop up the success message
-            setToast('success', 'Successfully saved.')
+            setToast(
+              'success',
+              response.data.existing
+                ? 'Existing account linked. User can log in with their current password.'
+                : 'Successfully saved.'
+            )
 
             // Updating showing text in redux
             dispatch(
