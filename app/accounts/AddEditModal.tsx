@@ -152,7 +152,7 @@ const AddEditModal = ({ hideModal, editData }: ModalProps) => {
     }
   }
 
-  const tempPassword = Math.floor(Math.random() * 8999) + 1000
+  const tempPassword = Math.floor(Math.random() * 900000) + 100000
 
   return (
     <>
