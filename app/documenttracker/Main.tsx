@@ -45,6 +45,7 @@ import {
   ChevronDown,
   ClipboardList,
   PrinterIcon,
+  Settings,
   Trash2,
 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -53,6 +54,7 @@ import AddStickyModal from './AddStickyModal'
 import DownloadExcelButton from './DownloadExcel'
 import OfficeReportModal from './OfficeReportModal'
 import PrintButton from './PrintButton'
+import SettingsModal, { DEFAULT_NEW_DOC_LOCATION } from './SettingsModal'
 import StickiesModal from './StickiesModal'
 import TrackerModal from './TrackerModal'
 
@@ -61,6 +63,10 @@ const Page: React.FC = () => {
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [defaultLocation, setDefaultLocation] = useState(
+    DEFAULT_NEW_DOC_LOCATION,
+  )
   const [showPrintSlipModal, setShowPrintSlipModal] = useState(false)
   const [showArchiveModal, setShowArchiveModal] = useState(false)
   const [showStickiesModal, setShowStickiesModal] = useState(false)
@@ -283,6 +289,24 @@ const Page: React.FC = () => {
     setActivitiesData(result.data)
   }
 
+  // Load the current user's tracker settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      const { data, error } = await supabase
+        .from('adm_tracker_user_settings')
+        .select('default_location')
+        .eq('user_id', session.user.id)
+        .maybeSingle()
+      if (error) {
+        console.error('load settings error', error)
+        return
+      }
+      if (data?.default_location) setDefaultLocation(data.default_location)
+    }
+    void loadSettings()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Update list whenever list in redux updates
   useEffect(() => {
     setList(globallist)
@@ -363,6 +387,16 @@ const Page: React.FC = () => {
               title="Add New Document"
               btnType="button"
               handleClick={handleAdd}
+            />
+            <Settings
+              onClick={() => setShowSettingsModal(true)}
+              className="cursor-pointer w-6 h-6"
+              data-tooltip-id="settings-tooltip"
+              data-tooltip-content="Settings"
+            />
+            <Tooltip
+              id="settings-tooltip"
+              place="bottom-end"
             />
           </div>
 
@@ -772,7 +806,16 @@ const Page: React.FC = () => {
           {showAddModal && (
             <AddEditModal
               editData={selectedItem}
+              defaultLocation={defaultLocation}
               hideModal={() => setShowAddModal(false)}
+            />
+          )}
+          {/* Settings Modal */}
+          {showSettingsModal && (
+            <SettingsModal
+              defaultLocation={defaultLocation}
+              onSaved={setDefaultLocation}
+              hideModal={() => setShowSettingsModal(false)}
             />
           )}
         </div>

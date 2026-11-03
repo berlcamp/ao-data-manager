@@ -80,9 +80,14 @@ const FormSchema = z.object({
 interface ModalProps {
   hideModal: () => void
   editData: DocumentTypes | null
+  defaultLocation?: string
 }
 
-export default function AddEditModal({ hideModal, editData }: ModalProps) {
+export default function AddEditModal({
+  hideModal,
+  editData,
+  defaultLocation = 'Received at OCM',
+}: ModalProps) {
   const { setToast } = useFilter()
   const { supabase, session, systemUsers } = useSupabase()
 
@@ -139,7 +144,7 @@ export default function AddEditModal({ hideModal, editData }: ModalProps) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       type: editData ? editData.type : '',
-      location: editData ? editData.location : 'Received at OCM',
+      location: editData ? editData.location : defaultLocation,
       status: editData ? editData.status : 'Open',
       specify: editData ? editData.specify || '' : '',
       requester: editData ? editData.requester || '' : '',
