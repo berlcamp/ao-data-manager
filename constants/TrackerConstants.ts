@@ -177,7 +177,7 @@ export const docRouting = [
   'Received at CADM',
   'Received at OCM',
   'Received at OCM 4th Floor',
-  'Received for Vice Mayor',
+  'Received for Acting Mayor',
 ]
 
 // Route titles grouped by office, e.g. OCM => ['Forwarded to OCM', 'Received at OCM']
