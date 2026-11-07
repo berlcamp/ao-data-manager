@@ -25,6 +25,11 @@ const PAGE_SIZE = 1000
 const MAX_RANGE_DAYS = 366
 const STORAGE_KEY = 'tracker_office_report_office'
 const ALL_ACTIVITY = '__all__'
+const ALL_OFFICES = '__all_offices__'
+const RECEIVED_ONLY = '__received__'
+const FORWARDED_ONLY = '__forwarded__'
+
+const allOfficeTitles = trackerOffices.flatMap((o) => o.titles)
 
 const allTypes = documentTypes.map((d) => d.type)
 
@@ -33,7 +38,10 @@ const ymd = (date: Date) => format(date, 'yyyy-MM-dd')
 const readSavedOffice = () => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    return trackerOffices.some((o) => o.office === saved) ? (saved ?? '') : ''
+    return saved === ALL_OFFICES ||
+      trackerOffices.some((o) => o.office === saved)
+      ? (saved ?? '')
+      : ''
   } catch {
     return ''
   }
@@ -51,6 +59,7 @@ export default function OfficeReportModal({
   const [isRange, setIsRange] = useState(false)
   const [fromDate, setFromDate] = useState(today)
   const [toDate, setToDate] = useState(today)
+  const [loggedByMe, setLoggedByMe] = useState(false)
 
   const [rows, setRows] = useState<OfficeReportRow[]>([])
   const [loading, setLoading] = useState(false)
@@ -60,10 +69,12 @@ export default function OfficeReportModal({
   // Ignore responses from requests that have been superseded
   const requestIdRef = useRef(0)
 
-  const { supabase } = useSupabase()
+  const { supabase, session } = useSupabase()
   const { setToast } = useFilter()
 
+  const isAllOffices = office === ALL_OFFICES
   const selectedOffice = trackerOffices.find((o) => o.office === office)
+  const officeLabel = isAllOffices ? 'All Offices' : office
   const effectiveTo = isRange ? toDate : fromDate
   const isAllTypes = selectedTypes.length === allTypes.length
   const typesLabel = isAllTypes
@@ -87,16 +98,32 @@ export default function OfficeReportModal({
   }, [office, selectedTypes, fromDate, effectiveTo])
 
   const titles = useMemo(() => {
+    if (isAllOffices) {
+      if (activity === RECEIVED_ONLY)
+        return allOfficeTitles.filter((t) => t.startsWith('Received'))
+      if (activity === FORWARDED_ONLY)
+        return allOfficeTitles.filter((t) => t.startsWith('Forwarded'))
+      return allOfficeTitles
+    }
     if (!selectedOffice) return []
     return activity === ALL_ACTIVITY ? selectedOffice.titles : [activity]
-  }, [selectedOffice, activity])
+  }, [isAllOffices, selectedOffice, activity])
+
+  const activityLabel = isAllOffices
+    ? activity === RECEIVED_ONLY
+      ? 'Received only'
+      : activity === FORWARDED_ONLY
+        ? 'Forwarded only'
+        : 'Received & Forwarded'
+    : activity === ALL_ACTIVITY
+      ? (selectedOffice?.titles.join(' / ') ?? '')
+      : activity
 
   const meta: OfficeReportMeta = {
-    office,
-    activity:
-      activity === ALL_ACTIVITY
-        ? (selectedOffice?.titles.join(' / ') ?? '')
-        : activity,
+    office: officeLabel,
+    activity: loggedByMe
+      ? `${activityLabel} (logged by ${preparedBy})`
+      : activityLabel,
     fromDate,
     toDate: effectiveTo,
     types: isAllTypes ? 'All' : selectedTypes.join(', '),
@@ -131,6 +158,7 @@ export default function OfficeReportModal({
         // Only filter when some types are unchecked, so documents whose
         // type isn't in the list still show under "All Types"
         if (!isAllTypes) query = query.in('adm_trackers.type', selectedTypes)
+        if (loggedByMe) query = query.eq('user_id', session.user.id)
 
         const { data, error } = await query
           .order('date', { ascending: true })
@@ -201,7 +229,14 @@ export default function OfficeReportModal({
     }
     void fetchRows()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [titles, selectedTypes, fromDate, effectiveTo, validationError])
+  }, [
+    titles,
+    selectedTypes,
+    fromDate,
+    effectiveTo,
+    loggedByMe,
+    validationError,
+  ])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -246,6 +281,7 @@ export default function OfficeReportModal({
                   value={office}
                   onChange={(e) => handleOfficeChange(e.target.value)}>
                   <option value="">Choose office</option>
+                  <option value={ALL_OFFICES}>All Offices</option>
                   {trackerOffices.map((o) => (
                     <option
                       key={o.office}
@@ -334,6 +370,27 @@ export default function OfficeReportModal({
                   </div>
                 </Listbox>
               </div>
+
+              {isAllOffices && (
+                <div className="flex flex-col w-60">
+                  <label
+                    htmlFor="report-activity"
+                    className="app__form_label">
+                    Activity
+                  </label>
+                  <select
+                    id="report-activity"
+                    className="app__select_standard bg-white"
+                    value={activity}
+                    onChange={(e) => setActivity(e.target.value)}>
+                    <option value={ALL_ACTIVITY}>
+                      All (Received &amp; Forwarded)
+                    </option>
+                    <option value={RECEIVED_ONLY}>Received only</option>
+                    <option value={FORWARDED_ONLY}>Forwarded only</option>
+                  </select>
+                </div>
+              )}
 
               {selectedOffice && selectedOffice.titles.length > 1 && (
                 <div className="flex flex-col w-60">
@@ -428,6 +485,14 @@ export default function OfficeReportModal({
                   />
                   Date range
                 </label>
+                <label className="flex items-center gap-1 text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={loggedByMe}
+                    onChange={(e) => setLoggedByMe(e.target.checked)}
+                  />
+                  Logged by Me
+                </label>
               </div>
             </div>
 
@@ -445,7 +510,7 @@ export default function OfficeReportModal({
                     <span>
                       <span className="font-bold">{rows.length}</span> document
                       {rows.length === 1 ? '' : 's'} for{' '}
-                      <span className="font-bold">{office}</span> on{' '}
+                      <span className="font-bold">{officeLabel}</span> on{' '}
                       <span className="font-bold">
                         {formatReportPeriod(meta)}
                       </span>
@@ -496,8 +561,9 @@ export default function OfficeReportModal({
               !loadError &&
               rows.length === 0 && (
                 <div className="app__norecordsfound">
-                  No documents were received/forwarded to this office on the
-                  selected date.
+                  No documents were received/forwarded
+                  {isAllOffices ? '' : ' to this office'}
+                  {loggedByMe ? ' by you' : ''} on the selected date.
                 </div>
               )}
             {!loading && rows.length > 0 && (
