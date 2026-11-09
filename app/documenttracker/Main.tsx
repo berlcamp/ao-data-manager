@@ -53,6 +53,7 @@ import { Tooltip } from 'react-tooltip'
 import AddStickyModal from './AddStickyModal'
 import DownloadExcelButton from './DownloadExcel'
 import OfficeReportModal from './OfficeReportModal'
+import { withOriginalLocations } from './originalLocation'
 import PrintButton from './PrintButton'
 import SettingsModal, { DEFAULT_NEW_DOC_LOCATION } from './SettingsModal'
 import StickiesModal from './StickiesModal'
@@ -143,7 +144,7 @@ const Page: React.FC = () => {
 
       const total = data.length > 0 ? data[0].total_count : 0
 
-      dispatch(updateList(data))
+      dispatch(updateList(await withOriginalLocations(supabase, data)))
       setResultsCount(total)
       setShowingCount(data.length)
     } catch (e) {
@@ -167,7 +168,10 @@ const Page: React.FC = () => {
 
       const total = data.length > 0 ? data[0].total_count : 0
 
-      const newList = [...list, ...data]
+      const newList = [
+        ...list,
+        ...(await withOriginalLocations(supabase, data)),
+      ]
       dispatch(updateList(newList))
       setResultsCount(total)
       setShowingCount(newList.length)
@@ -430,6 +434,9 @@ const Page: React.FC = () => {
                   <th className="app__th w-10"></th>
                   <th className="app__th">Routing No</th>
                   <th className="hidden md:table-cell app__th">
+                    Original Location
+                  </th>
+                  <th className="hidden md:table-cell app__th">
                     Current Location
                   </th>
                   <th className="hidden md:table-cell app__th">Status</th>
@@ -534,6 +541,9 @@ const Page: React.FC = () => {
                             />
                           </div>
                         </div>
+                      </td>
+                      <td className="hidden md:table-cell app__td">
+                        {item.original_location}
                       </td>
                       <td className="hidden md:table-cell app__td">
                         <div className="flex items-center">
@@ -720,7 +730,7 @@ const Page: React.FC = () => {
                   ))}
                 {loading && (
                   <TableRowLoading
-                    cols={8}
+                    cols={9}
                     rows={2}
                   />
                 )}

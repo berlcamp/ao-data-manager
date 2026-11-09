@@ -6,6 +6,7 @@ import autoTable from 'jspdf-autotable'
 import { format, parseISO } from 'date-fns'
 import {
   formatReportPeriod,
+  sortAndDedupeRows,
   type OfficeReportMeta,
   type OfficeReportRow,
 } from './officeReportShared'
@@ -15,7 +16,7 @@ const fileBaseName = (meta: OfficeReportMeta) => {
     meta.fromDate === meta.toDate
       ? meta.fromDate
       : `${meta.fromDate} to ${meta.toDate}`
-  return `Office Report - ${meta.office} - ${period}`.replace(
+  return `Office Report - ${meta.location} - ${period}`.replace(
     /[\\/:*?"<>|]/g,
     '-',
   )
@@ -45,7 +46,8 @@ const dateTimeLabel = (row: OfficeReportRow, isSingleDay: boolean) => {
   return `${format(parseISO(row.date), 'MMM d, yyyy')}${time ? ` ${time}` : ''}`
 }
 
-const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
+const buildPdf = (inputRows: OfficeReportRow[], meta: OfficeReportMeta) => {
+  const rows = sortAndDedupeRows(inputRows)
   const isSingleDay = meta.fromDate === meta.toDate
   const doc = new jsPDF({
     orientation: 'landscape',
@@ -61,8 +63,12 @@ const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
-  doc.text(`Office: ${meta.office}`, margin, 21)
-  doc.text(`Activity: ${meta.activity}`, margin, 26)
+  doc.text(`Original Location: ${meta.location}`, margin, 21)
+  doc.text(
+    `Logged By: ${meta.loggedBy || 'All users'}`,
+    margin,
+    26,
+  )
   doc.text(`Date: ${formatReportPeriod(meta)}`, margin, 31)
   // A long type selection wraps, pushing the table down
   const typeLines: string[] = doc.splitTextToSize(
@@ -94,7 +100,7 @@ const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
         'Agency',
         'Amount',
         'Particulars',
-        'Activity',
+        'Original Location',
         'Logged By',
         'Current Location',
         'Status',
@@ -142,7 +148,7 @@ const buildPdf = (rows: OfficeReportRow[], meta: OfficeReportMeta) => {
       doc.setFontSize(8)
       doc.setTextColor(120)
       doc.text(
-        `${meta.office} | ${formatReportPeriod(meta)}`,
+        `${meta.location} | ${formatReportPeriod(meta)}`,
         margin,
         pageHeight - 6,
       )
@@ -194,18 +200,22 @@ export const printOfficeReportPdf = (
 }
 
 export const downloadOfficeReportExcel = async (
-  rows: OfficeReportRow[],
+  inputRows: OfficeReportRow[],
   meta: OfficeReportMeta,
 ) => {
+  const rows = sortAndDedupeRows(inputRows)
   const workbook = new Excel.Workbook()
-  const worksheet = workbook.addWorksheet(meta.office.substring(0, 31))
+  // Sheet names can't contain \ / ? * [ ] : and max 31 chars
+  const worksheet = workbook.addWorksheet(
+    meta.location.replace(/[\\/?*[\]:]/g, '-').substring(0, 31),
+  )
 
   worksheet.addRow(['Document Tracker - Office Report']).font = {
     bold: true,
     size: 14,
   }
-  worksheet.addRow([`Office: ${meta.office}`])
-  worksheet.addRow([`Activity: ${meta.activity}`])
+  worksheet.addRow([`Original Location: ${meta.location}`])
+  worksheet.addRow([`Logged By: ${meta.loggedBy || 'All users'}`])
   worksheet.addRow([`Date: ${formatReportPeriod(meta)}`])
   worksheet.addRow([`Document Type: ${meta.types}`])
   worksheet.addRow([`Total Documents: ${rows.length}`])
@@ -224,7 +234,7 @@ export const downloadOfficeReportExcel = async (
     { header: 'Agency/Department', width: 24 },
     { header: 'Amount', width: 16 },
     { header: 'Particulars', width: 50 },
-    { header: 'Activity', width: 24 },
+    { header: 'Original Location', width: 24 },
     { header: 'Logged By', width: 24 },
     { header: 'Current Location', width: 24 },
     { header: 'Status', width: 14 },

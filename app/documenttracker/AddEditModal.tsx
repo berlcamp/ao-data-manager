@@ -230,6 +230,7 @@ export default function AddEditModal({
       // Append new data in redux
       const updatedData = {
         ...newData,
+        original_location: formdata.location,
         asenso_user: user,
         id: data[0].id,
         attachments: uploadedFiles,

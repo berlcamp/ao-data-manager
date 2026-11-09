@@ -108,6 +108,7 @@ export interface DocumentTypes {
   routing_slip_no: string
   received_by: string
   route_date: string
+  original_location?: string | null
 }
 
 export interface TrackerFilters {
