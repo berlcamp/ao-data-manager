@@ -110,55 +110,93 @@ export default function OfficeReportModal({
     return Array.from(counts.entries())
   }, [rows])
 
+  // Uses the fetch_original_location_report database function. Returns null
+  // when the function isn't installed yet, undefined when superseded.
+  const fetchFromDbFunction = async (requestId: number) => {
+    const rows: OfficeReportRow[] = []
+    for (let start = 0; ; start += PAGE_SIZE) {
+      const { data, error } = await supabase
+        .rpc('fetch_original_location_report', {
+          p_location: isAllLocations ? null : location,
+          p_from: fromDate,
+          p_to: effectiveTo,
+          p_types: isAllTypes ? null : selectedTypes,
+          p_user: loggedByMe ? session.user.id : null,
+        })
+        .range(start, start + PAGE_SIZE - 1)
+
+      if (error) {
+        // Function not found: fall back to filtering in the browser
+        if (error.code === 'PGRST202' || error.code === '42883') return null
+        throw new Error(error.message)
+      }
+      if (requestId !== requestIdRef.current) return undefined
+
+      rows.push(...(data as OfficeReportRow[]))
+      if (!data || data.length < PAGE_SIZE) break
+    }
+    return sortAndDedupeRows(rows)
+  }
+
+  // Fallback when the database function isn't installed
+  const fetchInBrowser = async (requestId: number) => {
+    const candidates: OfficeReportRow[] = []
+    // PostgREST caps each response, so page through until a short page
+    for (let start = 0; ; start += PAGE_SIZE) {
+      let query = supabase
+        .from('adm_tracker_routes')
+        .select(
+          'id, title, date, time, user, adm_trackers!inner(id, routing_slip_no, type, requester, agency, amount, particulars, location, status)',
+        )
+        .gte('date', fromDate)
+        .lte('date', effectiveTo)
+        .eq('adm_trackers.archived', false)
+
+      if (!isAllLocations) query = query.eq('title', location)
+      // Only filter when some types are unchecked, so documents whose
+      // type isn't in the list still show under "All Types"
+      if (!isAllTypes) query = query.in('adm_trackers.type', selectedTypes)
+      if (loggedByMe) query = query.eq('user_id', session.user.id)
+
+      const { data, error } = await query
+        .order('date', { ascending: true })
+        .order('id', { ascending: true })
+        .range(start, start + PAGE_SIZE - 1)
+
+      if (error) throw new Error(error.message)
+      if (requestId !== requestIdRef.current) return undefined
+
+      candidates.push(...(data as OfficeReportRow[]))
+      if (!data || data.length < PAGE_SIZE) break
+    }
+
+    // Keep only routes that are the document's first route (its original
+    // location), so later moves don't add the same document again
+    const firstRoutes = await fetchFirstRoutes(
+      supabase,
+      candidates.map((r) => r.adm_trackers.id),
+    )
+    if (requestId !== requestIdRef.current) return undefined
+
+    return sortAndDedupeRows(
+      candidates.filter(
+        (r) => firstRoutes.get(String(r.adm_trackers.id))?.id === r.id,
+      ),
+    )
+  }
+
   const fetchRows = async () => {
     const requestId = ++requestIdRef.current
     setLoading(true)
     setLoadError('')
 
     try {
-      const candidates: OfficeReportRow[] = []
-      // PostgREST caps each response, so page through until a short page
-      for (let start = 0; ; start += PAGE_SIZE) {
-        let query = supabase
-          .from('adm_tracker_routes')
-          .select(
-            'id, title, date, time, user, adm_trackers!inner(id, routing_slip_no, type, requester, agency, amount, particulars, location, status)',
-          )
-          .gte('date', fromDate)
-          .lte('date', effectiveTo)
-          .eq('adm_trackers.archived', false)
-
-        if (!isAllLocations) query = query.eq('title', location)
-        // Only filter when some types are unchecked, so documents whose
-        // type isn't in the list still show under "All Types"
-        if (!isAllTypes) query = query.in('adm_trackers.type', selectedTypes)
-        if (loggedByMe) query = query.eq('user_id', session.user.id)
-
-        const { data, error } = await query
-          .order('date', { ascending: true })
-          .order('id', { ascending: true })
-          .range(start, start + PAGE_SIZE - 1)
-
-        if (error) throw new Error(error.message)
-        if (requestId !== requestIdRef.current) return
-
-        candidates.push(...(data as OfficeReportRow[]))
-        if (!data || data.length < PAGE_SIZE) break
+      let all = await fetchFromDbFunction(requestId)
+      if (all === undefined) return // superseded
+      if (all === null) {
+        all = await fetchInBrowser(requestId)
+        if (all === undefined) return
       }
-
-      // Keep only routes that are the document's first route (its original
-      // location), so later moves don't add the same document again
-      const firstRoutes = await fetchFirstRoutes(
-        supabase,
-        candidates.map((r) => r.adm_trackers.id),
-      )
-      if (requestId !== requestIdRef.current) return
-
-      const all = sortAndDedupeRows(
-        candidates.filter(
-          (r) => firstRoutes.get(String(r.adm_trackers.id))?.id === r.id,
-        ),
-      )
 
       setRows(all)
     } catch (e) {
