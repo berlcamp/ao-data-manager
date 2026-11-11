@@ -198,7 +198,9 @@ export default function OfficeReportModal({
         if (all === undefined) return
       }
 
-      setRows(all)
+      const withRemarks = await attachRemarks(all)
+      if (requestId !== requestIdRef.current) return
+      setRows(withRemarks)
     } catch (e) {
       console.error('office report error', e)
       if (requestId === requestIdRef.current) {
@@ -210,7 +212,7 @@ export default function OfficeReportModal({
     }
   }
 
-  // The exports show each document's latest remark
+  // The report shows each document's latest remark
   const attachRemarks = async (list: OfficeReportRow[]) => {
     const ids = Array.from(new Set(list.map((r) => r.adm_trackers.id)))
     const remarks = new Map<number, { remarks: string | null } | null>()
@@ -237,11 +239,9 @@ export default function OfficeReportModal({
     setExporting(true)
     try {
       const exporter = await import('./officeReportExport')
-      const withRemarks = await attachRemarks(rows)
-      if (kind === 'print') exporter.printOfficeReportPdf(withRemarks, meta)
-      if (kind === 'pdf') exporter.downloadOfficeReportPdf(withRemarks, meta)
-      if (kind === 'excel')
-        await exporter.downloadOfficeReportExcel(withRemarks, meta)
+      if (kind === 'print') exporter.printOfficeReportPdf(rows, meta)
+      if (kind === 'pdf') exporter.downloadOfficeReportPdf(rows, meta)
+      if (kind === 'excel') await exporter.downloadOfficeReportExcel(rows, meta)
     } catch (e) {
       console.error('office report export error', e)
       setToast('error', 'Export failed. Please try again.')
@@ -295,7 +295,6 @@ export default function OfficeReportModal({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [hideModal])
 
-  const isSingleDay = fromDate === effectiveTo
   const canExport =
     !loading && !exporting && !validationError && rows.length > 0
 
@@ -574,16 +573,12 @@ export default function OfficeReportModal({
                   <thead className="app__thead">
                     <tr>
                       <th className="app__th">#</th>
-                      <th className="app__th">
-                        {isSingleDay ? 'Time' : 'Date/Time'}
-                      </th>
                       <th className="app__th">Routing No</th>
-                      <th className="app__th">Requester / Agency</th>
-                      <th className="app__th">Amount</th>
+                      <th className="app__th">Name/Payee</th>
+                      <th className="app__th">Agency/Department</th>
                       <th className="app__th">Particulars</th>
-                      <th className="app__th">Original Location</th>
-                      <th className="app__th">Logged By</th>
-                      <th className="app__th">Current Location / Status</th>
+                      <th className="app__th">Current Location</th>
+                      <th className="app__th">Remarks</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -591,42 +586,30 @@ export default function OfficeReportModal({
                       <tr
                         key={row.id}
                         className="app__tr">
-                        <td className="app__td">{index + 1}</td>
+                        <td className="app__td text-right">{index + 1}</td>
                         <td className="app__td whitespace-nowrap">
-                          {!isSingleDay && (
-                            <div>
-                              {format(parseISO(row.date), 'MMM d, yyyy')}
-                            </div>
-                          )}
-                          <div>{row.time}</div>
-                        </td>
-                        <td className="app__td">
-                          <div className="font-bold">
-                            {row.adm_trackers.routing_slip_no}
-                          </div>
-                          <div className="text-gray-500">
-                            {row.adm_trackers.type}
-                          </div>
+                          {row.adm_trackers.routing_slip_no}
                         </td>
                         <td className="app__td max-w-[180px]">
-                          <div>{row.adm_trackers.requester}</div>
-                          <div className="text-gray-500">
-                            {row.adm_trackers.agency}
-                          </div>
+                          {row.adm_trackers.requester}
                         </td>
-                        <td className="app__td whitespace-nowrap">
-                          {formatAmountWithCommas(row.adm_trackers.amount)}
+                        <td className="app__td max-w-[180px]">
+                          {row.adm_trackers.agency}
                         </td>
-                        <td className="app__td max-w-[300px]">
-                          {row.adm_trackers.particulars}
+                        <td className="app__td max-w-[360px]">
+                          <div>{row.adm_trackers.particulars}</div>
+                          {row.adm_trackers.amount?.trim() && (
+                            <div className="mt-3">
+                              Amount:{' '}
+                              {formatAmountWithCommas(row.adm_trackers.amount)}
+                            </div>
+                          )}
                         </td>
-                        <td className="app__td">{row.title}</td>
-                        <td className="app__td">{row.user}</td>
-                        <td className="app__td">
-                          <div>{row.adm_trackers.location}</div>
-                          <div className="text-gray-500">
-                            {row.adm_trackers.status}
-                          </div>
+                        <td className="app__td text-center">
+                          {row.adm_trackers.location}
+                        </td>
+                        <td className="app__td text-center max-w-[180px]">
+                          {row.adm_trackers.recent_remarks?.remarks}
                         </td>
                       </tr>
                     ))}
