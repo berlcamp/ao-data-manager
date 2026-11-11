@@ -58,6 +58,7 @@ export const timeToMinutes = (time: string | null) => {
 // These types go last in the report, in this order. Every other type comes
 // first, alphabetically. Keys are lowercase; aliases map to the same slot.
 const TRAILING_TYPES: string[][] = [
+  ['certification', 'cert'],
   ['pr/obr', 'obr/pr'],
   ['purchase order'],
   ['noa'],
