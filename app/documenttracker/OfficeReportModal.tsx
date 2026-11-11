@@ -210,14 +210,38 @@ export default function OfficeReportModal({
     }
   }
 
+  // The exports show each document's latest remark
+  const attachRemarks = async (list: OfficeReportRow[]) => {
+    const ids = Array.from(new Set(list.map((r) => r.adm_trackers.id)))
+    const remarks = new Map<number, { remarks: string | null } | null>()
+    // Chunk the ids to keep the request URL short
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data, error } = await supabase
+        .from('adm_trackers')
+        .select('id, recent_remarks')
+        .in('id', ids.slice(i, i + 200))
+      if (error) throw new Error(error.message)
+      data?.forEach((d: any) => remarks.set(d.id, d.recent_remarks))
+    }
+    return list.map((r) => ({
+      ...r,
+      adm_trackers: {
+        ...r.adm_trackers,
+        recent_remarks: remarks.get(r.adm_trackers.id) ?? null,
+      },
+    }))
+  }
+
   const handleExport = async (kind: 'print' | 'pdf' | 'excel') => {
     if (rows.length === 0) return
     setExporting(true)
     try {
       const exporter = await import('./officeReportExport')
-      if (kind === 'print') exporter.printOfficeReportPdf(rows, meta)
-      if (kind === 'pdf') exporter.downloadOfficeReportPdf(rows, meta)
-      if (kind === 'excel') await exporter.downloadOfficeReportExcel(rows, meta)
+      const withRemarks = await attachRemarks(rows)
+      if (kind === 'print') exporter.printOfficeReportPdf(withRemarks, meta)
+      if (kind === 'pdf') exporter.downloadOfficeReportPdf(withRemarks, meta)
+      if (kind === 'excel')
+        await exporter.downloadOfficeReportExcel(withRemarks, meta)
     } catch (e) {
       console.error('office report export error', e)
       setToast('error', 'Export failed. Please try again.')

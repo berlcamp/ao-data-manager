@@ -18,6 +18,8 @@ export interface OfficeReportRow {
     particulars: string | null
     location: string | null
     status: string | null
+    // Loaded only when exporting
+    recent_remarks?: { remarks: string | null } | null
   }
 }
 
@@ -53,7 +55,38 @@ export const timeToMinutes = (time: string | null) => {
   return hours * 60 + minutes
 }
 
-// Sort by date, then time, then route id; keep one row per document
+// These types go last in the report, in this order. Every other type comes
+// first, alphabetically. Keys are lowercase; aliases map to the same slot.
+const TRAILING_TYPES: string[][] = [
+  ['pr/obr', 'obr/pr'],
+  ['purchase order'],
+  ['noa'],
+  ['disbursement voucher'],
+  ['cheque', 'checks', 'check'],
+  ['leave'],
+  ['dtr'],
+  ['executive order'],
+  ['special order'],
+  ['memorandum order'],
+  ['travel order'],
+  ['liquidation'],
+  ['obr/payroll'],
+  ['obr/reimbursement'],
+]
+
+const trailingRank = new Map<string, number>(
+  TRAILING_TYPES.flatMap((aliases, i) => aliases.map((a) => [a, i] as const)),
+)
+
+const typeKey = (row: OfficeReportRow) =>
+  (row.adm_trackers.type ?? '').trim().toLowerCase()
+
+// Other types rank -1 (first); untyped documents go just before the trailing types
+const typeRank = (key: string) =>
+  trailingRank.get(key) ?? (key === '' ? -0.5 : -1)
+
+// Group by document type, then sort by date, time and route id;
+// keep one row per document
 export const sortAndDedupeRows = (rows: OfficeReportRow[]) => {
   const seen = new Set<number>()
   return rows
@@ -64,6 +97,8 @@ export const sortAndDedupeRows = (rows: OfficeReportRow[]) => {
     })
     .sort(
       (a, b) =>
+        typeRank(typeKey(a)) - typeRank(typeKey(b)) ||
+        typeKey(a).localeCompare(typeKey(b)) ||
         a.date.localeCompare(b.date) ||
         timeToMinutes(a.time) - timeToMinutes(b.time) ||
         a.id - b.id,

@@ -3,7 +3,7 @@ import Excel from 'exceljs'
 import { saveAs } from 'file-saver'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import {
   formatReportPeriod,
   sortAndDedupeRows,
@@ -22,33 +22,44 @@ const fileBaseName = (meta: OfficeReportMeta) => {
   )
 }
 
-// Amounts are stored as text; return a number when it parses, else the raw text
-const toAmount = (value: string | null): number | string => {
-  if (!value || value.trim() === '') return ''
-  const n = Number(value.replace(/,/g, '').trim())
-  return Number.isNaN(n) ? value : n
-}
-
 // Collapse tabs/newlines/double spaces typed into the fields
 const clean = (value: string | null) =>
   (value ?? '').replace(/\s+/g, ' ').trim()
 
-// exceljs stores dates as UTC, so build the date at UTC midnight to avoid
-// it showing as the previous day in timezones ahead of UTC
-const excelDate = (ymd: string) => {
-  const [y, m, d] = ymd.split('-').map(Number)
-  return new Date(Date.UTC(y, m - 1, d))
+// Particulars with the amount below it, separated by a blank line
+const particularsWithAmount = (row: OfficeReportRow) => {
+  const particulars = clean(row.adm_trackers.particulars)
+  const amount = clean(row.adm_trackers.amount)
+  if (!amount) return particulars
+  const line = `Amount: ${formatAmountWithCommas(amount)}`
+  return particulars ? `${particulars}\n\n${line}` : line
 }
 
-const dateTimeLabel = (row: OfficeReportRow, isSingleDay: boolean) => {
-  const time = row.time ?? ''
-  if (isSingleDay) return time
-  return `${format(parseISO(row.date), 'MMM d, yyyy')}${time ? ` ${time}` : ''}`
-}
+const remarksText = (row: OfficeReportRow) =>
+  clean(row.adm_trackers.recent_remarks?.remarks ?? null)
+
+const reportColumns = [
+  '#',
+  'Routing No',
+  'Name/Payee',
+  'Agency/Department',
+  'Particulars',
+  'Current Location',
+  'Remarks',
+]
+
+const reportCells = (row: OfficeReportRow, i: number) => [
+  i + 1,
+  clean(row.adm_trackers.routing_slip_no),
+  clean(row.adm_trackers.requester),
+  clean(row.adm_trackers.agency),
+  particularsWithAmount(row),
+  clean(row.adm_trackers.location),
+  remarksText(row),
+]
 
 const buildPdf = (inputRows: OfficeReportRow[], meta: OfficeReportMeta) => {
   const rows = sortAndDedupeRows(inputRows)
-  const isSingleDay = meta.fromDate === meta.toDate
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
@@ -90,58 +101,33 @@ const buildPdf = (inputRows: OfficeReportRow[], meta: OfficeReportMeta) => {
   autoTable(doc, {
     startY: tableStartY,
     margin: { left: margin, right: margin, bottom: 14 },
-    head: [
-      [
-        '#',
-        isSingleDay ? 'Time' : 'Date/Time',
-        'Routing No',
-        'Type',
-        'Requester/Payee',
-        'Agency',
-        'Amount',
-        'Particulars',
-        'Original Location',
-        'Logged By',
-        'Current Location',
-        'Status',
-      ],
-    ],
-    body: rows.map((row, i) => [
-      i + 1,
-      dateTimeLabel(row, isSingleDay),
-      clean(row.adm_trackers.routing_slip_no),
-      clean(row.adm_trackers.type),
-      clean(row.adm_trackers.requester),
-      clean(row.adm_trackers.agency),
-      formatAmountWithCommas(row.adm_trackers.amount),
-      clean(row.adm_trackers.particulars),
-      row.title,
-      clean(row.user),
-      clean(row.adm_trackers.location),
-      clean(row.adm_trackers.status),
-    ]),
+    head: [reportColumns],
+    body: rows.map(reportCells),
+    theme: 'grid',
     styles: {
-      fontSize: 7.5,
+      fontSize: 8,
       cellPadding: 1.5,
       overflow: 'linebreak',
-      valign: 'top',
+      valign: 'middle',
+      lineColor: [0, 0, 0],
+      lineWidth: 0.2,
+      textColor: 0,
     },
-    headStyles: { fillColor: [55, 65, 81], textColor: 255, fontStyle: 'bold' },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
+    headStyles: {
+      fillColor: 255,
+      textColor: 0,
+      fontStyle: 'bold',
+      halign: 'center',
+    },
     columnStyles: {
-      0: { cellWidth: 8, halign: 'right' },
       // Widths (mm) fit legal landscape: 356mm page minus 20mm margins
-      1: { cellWidth: isSingleDay ? 16 : 28 },
-      2: { cellWidth: 26 },
-      3: { cellWidth: 22 },
-      4: { cellWidth: 32 },
-      5: { cellWidth: 32 },
-      6: { halign: 'right', cellWidth: 20 },
-      7: { cellWidth: 'auto' }, // takes the remaining width
-      8: { cellWidth: 26 },
-      9: { cellWidth: 22 },
-      10: { cellWidth: 26 },
-      11: { cellWidth: 18 },
+      0: { cellWidth: 10, halign: 'right' },
+      1: { cellWidth: 30 },
+      2: { cellWidth: 45 },
+      3: { cellWidth: 45 },
+      4: { cellWidth: 'auto' }, // takes the remaining width
+      5: { cellWidth: 40, halign: 'center' },
+      6: { cellWidth: 40, halign: 'center' },
     },
     didDrawPage: () => {
       const pageHeight = doc.internal.pageSize.getHeight()
@@ -199,6 +185,13 @@ export const printOfficeReportPdf = (
   if (!win) doc.save(`${fileBaseName(meta)}.pdf`)
 }
 
+const thinBorder: Partial<Excel.Borders> = {
+  top: { style: 'thin' },
+  left: { style: 'thin' },
+  bottom: { style: 'thin' },
+  right: { style: 'thin' },
+}
+
 export const downloadOfficeReportExcel = async (
   inputRows: OfficeReportRow[],
   meta: OfficeReportMeta,
@@ -224,58 +217,44 @@ export const downloadOfficeReportExcel = async (
   ])
   worksheet.addRow([])
 
-  const headers = [
-    { header: '#', width: 6 },
-    { header: 'Date', width: 14 },
-    { header: 'Time', width: 10 },
-    { header: 'Routing No', width: 20 },
-    { header: 'Type', width: 20 },
-    { header: 'Requester/Payee', width: 28 },
-    { header: 'Agency/Department', width: 24 },
-    { header: 'Amount', width: 16 },
-    { header: 'Particulars', width: 50 },
-    { header: 'Original Location', width: 24 },
-    { header: 'Logged By', width: 24 },
-    { header: 'Current Location', width: 24 },
-    { header: 'Status', width: 14 },
-  ]
+  const widths = [6, 20, 28, 26, 60, 22, 26]
+  const headers = reportColumns.map((header, i) => ({
+    header,
+    width: widths[i],
+  }))
   headers.forEach((h, i) => {
     worksheet.getColumn(i + 1).width = h.width
   })
 
   const headerRow = worksheet.addRow(headers.map((h) => h.header))
-  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } }
+  headerRow.font = { bold: true }
   headerRow.eachCell((cell) => {
     cell.fill = {
       type: 'pattern',
       pattern: 'solid',
-      fgColor: { argb: 'FF374151' },
+      fgColor: { argb: 'FFFFFFFF' },
     }
-    cell.alignment = { vertical: 'middle', wrapText: true }
+    cell.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+      wrapText: true,
+    }
+    cell.border = thinBorder
   })
   const headerRowNumber = headerRow.number
 
   rows.forEach((row, i) => {
-    const added = worksheet.addRow([
-      i + 1,
-      excelDate(row.date),
-      clean(row.time),
-      clean(row.adm_trackers.routing_slip_no),
-      clean(row.adm_trackers.type),
-      clean(row.adm_trackers.requester),
-      clean(row.adm_trackers.agency),
-      toAmount(row.adm_trackers.amount),
-      clean(row.adm_trackers.particulars),
-      row.title,
-      clean(row.user),
-      clean(row.adm_trackers.location),
-      clean(row.adm_trackers.status),
-    ])
-    added.alignment = { vertical: 'top', wrapText: true }
+    const added = worksheet.addRow(reportCells(row, i))
+    added.eachCell({ includeEmpty: true }, (cell, col) => {
+      cell.border = thinBorder
+      cell.alignment = {
+        vertical: 'middle',
+        wrapText: true,
+        horizontal: col === 1 ? 'right' : col >= 6 ? 'center' : 'left',
+      }
+    })
   })
 
-  worksheet.getColumn(2).numFmt = 'mmm d, yyyy'
-  worksheet.getColumn(8).numFmt = '#,##0.00'
   worksheet.views = [{ state: 'frozen', ySplit: headerRowNumber }]
   worksheet.autoFilter = {
     from: { row: headerRowNumber, column: 1 },
