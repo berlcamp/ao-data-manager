@@ -56,6 +56,7 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
         { header: 'Amount', key: 'amount', width: 20 },
         { header: 'Agency/Department', key: 'agency', width: 20 },
         { header: 'Current Location ', key: 'location', width: 20 },
+        { header: 'Status', key: 'status', width: 20 },
         { header: 'Particulars ', key: 'particulars', width: 20 },
         { header: 'Remarks', key: 'remarks', width: 20 },
         // Add more columns based on your data structure
@@ -76,6 +77,7 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
           amount: item.amount,
           agency: item.agency,
           location: item.location,
+          status: item.status,
           particulars: item.particulars,
           remarks,
         })
