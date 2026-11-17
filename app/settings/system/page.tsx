@@ -9,9 +9,10 @@ import {
 import { useSupabase } from '@/context/SupabaseProvider'
 import React, { useEffect, useState } from 'react'
 
-import { superAdmins } from '@/constants/TrackerConstants'
+import { SUPER_ADMIN_EMAIL, superAdmins } from '@/constants/TrackerConstants'
 import type { UserAccessTypes } from '@/types/index'
 import ChooseUsers from './ChooseUsers'
+import IpWhitelistSettings from './IpWhitelistSettings'
 
 const Page: React.FC = () => {
   const [users, setUsers] = useState<UserAccessTypes[] | []>([])
@@ -55,6 +56,9 @@ const Page: React.FC = () => {
           </div>
 
           <div className="app__content pb-20 md:w-4/5">
+            {session.user.email === SUPER_ADMIN_EMAIL && (
+              <IpWhitelistSettings />
+            )}
             {loadedSettings && (
               <>
                 <ChooseUsers

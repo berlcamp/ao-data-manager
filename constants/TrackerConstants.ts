@@ -256,6 +256,9 @@ export const statusList = [
 
 export const superAdmins = ['berlcamp@gmail.com', 'berlcampomanes@gmail.com']
 
+// The only account that bypasses IP whitelisting and can manage it
+export const SUPER_ADMIN_EMAIL = 'berlcamp@gmail.com'
+
 export const risOffices = ['OCM', 'DepEd', 'POC']
 
 export const addresses = [

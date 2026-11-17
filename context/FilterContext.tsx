@@ -12,9 +12,8 @@ export function useFilter() {
 }
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const { systemAccess, session, ipLists } = useSupabase()
+  const { systemAccess, session } = useSupabase()
   const [isOnline, setIsOnline] = useState(true)
-  const [isIpAccepted, setIsIpAccepted] = useState(true)
   const [filters, setFilters] = useState({})
   const [perPage, setPerPage] = useState(10)
   const [isDarkMode, setIsDarkMode] = useState(false)
@@ -59,26 +58,6 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  useEffect(() => {
-    // Fetch data from an API to get IP address
-    ;(async () => {
-      // Fetch data from an API to get IP address
-      const res = await fetch('/api/ip')
-      const ipData = await res.json()
-      const ip = ipData.ip.toString()
-
-      const find = ipLists.find((item: any) => {
-        return item.ip === ip
-      })
-
-      if (find) {
-        setIsIpAccepted(true)
-      } else {
-        setIsIpAccepted(false)
-      }
-    })()
-  }, [])
-
   const value = {
     filters,
     setFilters,
@@ -91,10 +70,6 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
     setIsDarkMode,
     ipcrfTotalScore,
     setIpcrfTotalScore,
-  }
-
-  if (!isIpAccepted) {
-    // return <NotWhitelisted /> //temporary, uncomment this
   }
 
   if (!session) {

@@ -3,6 +3,7 @@ import { FilterProvider } from '@/context/FilterContext'
 import SupabaseProvider from '@/context/SupabaseProvider'
 import SupabaseListener from '@/utils/supabase-listener'
 import { createServerClient } from '@/utils/supabase-server'
+import { headers } from 'next/headers'
 import { Toaster } from 'react-hot-toast'
 import 'server-only'
 import './globals.css'
@@ -11,6 +12,8 @@ import type { AccountTypes, UserAccessTypes } from '@/types/index'
 import type { Metadata } from 'next'
 
 import ErrorPage from '@/components/ErrorPage'
+import NotWhitelisted from '@/components/NotWhitelisted'
+import { SUPER_ADMIN_EMAIL } from '@/constants/TrackerConstants'
 import { logError } from '@/utils/fetchApi'
 // import { Inter } from 'next/font/google'
 // const inter = Inter({ subsets: ['latin'] })
@@ -40,6 +43,32 @@ export default async function RootLayout({
 
   const { data: ipLists } = await supabase.from('adm_ip_whitelists').select()
 
+  // IP whitelisting: when enabled, only whitelisted IPs can use the system,
+  // except the super admin who can access from anywhere.
+  const headerList = headers()
+  const clientIp = (
+    headerList.get('x-forwarded-for') ??
+    headerList.get('x-real-ip') ??
+    '127.0.0.1'
+  )
+    .split(',')[0]
+    .trim()
+
+  let ipBlocked = false
+  if (session && session.user.email !== SUPER_ADMIN_EMAIL) {
+    const { data: ipSetting } = await supabase
+      .from('adm_system_settings')
+      .select('value')
+      .eq('key', 'ip_whitelist_enabled')
+      .maybeSingle()
+
+    if (ipSetting?.value === true) {
+      ipBlocked = !(ipLists ?? []).some(
+        (item: { ip: string }) => item.ip.trim() === clientIp,
+      )
+    }
+  }
+
   if (session) {
     try {
       const { data: systemAccess, error } = await supabase
@@ -51,7 +80,7 @@ export default async function RootLayout({
           'root layout system access',
           'asenso_system_access',
           '',
-          'root layout system access error'
+          'root layout system access error',
         )
         console.log('Error #: 1', error.message)
         throw new Error(error.message)
@@ -80,7 +109,7 @@ export default async function RootLayout({
           'root layout current user',
           'asenso_users',
           '',
-          error4.message
+          error4.message,
         )
         console.log('Error #: 4')
         throw new Error(error4.message)
@@ -111,14 +140,18 @@ export default async function RootLayout({
           currentUser={currUser}
           ipLists={ipLists}>
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <Providers>
-            <FilterProvider>
-              <Toaster />
-              {/* {!session && <LandingPage />}
+          {ipBlocked ? (
+            <NotWhitelisted ip={clientIp} />
+          ) : (
+            <Providers>
+              <FilterProvider>
+                <Toaster />
+                {/* {!session && <LandingPage />}
               {session && children} */}
-              {children}
-            </FilterProvider>
-          </Providers>
+                {children}
+              </FilterProvider>
+            </Providers>
+          )}
         </SupabaseProvider>
       </body>
     </html>
