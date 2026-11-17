@@ -67,6 +67,19 @@ export default async function RootLayout({
         (item: { ip: string }) => item.ip.trim() === clientIp,
       )
     }
+
+    // Users exempted by the super admin can access from any IP
+    if (ipBlocked) {
+      const { data: exempt } = await supabase
+        .from('asenso_system_access')
+        .select('id')
+        .eq('type', 'ip_exempt')
+        .eq('user_id', session.user.id)
+        .limit(1)
+        .maybeSingle()
+
+      if (exempt) ipBlocked = false
+    }
   }
 
   if (session) {

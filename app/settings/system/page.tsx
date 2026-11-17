@@ -57,7 +57,19 @@ const Page: React.FC = () => {
 
           <div className="app__content pb-20 md:w-4/5">
             {session.user.email === SUPER_ADMIN_EMAIL && (
-              <IpWhitelistSettings />
+              <>
+                <IpWhitelistSettings />
+                {loadedSettings && (
+                  <div className="mb-6">
+                    <ChooseUsers
+                      multiple={true}
+                      type="ip_exempt"
+                      users={users}
+                      title="Users exempted from IP whitelisting (can access from any IP)"
+                    />
+                  </div>
+                )}
+              </>
             )}
             {loadedSettings && (
               <>
